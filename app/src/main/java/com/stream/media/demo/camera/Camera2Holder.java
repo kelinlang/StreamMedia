@@ -15,6 +15,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -179,7 +180,8 @@ public class Camera2Holder {
             MLog.e("CameraAccessException error ",e);
         }
 
-        StreamMediaNative.init();
+        initCodec();
+//        StreamMediaNative.init();
     }
 
     public void closeCamera(){
@@ -199,6 +201,10 @@ public class Camera2Holder {
         }
         previewSurface = null;
 
+        if (videoEncoder != null){
+            videoEncoder.stop();
+        }
+
         StreamMediaNative.release();
     }
 
@@ -213,6 +219,7 @@ public class Camera2Holder {
         }
     }
 
+    private ImageUtil mImageUtil = new ImageUtil();
     private final ImageReader.OnImageAvailableListener mOnImageAvailableListener
             = new ImageReader.OnImageAvailableListener() {
 
@@ -224,12 +231,21 @@ public class Camera2Holder {
             Image image = reader.acquireNextImage();
             if (image != null){
 //                MLog.i("image != null");
+                byte[] yuvData = mImageUtil.getBytesFromImageAsType(image,ImageUtil.NV21);
+
+                if (videoEncoder != null && videoEncoder.isWorking()){
+                    videoEncoder.inputData(yuvData);
+                }
+//                StreamMediaNative.pushVideoData(yuvData,null);
+
+
+
                 image.close();
             }else {
                 MLog.i("image == null");
             }
 
-            StreamMediaNative.pushVideoData(null,null);
+
         }
 
     };
@@ -243,7 +259,7 @@ public class Camera2Holder {
 
             Size largest = Collections.max(Arrays.asList(map.getOutputSizes(ImageFormat.YUV_420_888)), new CompareSizesByArea());
 
-            mImageReader = ImageReader.newInstance(1280, 720, ImageFormat.YUV_420_888, /*maxImages*/10);
+            mImageReader = ImageReader.newInstance(640, 480, ImageFormat.YUV_420_888, /*maxImages*/10);
             mImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mBackgroudHandler);
         } catch (CameraAccessException e) {
             e.printStackTrace();
@@ -275,6 +291,17 @@ public class Camera2Holder {
             }
         }catch (IllegalStateException e){
             MLog.e("IllegalStateException error ",e);
+        }
+    }
+
+    private VideoParam videoParam = new VideoParam();
+    private VideoEncoder videoEncoder = new VideoEncoder();
+
+    private void initCodec(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && CodecUtils.supportAvcCodec()){
+            videoEncoder.setVideoParam(videoParam);
+            videoEncoder.setDataCallback(null);
+            videoEncoder.start();
         }
     }
 

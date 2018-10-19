@@ -13,6 +13,7 @@ public class ImageUtil {
     public static final int YUV420P = 0;
     public static final int YUV420SP = 1;
     public static final int NV21 = 2;
+    public static final int NV12 = 3;
     private static final String TAG = "ImageUtil";
 
     private  byte[] yuvBytes;
@@ -111,6 +112,12 @@ public class ImageUtil {
                     for (int i = 0; i < vBytes.length; i++) {
                         yuvBytes[dstIndex++] = vBytes[i];
                         yuvBytes[dstIndex++] = uBytes[i];
+                    }
+                    break;
+                case NV12:
+                    for (int i = 0; i < vBytes.length; i++) {
+                        yuvBytes[dstIndex++] = uBytes[i];
+                        yuvBytes[dstIndex++] = vBytes[i];
                     }
                     break;
             }

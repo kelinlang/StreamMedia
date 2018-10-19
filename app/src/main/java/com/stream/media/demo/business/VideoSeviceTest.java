@@ -28,7 +28,7 @@ public class VideoSeviceTest {
     }
 
     public void release(){
-        closeCamera();
+//        closeCamera();
         stopBackgroundThread();
     }
 
