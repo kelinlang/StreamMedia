@@ -17,12 +17,14 @@ add_library( # Sets the name of the library.
              SHARED
 
              # Provides a relative path to your source file(s).
-             src/main/cpp/CommonLib/log/cl_sdl_log.c
 
+
+             #公共库开始
+             src/main/cpp/CommonLib/log/cl_sdl_log.c
 
              src/main/cpp/CommonLib/thread/cl_sdl_thread.c
              src/main/cpp/CommonLib/thread/cl_sdl_mutex.c
-
+              #公共库结束
 
              src/main/cpp/native-lib.cpp
               src/main/cpp/looper.cpp
