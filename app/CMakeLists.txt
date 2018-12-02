@@ -51,7 +51,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/native-lib.cpp
               src/main/cpp/looper.cpp
               src/main/cpp/StreamMediaNative.cpp
-              src/main/cpp/log.c
+              #src/main/cpp/log.c
               src/main/cpp/MediaCodecTest.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a

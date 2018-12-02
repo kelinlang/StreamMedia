@@ -7,7 +7,6 @@
 #include <fcntl.h>
 #include <cstdlib>
 #include "com_stream_media_demo_nativelib_StreamMediaNative.h"
-#include "log.h"
 #include "pthread.h"
 #include "media/NdkMediaCodec.h"
 #include "stdio.h"

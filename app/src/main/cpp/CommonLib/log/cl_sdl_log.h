@@ -9,13 +9,14 @@
 #include <android/log.h>
 #include <jni.h>
 #include "cl_sdl_abstract_log.h"
+#include <stdlib.h>
 
 #define TAG "RealTimeVoice"
 static jboolean debug_flag = JNI_TRUE;
 
-/*void setDebug(jboolean isDebug) {
-    debug = isDebug;
-}*/
+void setDebug(jboolean isDebug) {
+    debug_flag = isDebug;
+}
 
 #define LOGV(...) if (debug_flag) __android_log_print(ANDROID_LOG_VERBOSE,TAG ,__VA_ARGS__)
 #define LOGD(...) if (debug_flag) __android_log_print(ANDROID_LOG_DEBUG,TAG ,__VA_ARGS__)
