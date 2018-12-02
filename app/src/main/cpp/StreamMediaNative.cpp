@@ -11,6 +11,8 @@
 #include "pthread.h"
 #include "media/NdkMediaCodec.h"
 #include "stdio.h"
+#include "CommonLib/log/cl_sdl_log.h"
+#include "CommonLib/log/cl_sdl_abstract_log.h"
 
 typedef struct {
     jboolean encodeThreadRunFlag;
@@ -187,6 +189,10 @@ JNIEXPORT void JNICALL Java_com_stream_media_demo_nativelib_StreamMediaNative_se
  */
 JNIEXPORT void JNICALL Java_com_stream_media_demo_nativelib_StreamMediaNative_init
         (JNIEnv *env, jclass jclass){
+    cl_init_log();
+
+    abstract_log_i("测试抽象log",0);
+
     create_encode();
     start_encode_thread();
 }
