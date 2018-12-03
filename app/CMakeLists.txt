@@ -35,6 +35,12 @@ add_library( # Sets the name of the library.
 
             src/main/cpp/CommonLib/thread/cl_sdl_thread.c
             src/main/cpp/CommonLib/thread/cl_sdl_mutex.c
+
+
+            src/main/cpp/CommonLib/android/cl_android_jni.c
+            src/main/cpp/CommonLib/android/cl_android_jni_base.c
+
+
             # #公共库结束
 
             # #媒体库
