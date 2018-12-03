@@ -7,9 +7,15 @@
     tools:context="com.stream.media.demo.MainActivity">
 
     <Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="进入测试camera界面"
+    android:onClick="onToTestCameraView"/>
+
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="进入测试camera界面"
-        android:onClick="onToTestCameraView"/>
+        android:text="进入测试OpenSLES界面"
+        android:onClick="onToTestOpenSLES"/>
 
 </android.support.constraint.ConstraintLayout>

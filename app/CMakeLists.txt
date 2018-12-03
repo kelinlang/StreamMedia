@@ -30,29 +30,33 @@ add_library( # Sets the name of the library.
 
 
              #公共库开始
-            #src/main/cpp/CommonLib/log/cl_sdl_log.c
+            src/main/cpp/CommonLib/log/cl_sdl_log.c
+            src/main/cpp/CommonLib/log/cl_sdl_abstract_log.c
 
-            #src/main/cpp/CommonLib/thread/cl_sdl_thread.c
-            #src/main/cpp/CommonLib/thread/cl_sdl_mutex.c
+            src/main/cpp/CommonLib/thread/cl_sdl_thread.c
+            src/main/cpp/CommonLib/thread/cl_sdl_mutex.c
             # #公共库结束
 
             # #媒体库
-            # src/main/cpp/CommonLib/StreamMedia/sm_egl.c
-            # src/main/cpp/CommonLib/StreamMedia/sm_gles2_display.c
-            # src/main/cpp/CommonLib/StreamMedia/sm_video_display.c
-            # src/main/cpp/CommonLib/StreamMedia/gles2/sm_gles2_utils.c
+            #src/main/cpp/CommonLib/StreamMedia/display/sm_egl.c
+            #src/main/cpp/CommonLib/StreamMedia/display/sm_gles2_display.c
+            #src/main/cpp/CommonLib/StreamMedia/display/sm_video_display.c
+            #src/main/cpp/CommonLib/StreamMedia/display/gles2/sm_gles2_utils.c
 
-            # src/main/cpp/CommonLib/StreamMedia/model/sm_video_data.c
-            # src/main/cpp/CommonLib/StreamMedia/model/sm_video_fourcc.c
+            #src/main/cpp/CommonLib/StreamMedia/model/sm_video_data.c
+           # src/main/cpp/CommonLib/StreamMedia/model/sm_video_fourcc.c
 
-            # src/main/cpp/CommonLib/StreamMedia/video/sm_video_fourcc.c
+            #src/main/cpp/CommonLib/StreamMedia/video/sm_video_codec.c
               #媒体库结束
 
              src/main/cpp/native-lib.cpp
               src/main/cpp/looper.cpp
               src/main/cpp/StreamMediaNative.cpp
               #src/main/cpp/log.c
-              src/main/cpp/MediaCodecTest.cpp)
+              src/main/cpp/MediaCodecTest.cpp
+
+
+              src/main/cpp/test/test_opensles.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -65,7 +69,8 @@ find_library( # Sets the name of the path variable.
 
               # Specifies the name of the NDK library that
               # you want CMake to locate.
-              log)
+              log
+              OpenSLES)
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
@@ -78,4 +83,5 @@ target_link_libraries( # Specifies the target library.
                        # included in the NDK.
                        ${log-lib}
                        mediandk
-                       OpenMAXAL)
+                       OpenMAXAL
+                       OpenSLES)

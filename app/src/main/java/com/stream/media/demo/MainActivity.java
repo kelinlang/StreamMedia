@@ -38,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this,TestCameraActivity.class));
     }
 
+    public void onToTestOpenSLES(View view){
+        startActivity(new Intent(this,TestOpenslesActivity.class));
+    }
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.

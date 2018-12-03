@@ -5,23 +5,19 @@
 #ifndef STREAMMEDIADEMO_CL_SDL_ABSTRACT_LOG_H
 #define STREAMMEDIADEMO_CL_SDL_ABSTRACT_LOG_H
 
-#include <stdlib.h>
+#include <stdio.h>
 
 typedef void(*abstract_log_func_I)(char *, int);
-
 static abstract_log_func_I  log_func_i;
 
 
-void set_abstract_log_i(abstract_log_func_I  logfunci){
-    if (log_func_i == NULL){
-        log_func_i = logfunci;
-    }
-}
+void set_abstract_log_i(abstract_log_func_I  logfunci);
 
-void abstract_log_i(char * logString, int  logValue){
-    if(log_func_i != NULL){
-        log_func_i(logString, logValue);
-    }
-};
+void abstract_log_i(char * logString, int  logValue);
+
+
+void dd(){
+    log_func_i = NULL;
+}
 
 #endif //STREAMMEDIADEMO_CL_SDL_ABSTRACT_LOG_H

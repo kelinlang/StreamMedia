@@ -3,3 +3,17 @@
 //
 
 #include "cl_sdl_log.h"
+
+
+static void cl_log_i(char * logString, int  logValue){
+    if (logString != NULL){
+        LOGI("logString: %s, logValue: %d\n", logString, logValue);
+    } else{
+        LOGI("logString: NULL, logValue: %d\n", logValue);
+    }
+}
+
+
+void cl_init_log(){
+    set_abstract_log_i(cl_log_i);
+}

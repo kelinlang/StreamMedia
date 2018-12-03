@@ -25,18 +25,8 @@ void setDebug(jboolean isDebug) {
 #define LOGE(...) if (debug_flag) __android_log_print(ANDROID_LOG_ERROR,TAG ,__VA_ARGS__)
 
 
-static void cl_log_i(char * logString, int  logValue){
-    if (logString != NULL){
-        LOGI("logString: %s, logValue: %d\n", logString, logValue);
-    } else{
-        LOGI("logString: NULL, logValue: %d\n", logValue);
-    }
-}
 
-
-void cl_init_log(){
-    set_abstract_log_i(cl_log_i);
-}
+void cl_init_log();
 
 
 #endif //STREAMMEDIADEMO_CL_SDL_LOG_H

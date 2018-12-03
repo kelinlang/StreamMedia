@@ -11,7 +11,7 @@
 #include "media/NdkMediaCodec.h"
 #include "stdio.h"
 #include "CommonLib/log/cl_sdl_log.h"
-#include "CommonLib/log/cl_sdl_abstract_log.h"
+
 
 typedef struct {
     jboolean encodeThreadRunFlag;
