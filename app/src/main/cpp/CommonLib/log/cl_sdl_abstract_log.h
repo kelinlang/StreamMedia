@@ -16,8 +16,5 @@ void set_abstract_log_i(abstract_log_func_I  logfunci);
 void abstract_log_i(char * logString, int  logValue);
 
 
-void dd(){
-    log_func_i = NULL;
-}
 
 #endif //STREAMMEDIADEMO_CL_SDL_ABSTRACT_LOG_H

@@ -4,6 +4,9 @@
 
 #include "cl_sdl_log.h"
 
+void setDebug(jboolean isDebug) {
+    debug_flag = isDebug;
+}
 
 static void cl_log_i(char * logString, int  logValue){
     if (logString != NULL){

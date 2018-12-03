@@ -14,9 +14,7 @@
 #define TAG "RealTimeVoice"
 static jboolean debug_flag = JNI_TRUE;
 
-void setDebug(jboolean isDebug) {
-    debug_flag = isDebug;
-}
+void setDebug(jboolean isDebug);
 
 #define LOGV(...) if (debug_flag) __android_log_print(ANDROID_LOG_VERBOSE,TAG ,__VA_ARGS__)
 #define LOGD(...) if (debug_flag) __android_log_print(ANDROID_LOG_DEBUG,TAG ,__VA_ARGS__)

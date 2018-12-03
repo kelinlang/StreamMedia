@@ -7,6 +7,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <unistd.h>
+#include <cstring>
+#include <fcntl.h>
+#include <cstdlib>
+#include "CommonLib/log/cl_sdl_log.h"
+#include "CommonLib/log/cl_sdl_abstract_log.h"
+#include "pthread.h"
+#include "media/NdkMediaCodec.h"
+#include "stdio.h"
+
+
 /*
  * Class:     com_stream_media_demo_nativelib_StreamMediaNative
  * Method:    setSurface

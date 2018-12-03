@@ -52,7 +52,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/native-lib.cpp
               src/main/cpp/looper.cpp
               src/main/cpp/StreamMediaNative.cpp
-              #src/main/cpp/log.c
+
               src/main/cpp/MediaCodecTest.cpp
 
 
@@ -70,7 +70,7 @@ find_library( # Sets the name of the path variable.
               # Specifies the name of the NDK library that
               # you want CMake to locate.
               log
-              OpenSLES)
+              )
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this

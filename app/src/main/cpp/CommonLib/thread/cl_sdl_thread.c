@@ -19,7 +19,7 @@ static void * sdl_func(void *data){
 SdlThread* sdl_create_thread(SdlThread *thread, int(*func)(void*),void *data, const char*name){
     thread->func = func;
     thread->data = data;
-    strlcpy(thread->name,name, strlen(name));
+    strlcpy(thread->name,name, sizeof(thread->name)-1);
     int retval = pthread_create(&thread->id,NULL,sdl_func,thread);
     if(retval){
         return NULL;

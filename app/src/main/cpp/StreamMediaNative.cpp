@@ -2,15 +2,8 @@
 // Created by dengjun on 2018/10/18.
 //
 
-#include <unistd.h>
-#include <cstring>
-#include <fcntl.h>
-#include <cstdlib>
+
 #include "com_stream_media_demo_nativelib_StreamMediaNative.h"
-#include "pthread.h"
-#include "media/NdkMediaCodec.h"
-#include "stdio.h"
-#include "CommonLib/log/cl_sdl_log.h"
 
 
 typedef struct {

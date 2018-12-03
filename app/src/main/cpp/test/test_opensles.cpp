@@ -127,6 +127,8 @@ JNIEXPORT jint JNICALL Java_com_medialib_audio_base_OpenslEs_process_1opensles_1
 
 
     LOGI("createAudioPlayer finish");
+
+    return 0;
 }
 
 
@@ -156,4 +158,6 @@ JNIEXPORT jint JNICALL Java_com_medialib_audio_base_OpenslEs_process_1opensles_1
         engineObject = NULL;
         engineEngine = NULL;
     }
+
+    return 0;
 }
