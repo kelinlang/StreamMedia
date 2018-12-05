@@ -7,11 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "../CommonLib/android/cl_android_jni.h"
 #include "../CommonLib/log/cl_sdl_log.h"
-
-
+#include "../CommonLib/android/cl_android_jni.h"
 /*
  * Class:     com_medialib_audio_base_OpenslEs
  * Method:    process_opensles_playstart
@@ -27,6 +24,14 @@ JNIEXPORT jint JNICALL Java_com_medialib_audio_base_OpenslEs_process_1opensles_1
  */
 JNIEXPORT jint JNICALL Java_com_medialib_audio_base_OpenslEs_process_1opensles_1playstop
   (JNIEnv *, jobject);
+
+/*
+ * Class:     com_medialib_audio_base_OpenslEs
+ * Method:    process_opensles_putplaydata
+ * Signature: ([SI)V
+ */
+JNIEXPORT void JNICALL Java_com_medialib_audio_base_OpenslEs_process_1opensles_1putplaydata
+  (JNIEnv *, jobject, jshortArray, jint);
 
 #ifdef __cplusplus
 }
