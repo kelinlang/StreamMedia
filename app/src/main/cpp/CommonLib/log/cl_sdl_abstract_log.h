@@ -7,13 +7,13 @@
 
 #include <stdio.h>
 
-typedef void(*abstract_log_func_I)(char *, int);
-static abstract_log_func_I  log_func_i;
+typedef void(*AbstractLogFuncI)(char *, int);
+static AbstractLogFuncI  log_func_i;
 
 
-void set_abstract_log_i(abstract_log_func_I  logfunci);
+void SetAbstractLogI(AbstractLogFuncI logfunci);
 
-void abstract_log_i(char * logString, int  logValue);
+void AbstractLogI(char *logString, int logValue);
 
 
 

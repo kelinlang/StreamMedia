@@ -18,5 +18,5 @@ static void cl_log_i(char * logString, int  logValue){
 
 
 void cl_init_log(){
-    set_abstract_log_i(cl_log_i);
+    SetAbstractLogI(cl_log_i);
 }

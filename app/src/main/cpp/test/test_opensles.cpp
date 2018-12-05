@@ -332,6 +332,36 @@ JNIEXPORT jint JNICALL Java_com_medialib_audio_base_OpenslEs_process_1opensles_1
     //pthread_t id;
 
 
+
+    //录音
+    // 参数
+    SLDataLocator_IODevice deviceInputLocator = { SL_DATALOCATOR_IODEVICE, SL_IODEVICE_AUDIOINPUT, SL_DEFAULTDEVICEID_AUDIOINPUT, NULL };
+    SLDataSource inputSource = { &deviceInputLocator, NULL };
+
+    SLDataLocator_AndroidSimpleBufferQueue inputLocator = { SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 1 };
+    SLDataFormat_PCM inputFormat = { SL_DATAFORMAT_PCM, 1, 16000 * 1000, SL_PCMSAMPLEFORMAT_FIXED_16, SL_PCMSAMPLEFORMAT_FIXED_16, SL_SPEAKER_FRONT_LEFT , SL_BYTEORDER_LITTLEENDIAN };
+
+    SLDataSink inputSink = { &inputLocator, &inputFormat };
+
+    const SLInterfaceID inputInterfaces[2] = { SL_IID_ANDROIDSIMPLEBUFFERQUEUE, SL_IID_ANDROIDCONFIGURATION };
+
+    const SLboolean requireds[2] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_FALSE };
+
+
+  /*  // 创建AudioRecorder
+    result = (*openSLEngineInterface)->CreateAudioRecorder(openSLEngineInterface, &andioRecorderObject, &inputSource, &inputSink, 2, inputInterfaces, requireds);
+
+// 初始化AudioRecorder
+    result = (*andioRecorderObject)->Realize(andioRecorderObject, SL_BOOLEAN_FALSE);
+
+// 获取音频输入的BufferQueue接口
+    result = (*andioRecorderObject)->GetInterface(andioRecorderObject, SL_IID_ANDROIDSIMPLEBUFFERQUEUE, &inputBufferQueueInterface);
+
+// 获取录制器接口
+    SLRecordItf audioRecorderInterface;
+    (*andioRecorderObject)->GetInterface(andioRecorderObject, SL_IID_RECORD, &audioRecorderInterface);*/
+
+    //启动
     feedData();
     LOGI("createAudioPlayer finish");
 

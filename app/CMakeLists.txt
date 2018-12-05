@@ -44,15 +44,20 @@ add_library( # Sets the name of the library.
             # #公共库结束
 
             # #媒体库
-            #src/main/cpp/CommonLib/StreamMedia/display/sm_egl.c
-            #src/main/cpp/CommonLib/StreamMedia/display/sm_gles2_display.c
-            #src/main/cpp/CommonLib/StreamMedia/display/sm_video_display.c
-            #src/main/cpp/CommonLib/StreamMedia/display/gles2/sm_gles2_utils.c
+            #src/main/cpp/StreamMedia/display/sm_egl.c
+            #src/main/cpp/StreamMedia/display/sm_gles2_display.c
+            #src/main/cpp/StreamMedia/display/sm_video_display.c
+            #src/main/cpp/StreamMedia/display/gles2/sm_gles2_utils.c
 
-            #src/main/cpp/CommonLib/StreamMedia/model/sm_video_data.c
-           # src/main/cpp/CommonLib/StreamMedia/model/sm_video_fourcc.c
+            #src/main/cpp/StreamMedia/model/sm_video_data.c
+            #src/main/cpp/StreamMedia/model/sm_video_fourcc.c
 
-            #src/main/cpp/CommonLib/StreamMedia/video/sm_video_codec.c
+            #src/main/cpp/StreamMedia/video/sm_video_codec.c
+
+
+            src/main/cpp/StreamMedia/audio/sm_audio_data.c
+            src/main/cpp/StreamMedia/audio/sm_audio_record.c
+            src/main/cpp/StreamMedia/audio/sm_opensles_record.c
               #媒体库结束
 
              src/main/cpp/native-lib.cpp

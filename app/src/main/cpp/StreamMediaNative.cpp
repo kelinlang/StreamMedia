@@ -183,7 +183,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_demo_nativelib_StreamMediaNative_in
         (JNIEnv *env, jclass jclass){
     cl_init_log();
 
-    abstract_log_i("测试抽象log",0);
+    AbstractLogI("测试抽象log", 0);
 
     create_encode();
     start_encode_thread();
