@@ -4,5 +4,7 @@
 
 #include "sm_audio_record.h"
 
+struct SmAudioRecordOpaque_{
 
+};
 

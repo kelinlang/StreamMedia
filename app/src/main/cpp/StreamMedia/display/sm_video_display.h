@@ -2,8 +2,10 @@
 // Created by dengjun on 2018/11/16.
 //
 
-#ifndef STREAMMEDIADEMO_SM_VIDIO_DISPLAY_H
-#define STREAMMEDIADEMO_SM_VIDIO_DISPLAY_H
+#ifndef STREAMMEDIADEMO_SM_VIDEO_DISPLAY_H
+#define STREAMMEDIADEMO_SM_VIDEO_DISPLAY_H
+
+#include <stdio.h>
 
 typedef struct VideoDisplay{
 

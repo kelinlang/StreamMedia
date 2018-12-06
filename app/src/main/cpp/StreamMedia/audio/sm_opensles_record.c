@@ -48,6 +48,8 @@ SmAudioRecord  CreateAudioRecord(int type){
         smAudioRecord->Start = Start;
         smAudioRecord->Stop = Stop;
 
+
+        SmAudioRecordOpaque audioRecordOpaque = malloc(sizeof(SmAudioRecordOpaque));
         return smAudioRecord;
     }
     return NULL;
