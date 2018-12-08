@@ -7,13 +7,17 @@
 
 
 
-typedef struct VideoData{
+typedef struct SmVideoData{
     //格式，入h264,yuv,rgb
     int format;
     int width, height;
-} VideoData;
+} SmVideoData;
+
+typedef struct SmVideoParam{
 
 
+
+}SmVideoParam;
 
 
 #endif //STREAMMEDIADEMO_SM_VIDEO_DATA_H

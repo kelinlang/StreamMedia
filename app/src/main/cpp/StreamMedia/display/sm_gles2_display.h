@@ -8,38 +8,72 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2platform.h>
+#include <malloc.h>
+
+#include "../CommonLib/log/cl_sdl_abstract_log.h"
 #include "../model/sm_video_data.h"
 
-typedef struct SmGles2Renderer SmGles2Renderer;
+
+/*
+ * Renderer
+ */
+#define IJK_GLES2_MAX_PLANE 3
 
 #define SM_GLES2_GRAVITY_RESIZE                (0) // Stretch to fill view bounds.
 #define SM_GLES2_GRAVITY_RESIZE_ASPECT         (1) // Preserve aspect ratio; fit within view bounds.
 #define SM_GLES2_GRAVITY_RESIZE_ASPECT_FILL    (2) // Preserve aspect ratio; fill view bounds.
 
 typedef struct SmGles2Param{
-    GLsizei view_width;
-    GLsizei view_height;
+    GLsizei viewWidth;
+    GLsizei viewHeight;
     int gravity;
+
+    uint32_t format;
 }SmGles2Param;
 
+typedef struct SmGles2Renderer_ *SmGles2Renderer;
+//具体实现相关
+typedef struct SmGles2Impl_ * SmGles2Impl;
 
-SmGles2Param* sm_gles2_create();
-void sm_gles2_free(SmGles2Param * gles2Param);
+typedef struct SmGles2Renderer_{
+    SmGles2Param *gles2Param;
+     SmGles2Impl gles2Opaque;
+
+    void (*SmGles2RendererReset)(SmGles2Renderer gles2Renderer);
+    void (*SmGles2RendererFree)(SmGles2Renderer gles2Renderer);
+    void (*SmGles2RendererFreep)(SmGles2Renderer gles2Renderer);
+
+    GLboolean (*SmGles2RendererSetupGles2)(SmGles2Renderer gles2Renderer);
+    GLboolean (*SmGles2RendererIsValid)(SmGles2Renderer gles2Renderer);
+    GLboolean (*SmGles2RendererSetParam)(SmGles2Renderer gles2Renderer, SmGles2Param *gles2Param);
+    SmGles2Param *(*SmGles2RendererGetParam)(SmGles2Renderer gles2Renderer);
+
+    GLboolean (*SmGles2RendererUse)(SmGles2Renderer gles2Renderer);
+
+    GLboolean (*SmGles2RendererRender)(SmGles2Renderer gles2Renderer, SmVideoData *videoData);
+
+}SmGles2Renderer_;
 
 
-SmGles2Renderer * sm_gles2_renderer_create();
-void sm_gles2_renderer_reset(SmGles2Renderer *gles2Renderer);
-void sm_gles2_renderer_free(SmGles2Renderer *gles2Renderer);
-void sm_gles2_renderer_freep(SmGles2Renderer *gles2Renderer);
 
-GLboolean sm_gles2_renderer_setup_gles();
-GLboolean sm_gles2_renderer_isValid(SmGles2Renderer *gles2Renderer);
-GLboolean sm_gles2_renderer_set_param(SmGles2Renderer *gles2Renderer, SmGles2Param gles2Param);
-SmGles2Param *sm_gles2_renderer_get_param();
 
-GLboolean sm_gles2_renderer_use(SmGles2Renderer *gles2Renderer);
+SmGles2Param* SmGles2Create();
+void SmGles2Free(SmGles2Param * gles2Param);
 
-GLboolean sm_gles2_renderer_render(SmGles2Renderer *gles2Renderer, VideoData *videoData);
+
+SmGles2Renderer  SmGles2RendererCreate(SmGles2Param * gles2Param);
+/*void SmGles2RendererReset(SmGles2Renderer *gles2Renderer);
+void SmGles2RendererFree(SmGles2Renderer *gles2Renderer);
+void SmGles2RendererFreep(SmGles2Renderer *gles2Renderer);
+
+GLboolean SmGles2RendererSetupGles2();
+GLboolean SmGles2RendererIsValid(SmGles2Renderer *gles2Renderer);
+GLboolean SmGles2RendererSetParam(SmGles2Renderer *gles2Renderer, SmGles2Param gles2Param);
+SmGles2Param *SmGles2RendererGetParam();
+
+GLboolean SmGles2RendererUse(SmGles2Renderer *gles2Renderer);
+
+GLboolean SmGles2RendererRender(SmGles2Renderer *gles2Renderer, SmVideoData *videoData);*/
 
 
 #endif //STREAMMEDIADEMO_SM_GLES2_DISPLAY_H

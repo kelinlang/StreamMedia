@@ -6,15 +6,27 @@
 #define STREAMMEDIADEMO_SM_VIDEO_DISPLAY_H
 
 #include <stdio.h>
+#include "sm_video_data.h"
+#include "../model/sm_video_data.h"
 
-typedef struct VideoDisplay{
+typedef  struct SmVideoDisplay_ *SmVideoDisplay;
 
-}VideoDisplay;
+//具体实现相关
+typedef struct SmVideoDisplayOpaque_ * SmVideoDisplayOpaque;
+
+typedef struct SmVideoDisplay_{
+    void (*SetVideoParam)(SmVideoDisplay videoDisplay,SmVideoParam *videoParam);
+    SmVideoParam * (*GetVideoParam)(SmVideoDisplay videoDisplay);
+
+    SmVideoDisplayOpaque videoDisplayOpaque;
+
+    int (*VideoDisplayInit)(SmVideoDisplay videoDisplay);
+    int (*VideoDisplayRelease)(SmVideoDisplay videoDisplay);
+
+}SmVideoDisplay_;
 
 
-VideoDisplay* video_display_create();
-int video_display_init(VideoDisplay *videoDisplay);
-void video_display_release(VideoDisplay *videoDisplay);
+SmVideoDisplay VideoDisplayCreate();
 
 
 #endif //STREAMMEDIADEMO_SM_VIDIO_DISPLAY_H
