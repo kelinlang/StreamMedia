@@ -5,19 +5,37 @@
 #ifndef STREAMMEDIADEMO_SM_VIDEO_DATA_H
 #define STREAMMEDIADEMO_SM_VIDEO_DATA_H
 
+#define SM_GLES2_MAX_PLANE 3
 
 
-typedef struct SmVideoData{
+typedef struct SmVideoData_ * SmVideoData;
+
+typedef struct SmVideoData_{
     //格式，入h264,yuv,rgb
-    int format;
-    int width, height;
-} SmVideoData;
+    unsigned int dataFormat;
+    int width;
+    int height;
 
-typedef struct SmVideoParam{
+    void (*destroy)(SmVideoData videoData);
+
+} SmVideoData_;
+
+int SmCreateVideoData(SmVideoData videoData);
 
 
+typedef struct SmVideoParam_ * SmVideoParam;
 
-}SmVideoParam;
+typedef struct SmVideoParam_{
+    int viewWidth;
+    int viewHeight;
+    int gravity;
 
+    unsigned int dataFormat;
+    unsigned int displayFormat;
+
+    void (*destroy)(SmVideoParam videoParam);
+}SmVideoParam_;
+
+int SmCreateVideoParam(SmVideoParam videoParam);
 
 #endif //STREAMMEDIADEMO_SM_VIDEO_DATA_H

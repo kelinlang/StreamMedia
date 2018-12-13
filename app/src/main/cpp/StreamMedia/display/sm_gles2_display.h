@@ -12,12 +12,13 @@
 
 #include "../CommonLib/log/cl_sdl_abstract_log.h"
 #include "../model/sm_video_data.h"
+#include "gles2/gles2_internal.h"
 
 
 /*
  * Renderer
  */
-#define IJK_GLES2_MAX_PLANE 3
+
 
 #define SM_GLES2_GRAVITY_RESIZE                (0) // Stretch to fill view bounds.
 #define SM_GLES2_GRAVITY_RESIZE_ASPECT         (1) // Preserve aspect ratio; fit within view bounds.
@@ -33,7 +34,6 @@ typedef struct SmGles2Param{
 
 typedef struct SmGles2Renderer_ *SmGles2Renderer;
 //具体实现相关
-typedef struct SmGles2Impl_ * SmGles2Impl;
 
 typedef struct SmGles2Renderer_{
     SmGles2Param *gles2Param;

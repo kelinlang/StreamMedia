@@ -20,8 +20,9 @@
  */
 
 #include "gles2_internal.h"
+#include "../../../CommonLib/log/cl_sdl_log.h"
 
-static void IJK_GLES2_printShaderInfo(GLuint shader)
+static void SmGles2PrintShaderInfo(GLuint shader)
 {
     if (!shader)
         return;
@@ -29,7 +30,7 @@ static void IJK_GLES2_printShaderInfo(GLuint shader)
     GLint info_len = 0;
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &info_len);
     if (!info_len) {
-        ALOGE("[GLES2][Shader] empty info\n");
+        LOGE("[GLES2][Shader] empty info\n");
         return;
     }
 
@@ -46,24 +47,22 @@ static void IJK_GLES2_printShaderInfo(GLuint shader)
     }
 
     glGetShaderInfoLog(shader, buf_len, NULL, buf);
-    ALOGE("[GLES2][Shader] error %s\n", buf);
+    LOGE("[GLES2][Shader] error %s\n", buf);
 
     if (buf_heap)
         free(buf_heap);
 }
 
-GLuint IJK_GLES2_loadShader(GLenum shader_type, const char *shader_source)
+GLuint  SmGles2LoadShader(GLenum shader_type, const char *shader_source)
 {
-    assert(shader_source);
 
-    GLuint shader = glCreateShader(shader_type);        IJK_GLES2_checkError("glCreateShader");
+    GLuint shader = glCreateShader(shader_type);        SmGles2CheckError("glCreateShader");
     if (!shader)
         return 0;
 
-    assert(shader_source);
 
-    glShaderSource(shader, 1, &shader_source, NULL);    IJK_GLES2_checkError_TRACE("glShaderSource");
-    glCompileShader(shader);                            IJK_GLES2_checkError_TRACE("glCompileShader");
+    glShaderSource(shader, 1, &shader_source, NULL);    SmGles2CheckErrorTrace("glShaderSource");
+    glCompileShader(shader);                            SmGles2CheckErrorTrace("glCompileShader");
 
     GLint compile_status = 0;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compile_status);
@@ -75,7 +74,7 @@ GLuint IJK_GLES2_loadShader(GLenum shader_type, const char *shader_source)
 fail:
 
     if (shader) {
-        IJK_GLES2_printShaderInfo(shader);
+        SmGles2PrintShaderInfo(shader);
         glDeleteShader(shader);
     }
 

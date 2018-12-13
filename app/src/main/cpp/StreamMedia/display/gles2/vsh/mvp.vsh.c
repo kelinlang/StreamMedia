@@ -19,9 +19,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "ijksdl/gles2/internal.h"
+#include "../gles2_internal.h"
 
-static const char g_shader[] = IJK_GLES_STRING(
+static const char g_shader[] = SM_GLES_STRING(
     precision highp float;
     varying   highp vec2 vv2_Texcoord;
     attribute highp vec4 av4_Position;
@@ -35,7 +35,7 @@ static const char g_shader[] = IJK_GLES_STRING(
     }
 );
 
-const char *IJK_GLES2_getVertexShader_default()
+const char *Sm_GLES2_getVertexShader_default()
 {
     return g_shader;
 }
