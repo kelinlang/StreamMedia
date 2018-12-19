@@ -5,6 +5,8 @@
 #ifndef STREAMMEDIADEMO_SM_VIDEO_DATA_H
 #define STREAMMEDIADEMO_SM_VIDEO_DATA_H
 
+#include <stdint.h>
+
 #define SM_GLES2_MAX_PLANE 3
 
 
@@ -15,6 +17,9 @@ typedef struct SmVideoData_{
     unsigned int dataFormat;
     int width;
     int height;
+
+    uint16_t *pitches; /**< in bytes, Read-only */  //像素长度
+    uint8_t **pixels;//像素数据
 
     void (*destroy)(SmVideoData videoData);
 

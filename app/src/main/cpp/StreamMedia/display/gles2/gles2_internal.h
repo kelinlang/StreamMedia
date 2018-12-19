@@ -54,6 +54,7 @@ typedef struct SmGles2Impl_
     int (*SmGles2SetVideoParam)(SmGles2Impl gles2Impl,SmVideoParam videoParam1);
     SmVideoParam (*SmGles2GetVideoParam)(SmGles2Impl gles2Impl);
     int (*SmGles2Init)(SmGles2Impl gles2Impl);
+    void (*SmGles2Release)(SmGles2Impl gles2Impl);
 
     GLboolean (*func_use)(SmGles2Impl gles2Impl);
     GLsizei   (*func_getBufferWidth)(SmGles2Impl gles2Impl, SmVideoData *videoData);

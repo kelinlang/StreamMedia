@@ -19,7 +19,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-#include "gles2_internal.h"
+#include <GLES2/gl2.h>
 
 // BT.709, which is the standard for HDTV.
 static const GLfloat g_bt709[] = {
@@ -27,7 +27,7 @@ static const GLfloat g_bt709[] = {
     0.0,   -0.213,  2.112,
     1.793, -0.533,  0.0,
 };
-const GLfloat *IJK_GLES2_getColorMatrix_bt709()
+const GLfloat *SM_GLES2_getColorMatrix_bt709()
 {
     return g_bt709;
 }
