@@ -6,7 +6,9 @@
 #define STREAMMEDIADEMO_GLES2_INTERNAL_H
 
 
+#include <GLES2/gl2.h>
 #include "../model/sm_video_data.h"
+#include "../../model/sm_video_data.h"
 
 #define SM_GLES_STRINGIZE(x)   #x
 #define SM_GLES_STRINGIZE2(x)  SM_GLES_STRINGIZE(x)
@@ -56,10 +58,8 @@ typedef struct SmGles2Impl_
     int (*SmGles2Init)(SmGles2Impl gles2Impl);
     void (*SmGles2Release)(SmGles2Impl gles2Impl);
 
-    GLboolean (*func_use)(SmGles2Impl gles2Impl);
-    GLsizei   (*func_getBufferWidth)(SmGles2Impl gles2Impl, SmVideoData *videoData);
-    GLboolean (*func_uploadTexture)(SmGles2Impl gles2Impl, SmVideoData *videoData);
-    GLvoid    (*func_destroy)(SmGles2Impl gles2Opaque);
+
+    GLboolean    (*SmGles2Display)(SmGles2Impl gles2Impl, SmVideoData videoData);
 } SmGles2Impl_;
 
 
@@ -85,27 +85,17 @@ GLuint  SmGles2LoadShader(GLenum shader_type, const char *shader_source);
 
 void SmGLES2LoadOrtho(SmGlesMatrix *matrix, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far);
 
-int  SmGles2ImplCreate(SmGles2Impl gles2Impl);
+SmGles2Impl  SmGles2ImplCreate( );
+
+GLboolean Sm_GLES2_Renderer_setupGLES();
+void      IJK_GLES2_Renderer_reset(SmGles2Impl renderer);
+GLboolean IJK_GLES2_Renderer_isValid(SmGles2Impl renderer);
+GLboolean IJK_GLES2_Renderer_isFormat(SmGles2Impl renderer, int format);
 
 
 
 const char *Sm_GLES2_getVertexShader_default();
 const char *Sm_GLES2_getFragmentShader_yuv420p();
-const char *Sm_GLES2_getFragmentShader_yuv444p10le();
-const char *Sm_GLES2_getFragmentShader_yuv420sp();
-const char *Sm_GLES2_getFragmentShader_rgb();
-
-const GLfloat *Sm_GLES2_getColorMatrix_bt709();
-const GLfloat *Sm_GLES2_getColorMatrix_bt601();
-
-SmGles2Impl SmGles2Opaque__create_base(const char *fragment_shader_source);
-SmGles2Impl SmGles2Opaque__create_yuv420p();
-SmGles2Impl SmGles2Opaque__create_yuv444p10le();
-SmGles2Impl SmGles2Opaque__create_yuv420sp();
-SmGles2Impl SmGles2Opaque__create_yuv420sp_vtb(SmVideoData *videoData);
-SmGles2Impl SmGles2Opaque__create_rgb565();
-SmGles2Impl SmGles2Opaque__create_rgb888();
-SmGles2Impl SmGles2Opaque__create_rgbx8888();
 
 
 

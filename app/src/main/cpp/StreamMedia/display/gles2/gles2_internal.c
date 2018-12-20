@@ -159,7 +159,8 @@ static int SmGles2Init(SmGles2Impl gles2Impl){
         //目前yuv420p
 
 
-        return 0;
+        return  yunv420pPrepare(gles2Impl);
+//        return 0;
     } else{
         LOGE("gles2Impl is NULL");
         return -1;
@@ -173,15 +174,61 @@ static void SmGles2Release(SmGles2Impl gles2Impl){
 }
 
 
-int  SmGles2ImplCreate(SmGles2Impl gles2Impl){
-    gles2Impl = (SmGles2Impl)malloc(sizeof(SmGles2Impl_));
+SmGles2Impl  SmGles2ImplCreate(){
+    SmGles2Impl gles2Impl = (SmGles2Impl)malloc(sizeof(SmGles2Impl_));
     if(gles2Impl != NULL){
         gles2Impl->SmGles2SetVideoParam = SmGles2SetVideoParam;
         gles2Impl->SmGles2GetVideoParam = SmGles2GetVideoParam;
         gles2Impl->SmGles2Init = SmGles2Init;
-        return 0;
+        gles2Impl->SmGles2Release = SmGles2Release;
+        gles2Impl->SmGles2Display = yunv420pDisplay;
+        return gles2Impl;
     } else{
         LOGE("SmGles2Impl malloc fail");
-        return -1;
+        return NULL;
     }
+}
+
+GLboolean Sm_GLES2_Renderer_setupGLES(){
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);       SmGles2CheckErrorTrace("glClearColor");
+    glEnable(GL_CULL_FACE);                     SmGles2CheckErrorTrace("glEnable(GL_CULL_FACE)");
+    glCullFace(GL_BACK);                        SmGles2CheckErrorTrace("glCullFace");
+    glDisable(GL_DEPTH_TEST);
+
+    return GL_TRUE;
+}
+
+GLboolean IJK_GLES2_Renderer_isValid(SmGles2Impl renderer)
+{
+    return renderer && renderer->program ? GL_TRUE : GL_FALSE;
+}
+
+void      IJK_GLES2_Renderer_reset(SmGles2Impl renderer){
+    if (!renderer)
+        return;
+
+    if (renderer->vertex_shader)
+        glDeleteShader(renderer->vertex_shader);
+    if (renderer->fragment_shader)
+        glDeleteShader(renderer->fragment_shader);
+    if (renderer->program)
+        glDeleteProgram(renderer->program);
+
+    renderer->vertex_shader   = 0;
+    renderer->fragment_shader = 0;
+    renderer->program         = 0;
+
+    for (int i = 0; i < SM_GLES2_MAX_PLANE; ++i) {
+        if (renderer->plane_textures[i]) {
+            glDeleteTextures(1, &renderer->plane_textures[i]);
+            renderer->plane_textures[i] = 0;
+        }
+    }
+}
+
+GLboolean IJK_GLES2_Renderer_isFormat(SmGles2Impl renderer, int format){
+    if (!IJK_GLES2_Renderer_isValid(renderer))
+        return GL_FALSE;
+
+    return renderer->format == format ? GL_TRUE : GL_FALSE;
 }

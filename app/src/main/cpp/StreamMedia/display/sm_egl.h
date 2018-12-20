@@ -9,16 +9,20 @@
 #include <EGL/eglext.h>
 #include <EGL/eglplatform.h>
 #include "../../CommonLib/common/cl_common_class.h"
+#include "gles2/gles2_internal.h"
+#include "../model/sm_video_data.h"
 
 
 typedef struct SmEGLOpaque SmEGLOpaque;
 
-typedef struct SmEGL{
+typedef struct SmEGL_ * SmEGL;
+
+typedef struct SmEGL_{
     CommonClass *opaque_class;
 
-    SmEGLOpaque *opaque;
+    SmGles2Impl gles2Impl;
 
-    EGLNativeWindowType  window_type;
+    EGLNativeWindowType  window;
 
     EGLDisplay  display;
     EGLSurface  surface;
@@ -26,13 +30,23 @@ typedef struct SmEGL{
 
     EGLint width;
     EGLint height;
-}SmEGL;
+
+    SmVideoParam videoParam;
+
+    int (*SmEglSetVideoParam)(SmEGL egl,SmVideoParam videoParam1);
+    SmVideoParam (*SmEglGetVideoParam)(SmEGL egl);
+    int (*SmEglInit)(SmEGL egl);
+    void (*SmEglRelease)(SmEGL egl);
+    EGLBoolean    (*SmEglDisplay)(SmEGL gles2Impl, SmVideoData videoData);
+}SmEGL_;
 
 
-SmEGL *sm_egl_create();
-void sm_egl_free(SmEGL *egl);
-void sm_egl_freep(SmEGL **egl);
-EGLBoolean  sm_egl_display(SmEGL *egl,EGLNativeWindowType windowType);
-void sm_egl_terminate(SmEGL *egl);
+SmEGL  SmEglCreate( );
+
+/*SmEGL sm_egl_create();
+void sm_egl_free(SmEGL egl);
+void sm_egl_freep(SmEGL *egl);
+EGLBoolean  sm_egl_display(SmEGL egl,EGLNativeWindowType windowType, SmVideoData videoData);
+void sm_egl_terminate(SmEGL egl);*/
 
 #endif //STREAMMEDIADEMO_SM_EGL_H
