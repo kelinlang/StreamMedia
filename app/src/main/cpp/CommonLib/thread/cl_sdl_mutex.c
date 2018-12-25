@@ -7,9 +7,9 @@
 #include "cl_sdl_mutex.h"
 
 
-SdlMutex * sdl_create_mutex(void){
-    SdlMutex *mutex;
-    mutex = (SdlMutex*)malloc(sizeof(SdlMutex));
+ClMutex_ * clCreateMutex(void){
+    ClMutex_ *mutex;
+    mutex = (ClMutex_*)malloc(sizeof(ClMutex_));
     if (!mutex){
         return NULL;
     }
@@ -20,28 +20,28 @@ SdlMutex * sdl_create_mutex(void){
     return mutex;
 }
 
-void sdl_destroy_mutex(SdlMutex *mutex){
+void clDestroyMutex(ClMutex_ *mutex){
     if(mutex){
         pthread_mutex_destroy(&mutex->id);
         free(mutex);
     }
 }
 
-void sdl_destroy_mutex_p(SdlMutex **mutex){
+void clDestroyMutexP(ClMutex_ **mutex){
     if(mutex){
-        sdl_destroy_mutex(*mutex);
+        clDestroyMutex(*mutex);
         *mutex = NULL;
     }
 }
 
-int sdl_lock_mutex(SdlMutex *mutex){
+int clLockMutex(ClMutex_ *mutex){
     if (!mutex){
         return -1;
     }
     return pthread_mutex_lock(&mutex->id);
 }
 
-int sdl_unlock_mutex(SdlMutex *mutex){
+int clUnlockMutex(ClMutex_ *mutex){
     if (!mutex){
         return -1;
     }
@@ -50,9 +50,9 @@ int sdl_unlock_mutex(SdlMutex *mutex){
 
 
 
-SdlCond *sdl_create_cond(void){
-    SdlCond *cond;
-    cond = (SdlCond*)malloc(sizeof(SdlCond));
+ClCond *clCreateCond(void){
+    ClCond *cond;
+    cond = (ClCond*)malloc(sizeof(ClCond));
     if (!cond){
         return NULL;
     }
@@ -63,34 +63,34 @@ SdlCond *sdl_create_cond(void){
     return cond;
 }
 
-void sdl_destroy_cond(SdlCond *cond){
+void clDestroyCond(ClCond *cond){
     if (cond){
         pthread_cond_destroy(&cond->id);
         free(cond);
     }
 }
-void sdl_destroy_cond_p(SdlCond **cond){
+void clDestroyCondP(ClCond **cond){
     if (cond){
-        sdl_destroy_cond(*cond);
+        clDestroyCond(*cond);
         *cond = NULL;
     }
 }
 
-int sdl_cond_signal(SdlCond *cond){
+int clCondSignal(ClCond *cond){
     if(!cond){
         return -1;
     }
     return pthread_cond_signal(&cond->id);
 }
 
-int sdl_cond_broadcast(SdlCond *cond){
+int clCondBroadcast(ClCond *cond){
     if(!cond){
         return -1;
     }
     return pthread_cond_broadcast(&cond->id);
 }
 
-int sdl_cond_wait_timeout(SdlCond *cond,SdlMutex *mutex, uint32_t ms){
+int clCondWaitTimeout(ClCond *cond, ClMutex_ *mutex, uint32_t ms){
     int retval;
     struct timeval delta;
     struct timespec abstime;
@@ -121,7 +121,7 @@ int sdl_cond_wait_timeout(SdlCond *cond,SdlMutex *mutex, uint32_t ms){
     return -1;
 }
 
-int sdl_cond_wait(SdlCond *cond, SdlMutex *mutex){
+int clCondWait(ClCond *cond, ClMutex_ *mutex){
     if (!cond || !mutex)
         return -1;
 

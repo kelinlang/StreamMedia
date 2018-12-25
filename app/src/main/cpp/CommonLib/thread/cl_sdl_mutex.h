@@ -11,27 +11,28 @@
 #define SDL_MUTEX_TIMEDOUT  1
 #define SDL_MUTEX_MAXWAIT   (~(uint32_t)0)
 
-typedef  struct  SdlMutex{
+typedef struct ClMutex_* ClMutex;
+typedef  struct  ClMutex_{
     pthread_mutex_t id;
-} SdlMutex;
+} ClMutex_;
 
-SdlMutex * sdl_create_mutex(void);
-void sdl_destroy_mutex(SdlMutex *mutex);
-void sdl_destroy_mutex_p(SdlMutex **mutex);
-int sdl_lock_mutex(SdlMutex *mutex);
-int sdl_unlock_mutex(SdlMutex *mutex);
+ClMutex clCreateMutex();
+void clDestroyMutex(ClMutex mutex);
+void clDestroyMutexP(ClMutex* mutex);
+int clLockMutex(ClMutex mutex);
+int clUnlockMutex(ClMutex mutex);
 
 
-typedef struct  SdlCond{
+typedef struct  ClCond{
     pthread_cond_t id;
-}SdlCond;
+}ClCond;
 
-SdlCond *sdl_create_cond(void);
-void sdl_destroy_cond(SdlCond *cond);
-void sdl_destroy_cond_p(SdlCond **cond);
-int sdl_cond_signal(SdlCond *cond);
-int sdl_cond_broadcast(SdlCond *cond);
-int sdl_cond_wait_timeout(SdlCond *cond,SdlMutex *mutex, uint32_t ms);
-int sdl_cond_wait(SdlCond *cond, SdlMutex *mutex);
+ClCond *clCreateCond(void);
+void clDestroyCond(ClCond *cond);
+void clDestroyCondP(ClCond **cond);
+int clCondSignal(ClCond *cond);
+int clCondBroadcast(ClCond *cond);
+int clCondWaitTimeout(ClCond *cond, ClMutex_ *mutex, uint32_t ms);
+int clCondWait(ClCond *cond, ClMutex_ *mutex);
 
 #endif //STREAMMEDIADEMO_CL_SDL_MUTEX_H

@@ -6,6 +6,7 @@
 #define STREAMMEDIADEMO_SM_VIDEO_DATA_BUFFER_H
 
 #include "../model/sm_video_data.h"
+#include "../../CommonLib/thread/cl_sdl_mutex.h"
 
 typedef struct SmVideoDataNode_* SmVideoDataNode;
 typedef struct SmVideoDataNode_{
@@ -21,9 +22,11 @@ typedef struct SmVideoDataQueue_{
     SmVideoDataNode fistNode;
     SmVideoDataNode lastNode;
     int numNode;
+    ClMutex clMutex;
 
     SmVideoDataNode recycleNode;
     int numRecycleNode;
+    ClMutex recycleClMutex;
 
 }  SmVideoDataQueue_;
 
