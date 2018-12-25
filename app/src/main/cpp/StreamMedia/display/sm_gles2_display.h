@@ -73,7 +73,7 @@ SmGles2Param *SmGles2RendererGetParam();
 
 GLboolean SmGles2RendererUse(SmGles2Renderer *gles2Renderer);
 
-GLboolean SmGles2RendererRender(SmGles2Renderer *gles2Renderer, SmVideoData *videoData);*/
+GLboolean SmGles2RendererRender(SmGles2Renderer *gles2Renderer, SmVideoData *SmVideoData);*/
 
 
 #endif //STREAMMEDIADEMO_SM_GLES2_DISPLAY_H

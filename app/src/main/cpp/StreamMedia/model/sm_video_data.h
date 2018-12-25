@@ -23,9 +23,10 @@ typedef struct SmVideoData_{
 
     void (*destroy)(SmVideoData videoData);
 
-} SmVideoData_;
+} VideoData_;
 
-int SmCreateVideoData(SmVideoData videoData);
+SmVideoData smCreateVideoData();
+void smDestroyVideoData(SmVideoData videoData);
 
 
 typedef struct SmVideoParam_ * SmVideoParam;

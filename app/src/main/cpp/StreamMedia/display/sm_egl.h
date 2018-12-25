@@ -46,7 +46,7 @@ SmEGL  SmEglCreate( );
 /*SmEGL sm_egl_create();
 void sm_egl_free(SmEGL egl);
 void sm_egl_freep(SmEGL *egl);
-EGLBoolean  sm_egl_display(SmEGL egl,EGLNativeWindowType windowType, SmVideoData videoData);
+EGLBoolean  sm_egl_display(SmEGL egl,EGLNativeWindowType windowType, SmVideoData SmVideoData);
 void sm_egl_terminate(SmEGL egl);*/
 
 #endif //STREAMMEDIADEMO_SM_EGL_H
