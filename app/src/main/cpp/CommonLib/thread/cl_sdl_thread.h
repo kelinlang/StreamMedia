@@ -16,19 +16,20 @@ typedef enum {
     SDL_THREAD_PRIORITY_HIGH
 }SdlThreadPriority;
 
-typedef struct SdlThread{
+typedef struct ClThread_* ClThread;
+typedef struct ClThread_{
     pthread_t id;
     int (*func)(void *);
     void *data;
     char name[32];
     int retval;
-} SdlThread;
+} ClThread_;
 
 
-SdlThread* sdl_create_thread(SdlThread *thread, int(*func)(void*),void *data, const char*name);
-int  sdl_set_thread_priority(SdlThreadPriority sdl_threadPriority);
-void sdl_wait_thread(SdlThread* thread, int *status);
-void sdl_detach_thread(SdlThread* thread);
+ClThread  clCreateThread(ClThread thread, int(*func)(void *), void *data, const char *name);
+int  clSetThreadPriority(SdlThreadPriority sdl_threadPriority);
+void clWaitThread(ClThread thread, int *status);
+void clDetachThread(ClThread thread);
 
 
 #endif //STREAMMEDIADEMO_CL_SDL_THREAD_H

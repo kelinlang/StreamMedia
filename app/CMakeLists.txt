@@ -47,11 +47,27 @@ add_library( # Sets the name of the library.
             src/main/cpp/StreamMedia/display/sm_egl.c
             src/main/cpp/StreamMedia/display/sm_gles2_display.c
             src/main/cpp/StreamMedia/display/sm_video_display.c
+
             src/main/cpp/StreamMedia/display/gles2/sm_gles2_utils.c
+            src/main/cpp/StreamMedia/display/gles2/gles2_internal.c
+            src/main/cpp/StreamMedia/display/gles2/shader.c
+            src/main/cpp/StreamMedia/display/gles2/color.c
+
+            src/main/cpp/StreamMedia/display/gles2/fsh/rgb.fsh.c
+            src/main/cpp/StreamMedia/display/gles2/fsh/yuv420p.fsh.c
+            src/main/cpp/StreamMedia/display/gles2/fsh/yuv420sp.fsh.c
+            src/main/cpp/StreamMedia/display/gles2/fsh/yuv444p10le.fsh.c
+
+            src/main/cpp/StreamMedia/display/gles2/vsh/mvp.vsh.c
+
+
 
             src/main/cpp/StreamMedia/model/sm_video_data.c
 
             src/main/cpp/StreamMedia/video/sm_video_codec.c
+
+
+            src/main/cpp/StreamMedia/buffer/sm_video_data_buffer.c
 
 
             src/main/cpp/StreamMedia/audio/sm_audio_data.c
