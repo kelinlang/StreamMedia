@@ -22,17 +22,17 @@ void clDestroyMutexP(ClMutex* mutex);
 int clLockMutex(ClMutex mutex);
 int clUnlockMutex(ClMutex mutex);
 
-
-typedef struct  ClCond{
+typedef struct ClCond_* ClCond;
+typedef struct  ClCond_{
     pthread_cond_t id;
-}ClCond;
+}ClCond_;
 
-ClCond *clCreateCond(void);
-void clDestroyCond(ClCond *cond);
-void clDestroyCondP(ClCond **cond);
-int clCondSignal(ClCond *cond);
-int clCondBroadcast(ClCond *cond);
-int clCondWaitTimeout(ClCond *cond, ClMutex_ *mutex, uint32_t ms);
-int clCondWait(ClCond *cond, ClMutex_ *mutex);
+ClCond_ *clCreateCond(void);
+void clDestroyCond(ClCond cond);
+void clDestroyCondP(ClCond *cond);
+int clCondSignal(ClCond cond);
+int clCondBroadcast(ClCond cond);
+int clCondWaitTimeout(ClCond cond, ClMutex mutex, uint32_t ms);
+int clCondWait(ClCond cond, ClMutex mutex);
 
 #endif //STREAMMEDIADEMO_CL_SDL_MUTEX_H

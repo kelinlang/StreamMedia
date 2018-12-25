@@ -33,6 +33,7 @@ SmVideoDataQueue smCreateVideoDataQueue(){
         videoDataQueue->lastNode = NULL;
         videoDataQueue->numNode = 0;
         videoDataQueue->clMutex = clCreateMutex();
+        videoDataQueue->clCond = clCreateCond();
 
         videoDataQueue->recycleNode = NULL;
         videoDataQueue->numRecycleNode = 0;
@@ -61,6 +62,7 @@ void smVideoDataQueueClearData(SmVideoDataQueue videoDataQueue){
         videoDataQueue->lastNode = NULL;
         videoDataQueue->numNode = 0;
         clUnlockMutex(videoDataQueue->clMutex);
+        clDestroyCond(videoDataQueue->clCond);
 
         clLockMutex(videoDataQueue->recycleClMutex);
         if(videoDataQueue->recycleNode){
@@ -97,14 +99,19 @@ void smVideoDataQueueEnqueueData(SmVideoDataQueue videoDataQueue, SmVideoDataNod
         videoDataQueue->lastNode = videoDataNode;
 
         clUnlockMutex(videoDataQueue->clMutex);
+
+        clCondSignal(videoDataQueue->clCond);
     }
 }
 
 
 SmVideoDataNode  smVideoDataQueueDequeueData(SmVideoDataQueue videoDataQueue){
     SmVideoDataNode  videoDataNode = NULL;
-    if (videoDataQueue && videoDataQueue->fistNode){
+    if (videoDataQueue){
         clLockMutex(videoDataQueue->clMutex);
+        if (videoDataQueue->numNode <= 0){
+            clCondWait(videoDataQueue->clCond,videoDataQueue->clMutex);
+        }
 
         videoDataNode = videoDataQueue->fistNode;
         videoDataQueue->fistNode = videoDataQueue->fistNode->next;

@@ -23,6 +23,7 @@ typedef struct SmVideoDataQueue_{
     SmVideoDataNode lastNode;
     int numNode;
     ClMutex clMutex;
+    ClCond clCond;
 
     SmVideoDataNode recycleNode;
     int numRecycleNode;

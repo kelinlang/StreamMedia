@@ -50,9 +50,9 @@ int clUnlockMutex(ClMutex_ *mutex){
 
 
 
-ClCond *clCreateCond(void){
-    ClCond *cond;
-    cond = (ClCond*)malloc(sizeof(ClCond));
+ClCond_ *clCreateCond(void){
+    ClCond_ *cond;
+    cond = (ClCond_*)malloc(sizeof(ClCond_));
     if (!cond){
         return NULL;
     }
@@ -63,34 +63,34 @@ ClCond *clCreateCond(void){
     return cond;
 }
 
-void clDestroyCond(ClCond *cond){
+void clDestroyCond(ClCond_ *cond){
     if (cond){
         pthread_cond_destroy(&cond->id);
         free(cond);
     }
 }
-void clDestroyCondP(ClCond **cond){
+void clDestroyCondP(ClCond_ **cond){
     if (cond){
         clDestroyCond(*cond);
         *cond = NULL;
     }
 }
 
-int clCondSignal(ClCond *cond){
+int clCondSignal(ClCond_ *cond){
     if(!cond){
         return -1;
     }
     return pthread_cond_signal(&cond->id);
 }
 
-int clCondBroadcast(ClCond *cond){
+int clCondBroadcast(ClCond_ *cond){
     if(!cond){
         return -1;
     }
     return pthread_cond_broadcast(&cond->id);
 }
 
-int clCondWaitTimeout(ClCond *cond, ClMutex_ *mutex, uint32_t ms){
+int clCondWaitTimeout(ClCond_ *cond, ClMutex_ *mutex, uint32_t ms){
     int retval;
     struct timeval delta;
     struct timespec abstime;
@@ -121,7 +121,7 @@ int clCondWaitTimeout(ClCond *cond, ClMutex_ *mutex, uint32_t ms){
     return -1;
 }
 
-int clCondWait(ClCond *cond, ClMutex_ *mutex){
+int clCondWait(ClCond_ *cond, ClMutex_ *mutex){
     if (!cond || !mutex)
         return -1;
 
