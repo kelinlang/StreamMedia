@@ -37,7 +37,7 @@ SmVideoDataQueue smCreateVideoDataQueue(){
 
         videoDataQueue->recycleNode = NULL;
         videoDataQueue->numRecycleNode = 0;
-        videoDataQueue->recycleClMutex = clCreateMutex();
+//        videoDataQueue->recycleClMutex = clCreateMutex();
 
     }
     return videoDataQueue;
@@ -46,7 +46,7 @@ void smDestroyVideoDataQueue(SmVideoDataQueue videoDataQueue){
     if (videoDataQueue){
         smVideoDataQueueClearData(videoDataQueue);
         clDestroyMutex(videoDataQueue->clMutex);
-        clDestroyMutex(videoDataQueue->recycleClMutex);
+//        clDestroyMutex(videoDataQueue->recycleClMutex);
         free(videoDataQueue);
     }
 }
@@ -61,10 +61,10 @@ void smVideoDataQueueClearData(SmVideoDataQueue videoDataQueue){
         videoDataQueue->fistNode = NULL;
         videoDataQueue->lastNode = NULL;
         videoDataQueue->numNode = 0;
-        clUnlockMutex(videoDataQueue->clMutex);
-        clDestroyCond(videoDataQueue->clCond);
+//        clUnlockMutex(videoDataQueue->clMutex);
 
-        clLockMutex(videoDataQueue->recycleClMutex);
+
+//        clLockMutex(videoDataQueue->clMutex);
         if(videoDataQueue->recycleNode){
             while (videoDataQueue->recycleNode){
                 SmVideoDataNode tmp = videoDataQueue->recycleNode;
@@ -73,8 +73,17 @@ void smVideoDataQueueClearData(SmVideoDataQueue videoDataQueue){
             }
         }
         videoDataQueue->numRecycleNode = 0;
-        clLockMutex(videoDataQueue->recycleClMutex);
+        clLockMutex(videoDataQueue->clMutex);
+        clDestroyCond(videoDataQueue->clCond);
+    }
+}
 
+void smVideoDataQueueAbort(SmVideoDataQueue videoDataQueue){
+    if(videoDataQueue){
+        clLockMutex(videoDataQueue->clMutex);
+        videoDataQueue->abortFlag = 1;
+        clCondSignal(videoDataQueue->clCond);
+        clUnlockMutex(videoDataQueue->clMutex);
     }
 }
 
@@ -125,7 +134,7 @@ SmVideoDataNode  smVideoDataQueueDequeueData(SmVideoDataQueue videoDataQueue){
 SmVideoDataNode smCreateVideoDataNodeFromCache(SmVideoDataQueue videoDataQueue){
     SmVideoDataNode  videoDataNode = NULL;
     if (videoDataQueue){
-        clLockMutex(videoDataQueue->recycleClMutex);
+        clLockMutex(videoDataQueue->clMutex);
 
         if(videoDataQueue->recycleNode){
             videoDataNode = videoDataQueue->recycleNode;
@@ -137,13 +146,13 @@ SmVideoDataNode smCreateVideoDataNodeFromCache(SmVideoDataQueue videoDataQueue){
             }
         }
 
-        clUnlockMutex(videoDataQueue->recycleClMutex);
+        clUnlockMutex(videoDataQueue->clMutex);
     }
     return videoDataNode;
 }
 void smCacheVideoDataNodeToCache(SmVideoDataQueue videoDataQueue,SmVideoDataNode videoDataNode){
     if(videoDataQueue && videoDataNode){
-        clLockMutex(videoDataQueue->recycleClMutex);
+        clLockMutex(videoDataQueue->clMutex);
 
         if(videoDataQueue->recycleNode){
             videoDataQueue->recycleNode->next = videoDataNode;
@@ -151,6 +160,6 @@ void smCacheVideoDataNodeToCache(SmVideoDataQueue videoDataQueue,SmVideoDataNode
             videoDataQueue ->recycleNode = videoDataNode;
         }
 
-        clUnlockMutex(videoDataQueue->recycleClMutex);
+        clUnlockMutex(videoDataQueue->clMutex);
     }
 }

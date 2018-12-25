@@ -24,17 +24,18 @@ typedef struct SmVideoDataQueue_{
     int numNode;
     ClMutex clMutex;
     ClCond clCond;
+    int abortFlag;
 
     SmVideoDataNode recycleNode;
     int numRecycleNode;
-    ClMutex recycleClMutex;
+//    ClMutex recycleClMutex;
 
 }  SmVideoDataQueue_;
 
 SmVideoDataQueue smCreateVideoDataQueue();
 void smDestroyVideoDataQueue(SmVideoDataQueue videoDataQueue);
 void smVideoDataQueueClearData(SmVideoDataQueue videoDataQueue);
-
+void smVideoDataQueueAbort(SmVideoDataQueue videoDataQueue);
 int smGetVideoDataQueueSize(SmVideoDataQueue videoDataQueue);
 void smVideoDataQueueEnqueueData(SmVideoDataQueue videoDataQueue, SmVideoDataNode videoDataNode);
 SmVideoDataNode  smVideoDataQueueDequeueData(SmVideoDataQueue videoDataQueue);
