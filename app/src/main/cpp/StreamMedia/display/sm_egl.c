@@ -353,14 +353,14 @@ EGLBoolean  SmEglDisplay(SmEGL egl, SmVideoData videoData){
     }
 }
 
-SmEGL  SmEglCreate( ){
+SmEGL  smCreateEgl(){
     SmEGL gles2Impl = (SmGles2Impl)malloc(sizeof(SmEGL_));
     if(gles2Impl != NULL){
-        gles2Impl->SmEglSetVideoParam = SmEglSetVideoParam;
-        gles2Impl->SmEglGetVideoParam = SmEglGetVideoParam;
-        gles2Impl->SmEglInit = SmEglInit;
-        gles2Impl->SmEglRelease = SmEglRelease;
-        gles2Impl->SmEglDisplay = SmEglDisplay;
+        gles2Impl->EglSetVideoParam = SmEglSetVideoParam;
+        gles2Impl->EglGetVideoParam = SmEglGetVideoParam;
+        gles2Impl->EglInit = SmEglInit;
+        gles2Impl->EglRelease = SmEglRelease;
+        gles2Impl->EglDisplay = SmEglDisplay;
         return gles2Impl;
     } else{
         LOGE("SmGles2Impl malloc fail");

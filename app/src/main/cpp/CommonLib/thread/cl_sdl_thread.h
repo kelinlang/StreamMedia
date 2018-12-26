@@ -26,10 +26,10 @@ typedef struct ClThread_{
 } ClThread_;
 
 
-ClThread  clCreateThread(ClThread thread, int(*func)(void *), void *data, const char *name);
+ClThread  clCreateThread(int(*func)(void *), void *data, const char *name);
 int  clSetThreadPriority(SdlThreadPriority sdl_threadPriority);
 void clWaitThread(ClThread thread, int *status);
 void clDetachThread(ClThread thread);
-
+void clReleaseThread(ClThread thread);
 
 #endif //STREAMMEDIADEMO_CL_SDL_THREAD_H

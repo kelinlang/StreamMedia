@@ -33,15 +33,15 @@ typedef struct SmEGL_{
 
     SmVideoParam videoParam;
 
-    int (*SmEglSetVideoParam)(SmEGL egl,SmVideoParam videoParam1);
-    SmVideoParam (*SmEglGetVideoParam)(SmEGL egl);
-    int (*SmEglInit)(SmEGL egl);
-    void (*SmEglRelease)(SmEGL egl);
-    EGLBoolean    (*SmEglDisplay)(SmEGL gles2Impl, SmVideoData videoData);
+    int (*EglSetVideoParam)(SmEGL egl,SmVideoParam videoParam1);
+    SmVideoParam (*EglGetVideoParam)(SmEGL egl);
+    int (*EglInit)(SmEGL egl);
+    void (*EglRelease)(SmEGL egl);
+    EGLBoolean    (*EglDisplay)(SmEGL gles2Impl, SmVideoData videoData);
 }SmEGL_;
 
 
-SmEGL  SmEglCreate( );
+SmEGL  smCreateEgl();
 
 /*SmEGL sm_egl_create();
 void sm_egl_free(SmEGL egl);

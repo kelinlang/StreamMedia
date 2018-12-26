@@ -21,9 +21,9 @@ typedef struct SmVideoData_{
     uint16_t *pitches; /**< in bytes, Read-only */  //像素长度
     uint8_t **pixels;//像素数据
 
-    void (*destroy)(SmVideoData videoData);
+//    void (*destroy)(SmVideoData videoData);
 
-} VideoData_;
+} SmVideoData_;
 
 SmVideoData smCreateVideoData();
 void smDestroyVideoData(SmVideoData videoData);
@@ -39,9 +39,10 @@ typedef struct SmVideoParam_{
     unsigned int dataFormat;
     unsigned int displayFormat;
 
-    void (*destroy)(SmVideoParam videoParam);
+//    void (*destroy)(SmVideoParam videoParam);
 }SmVideoParam_;
 
-int SmCreateVideoParam(SmVideoParam videoParam);
+SmVideoParam smCreateVideoParam();
+void smDestroyVideoParam(SmVideoParam videoParam);
 
 #endif //STREAMMEDIADEMO_SM_VIDEO_DATA_H

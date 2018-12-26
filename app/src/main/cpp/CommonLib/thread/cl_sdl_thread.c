@@ -16,13 +16,16 @@ static void * sdl_func(void *data){
     return NULL;
 }
 
-ClThread_* clCreateThread(ClThread_ *thread, int(*func)(void *), void *data, const char *name){
-    thread->func = func;
-    thread->data = data;
-    strlcpy(thread->name,name, sizeof(thread->name)-1);
-    int retval = pthread_create(&thread->id,NULL,sdl_func,thread);
-    if(retval){
-        return NULL;
+ClThread  clCreateThread(int(*func)(void *), void *data, const char *name){
+    ClThread thread = (ClThread)malloc(sizeof(ClThread_));
+    if (thread){
+        thread->func = func;
+        thread->data = data;
+        strlcpy(thread->name,name, sizeof(thread->name)-1);
+        int retval = pthread_create(&thread->id,NULL,sdl_func,thread);
+        if(retval){
+            return NULL;
+        }
     }
     return thread;
 }
@@ -68,4 +71,10 @@ void clDetachThread(ClThread_ *thread){
         return;
     }
     pthread_detach(thread->id);
+}
+
+void clReleaseThread(ClThread thread){
+    if(thread){
+        free(thread);
+    }
 }
