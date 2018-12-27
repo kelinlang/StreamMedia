@@ -21,6 +21,10 @@ typedef struct SmVideoData_{
     uint16_t *pitches; /**< in bytes, Read-only */  //像素长度
     uint8_t **pixels;//像素数据
 
+    unsigned char* pixelsY;
+    unsigned char* pixelsU;
+    unsigned char* pixelsV;
+
 //    void (*destroy)(SmVideoData videoData);
 
 } SmVideoData_;

@@ -67,7 +67,8 @@ static GLboolean yunv420pDisplay(SmGles2Impl gles2Impl,SmVideoData videoData){
     int planes[3] = {0,1,2};
     const GLsizei widths[3]    = { videoData->pitches[0], videoData->pitches[1], videoData->pitches[2] };
     const GLsizei heights[3]   = { videoData->height,          videoData->height / 2,      videoData->height / 2 };
-    const GLubyte *pixels[3]   = { videoData->pixels[0],  videoData->pixels[1],  videoData->pixels[2] };
+//    const GLubyte *pixels[3]   = { videoData->pixels[0],  videoData->pixels[1],  videoData->pixels[2] };
+    const GLubyte *pixels[3]   = { videoData->pixelsY,  videoData->pixelsU,  videoData->pixelsV };
 
     switch (videoData->dataFormat) {
         case SM_VIDEO_FCC_I420:

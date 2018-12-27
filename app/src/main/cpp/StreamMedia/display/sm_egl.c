@@ -238,6 +238,8 @@ static int EglInitInternal(SmEGL egl,EGLNativeWindowType window){
         LOGE("[EGL] eglGetDisplay failed\n");
         return EGL_FALSE;
     }
+    egl->display = display;
+    LOGV("eglGetDisplay ok");
 
     EGLint major, minor;
     if (!eglInitialize(display, &major, &minor)) {
@@ -245,6 +247,7 @@ static int EglInitInternal(SmEGL egl,EGLNativeWindowType window){
         return EGL_FALSE;
     }
     LOGI("[EGL] eglInitialize %d.%d\n", (int)major, (int)minor);
+    LOGV("eglInitialize ok");
 
     static const EGLint configAttribs[] = {
             EGL_RENDERABLE_TYPE,    EGL_OPENGL_ES2_BIT,
@@ -266,6 +269,8 @@ static int EglInitInternal(SmEGL egl,EGLNativeWindowType window){
         LOGE("[EGL] eglChooseConfig failed\n");
         return EGL_FALSE;
     }
+    LOGV("eglChooseConfig ok");
+
 
     EGLSurface surface = eglCreateWindowSurface(display, config, window, NULL);
     if (surface == EGL_NO_SURFACE) {
@@ -273,6 +278,9 @@ static int EglInitInternal(SmEGL egl,EGLNativeWindowType window){
         eglTerminate(display);
         return EGL_FALSE;
     }
+    egl->surface = surface;
+    LOGV("eglCreateWindowSurface ok");
+
 
     EGLSurface context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
     if (context == EGL_NO_CONTEXT) {
@@ -281,24 +289,22 @@ static int EglInitInternal(SmEGL egl,EGLNativeWindowType window){
         eglTerminate(display);
         return EGL_FALSE;
     }
+    egl->context = context;
+    LOGV("eglCreateContext ok");
 
     if (!eglMakeCurrent(display, surface, surface, context)) {
         LOGE("[EGL] elgMakeCurrent() failed (new)\n");
-        eglDestroyContext(display, context);
-        eglDestroySurface(display, surface);
-        eglTerminate(display);
+//        eglDestroyContext(display, context);
+//        eglDestroySurface(display, surface);
+//        eglTerminate(display);
         return EGL_FALSE;
     }
+    LOGV("eglMakeCurrent ok");
 
     Sm_GLES2_Renderer_setupGLES();
-
-
-    egl->context = context;
-    egl->surface = surface;
-    egl->display = display;
 }
 
-int SmEglInit(SmEGL egl){
+static  int SmEglInit(SmEGL egl){
     int retVal = -1;
     if(egl){
         egl->gles2Impl = SmGles2ImplCreate();
