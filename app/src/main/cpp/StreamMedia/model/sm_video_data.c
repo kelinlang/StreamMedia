@@ -33,4 +33,8 @@ SmVideoParam smCreateVideoParam(){
     }
     return videoParam;
 }
-void smDestroyVideoParam(SmVideoParam videoParam);
+void smDestroyVideoParam(SmVideoParam videoParam){
+    if(videoParam){
+        free(videoParam);
+    }
+}

@@ -80,7 +80,7 @@ void queue_data(uint8_t *data){
 
 int fileFd = -1;
 void openSave(){
-    char  *path = "/sdcard/h264Tmp.h264";
+    const char  *path = "/sdcard/h264Tmp.h264";
     if (access(path,F_OK) != -1){
         remove(path);
     }
@@ -183,7 +183,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_demo_nativelib_StreamMediaNative_in
         (JNIEnv *env, jclass jclass){
     cl_init_log();
 
-    AbstractLogI("测试抽象log", 0);
+//    AbstractLogI("测试抽象log", 0);
 
     create_encode();
     start_encode_thread();

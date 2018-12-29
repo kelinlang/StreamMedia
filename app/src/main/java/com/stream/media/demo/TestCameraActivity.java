@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.medialib.audio.base.OpenslEs;
+import com.medialib.video.OpenGlEs;
 import com.stream.media.demo.business.VideoSeviceTest;
 import com.stream.media.demo.utils.MLog;
 import com.stream.media.demo.utils.PermssionUtils;
@@ -19,6 +21,8 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
     private SurfaceView mCameraPreviewView;
 
     private VideoSeviceTest mVideoSeviceTest;
+
+    public static OpenGlEs openGlEs = new OpenGlEs();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +40,7 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == RESULT_CODE_CAMERA && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             mVideoSeviceTest.openCamera();
-            mVideoSeviceTest.startPreview();
+//            mVideoSeviceTest.startPreview();
         }
     }
 
@@ -50,6 +54,8 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mVideoSeviceTest.setPreviewSurface(holder.getSurface());
+        openGlEs.setSurface(holder.getSurface());
+        openGlEs.start();
 
         if (PermssionUtils.checkPermision(this, Manifest.permission.CAMERA)){
             mVideoSeviceTest.openCamera();
@@ -68,5 +74,6 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
     public void surfaceDestroyed(SurfaceHolder holder) {
         MLog.i("surfaceDestroyed");
         mVideoSeviceTest.closeCamera();
+        openGlEs.stop();
     }
 }

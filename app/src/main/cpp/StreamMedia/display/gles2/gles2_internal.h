@@ -7,7 +7,7 @@
 
 
 #include <GLES2/gl2.h>
-#include "../model/sm_video_data.h"
+
 #include "../../model/sm_video_data.h"
 
 #define SM_GLES_STRINGIZE(x)   #x
@@ -77,8 +77,8 @@ typedef struct SmGlesMatrix
 #define SmGles2CheckErrorDebug(op) SmGles2CheckError(op)
 #endif
 
-void SmGles2PrintString(const char *name, GLenum s);
-void SmGles2CheckError(const char* op);
+void SmGles2PrintString( char *name, GLenum s);
+void SmGles2CheckError( char* op);
 
 GLuint  SmGles2LoadShader(GLenum shader_type, const char *shader_source);
 
@@ -96,7 +96,12 @@ GLboolean IJK_GLES2_Renderer_isFormat(SmGles2Impl renderer, int format);
 
 const char *Sm_GLES2_getVertexShader_default();
 const char *Sm_GLES2_getFragmentShader_yuv420p();
+const char *IJK_GLES2_getFragmentShader_rgb();
+const char *IJK_GLES2_getFragmentShader_yuv420p();
+const char *Sm_GLES2_getFragmentShader_yuv420p();
+const char *IJK_GLES2_getFragmentShader_yuv444p10le();
 
-
+const GLfloat *SM_GLES2_getColorMatrix_bt709();
+const GLfloat *IJK_GLES2_getColorMatrix_bt601();
 
 #endif //STREAMMEDIADEMO_INTERNAL_H

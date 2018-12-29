@@ -6,7 +6,7 @@
 #include "gles2_internal.h"
 #include "../../../CommonLib/log/cl_sdl_log.h"
 #include "../../model/sm_video_data.h"
-#include "./color.c"
+//#include "./color.c"
 #include "../../model/sm_video_fourcc.h"
 
 

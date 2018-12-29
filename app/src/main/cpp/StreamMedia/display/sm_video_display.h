@@ -6,7 +6,7 @@
 #define STREAMMEDIADEMO_SM_VIDEO_DISPLAY_H
 
 #include <stdio.h>
-#include "sm_video_data.h"
+
 #include "../model/sm_video_data.h"
 
 typedef  struct SmVideoDisplay_ *SmVideoDisplay;

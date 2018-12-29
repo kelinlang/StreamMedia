@@ -100,7 +100,7 @@ static void testGetString(JNIEnv *env, jobject jobj){
     LOGI("getString  : %s","start 1");
 
     jstring len = (jstring)env->CallStaticObjectMethod(jclass1, mid);
-    LOGI("getString  : %s",len);
+//    LOGI("getString  : %s",len);
 }
 
 static void getPlayDataBytes(JNIEnv *env, jobject jobj){

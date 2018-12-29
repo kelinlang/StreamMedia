@@ -17,6 +17,10 @@ include_directories(CommonLib/common
                                     CommonLib/thread
                                     StreamMedia/display
                                      StreamMedia/model
+                                     StreamMedia/buffer
+                                     StreamMedia/gles2
+                                     StreamMedia/gles2/fsh
+                                     StreamMedia/gles2/vsh
                                       StreamMedia/video)
 
 
@@ -44,6 +48,8 @@ add_library( # Sets the name of the library.
             # #公共库结束
 
             # #媒体库
+            src/main/cpp/StreamMedia/model/sm_video_data.c
+
             src/main/cpp/StreamMedia/display/sm_egl.c
             src/main/cpp/StreamMedia/display/sm_gles2_display.c
             src/main/cpp/StreamMedia/display/sm_video_display.c
@@ -57,12 +63,7 @@ add_library( # Sets the name of the library.
             src/main/cpp/StreamMedia/display/gles2/fsh/yuv420p.fsh.c
             src/main/cpp/StreamMedia/display/gles2/fsh/yuv420sp.fsh.c
             src/main/cpp/StreamMedia/display/gles2/fsh/yuv444p10le.fsh.c
-
             src/main/cpp/StreamMedia/display/gles2/vsh/mvp.vsh.c
-
-
-
-            src/main/cpp/StreamMedia/model/sm_video_data.c
 
             src/main/cpp/StreamMedia/video/sm_video_codec.c
 
@@ -109,6 +110,9 @@ target_link_libraries( # Specifies the target library.
                        # Links the target library to the log library
                        # included in the NDK.
                        ${log-lib}
+                       android
                        mediandk
                        OpenMAXAL
-                       OpenSLES)
+                       OpenSLES
+                       GLESv2
+                       EGL)

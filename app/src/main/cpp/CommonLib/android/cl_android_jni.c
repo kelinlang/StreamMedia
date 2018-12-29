@@ -90,7 +90,7 @@ void    cl_android_jni_DetachThreadEnv(){
         return;
     pthread_setspecific(g_thread_key, NULL);
 
-    if ((*jvm)->DetachCurrentThread(env) == JNI_OK)
+    if ((*jvm)->DetachCurrentThread(jvm) == JNI_OK)
         return;
 
     return;

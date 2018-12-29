@@ -56,7 +56,7 @@ int  clSetThreadPriority(SdlThreadPriority sdl_threadPriority){
 
 }
 
-void clWaitThread(ClThread_ *thread, int *status){
+void clWaitThread(ClThread thread, int *status){
     if(!thread){
         return;
     }

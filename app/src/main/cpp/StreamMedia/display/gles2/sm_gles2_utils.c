@@ -5,15 +5,16 @@
 #include "../../../CommonLib/log/cl_sdl_abstract_log.h"
 
 
-void SmGles2CheckError(const char* op){
+void SmGles2CheckError( char* op){
     for (GLint error = glGetError(); error; error = glGetError()) {
         AbstractLogI(op, error);
     }
 }
 
-void SmGles2PrintString(const char *name, GLenum s) {
-    const char *v = (const char *) glGetString(s);
-    AbstractLogI(name, v);
+void SmGles2PrintString( char *name, GLenum s) {
+     char *v = ( char *) glGetString(s);
+    AbstractLogI(name, 0);
+    AbstractLogI(v, 0);
 }
 
 void SmGLES2LoadOrtho(SmGlesMatrix *matrix, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far)

@@ -24,6 +24,7 @@ import android.util.Size;
 import android.view.Surface;
 
 
+import com.stream.media.demo.TestCameraActivity;
 import com.stream.media.demo.nativelib.StreamMediaNative;
 import com.stream.media.demo.utils.MLog;
 
@@ -233,9 +234,10 @@ public class Camera2Holder {
 //                MLog.i("image != null");
                 byte[] yuvData = mImageUtil.getBytesFromImageAsType(image,ImageUtil.NV21);
 
-                if (videoEncoder != null && videoEncoder.isWorking()){
+               /* if (videoEncoder != null && videoEncoder.isWorking()){
                     videoEncoder.inputData(yuvData);
-                }
+                }*/
+                TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
 //                StreamMediaNative.pushVideoData(yuvData,null);
 
 

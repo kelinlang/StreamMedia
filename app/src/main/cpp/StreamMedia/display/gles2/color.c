@@ -20,6 +20,7 @@
  */
 
 #include <GLES2/gl2.h>
+#include "gles2_internal.h"
 
 // BT.709, which is the standard for HDTV.
 static const GLfloat g_bt709[] = {

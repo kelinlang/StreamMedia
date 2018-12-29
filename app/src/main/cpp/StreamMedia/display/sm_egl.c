@@ -75,7 +75,7 @@ static EGLBoolean IJK_EGL_setSurfaceSize(SmEGL egl, int width, int height)
     return EGL_FALSE;
 }
 
-static EGLBoolean IJK_EGL_makeCurrent(SmEGL egl, EGLNativeWindowType window)
+/*static EGLBoolean IJK_EGL_makeCurrent(SmEGL egl, EGLNativeWindowType window)
 {
     if (window && window == egl->window &&
         egl->display &&
@@ -212,7 +212,7 @@ static EGLBoolean IJK_EGL_makeCurrent(SmEGL egl, EGLNativeWindowType window)
     egl->surface = surface;
     egl->display = display;
     return EGL_TRUE;
-}
+}*/
 
 int SmEglSetVideoParam(SmEGL egl,SmVideoParam videoParam1){
     if (egl != NULL){
@@ -302,6 +302,8 @@ static int EglInitInternal(SmEGL egl,EGLNativeWindowType window){
     LOGV("eglMakeCurrent ok");
 
     Sm_GLES2_Renderer_setupGLES();
+
+    return EGL_TRUE;
 }
 
 static  int SmEglInit(SmEGL egl){
@@ -347,6 +349,7 @@ EGLBoolean  SmEglDisplay(SmEGL egl, SmVideoData videoData){
         if (egl ->gles2Impl != NULL){
             if (egl->gles2Impl->SmGles2Display(egl->gles2Impl,videoData) == GL_TRUE ){
                 eglSwapBuffers(egl->display, egl->surface);
+                return EGL_TRUE;
             } else{
                 LOGE("[EGL] SmGles2Display failed\n");
                 return EGL_FALSE;
@@ -360,7 +363,7 @@ EGLBoolean  SmEglDisplay(SmEGL egl, SmVideoData videoData){
 }
 
 SmEGL  smCreateEgl(){
-    SmEGL gles2Impl = (SmGles2Impl)malloc(sizeof(SmEGL_));
+    SmEGL gles2Impl = (SmEGL)malloc(sizeof(SmEGL_));
     if(gles2Impl != NULL){
         gles2Impl->EglSetVideoParam = SmEglSetVideoParam;
         gles2Impl->EglGetVideoParam = SmEglGetVideoParam;

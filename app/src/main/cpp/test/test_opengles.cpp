@@ -2,14 +2,18 @@
 // Created by dengjun on 2018/12/25.
 //
 
+#include "com_medialib_video_OpenGlEs.h"
+
 #include <android/native_window_jni.h>
 #include <cstring>
-#include "com_medialib_video_OpenGlEs.h"
+
+#include "../StreamMedia/model/sm_video_data.h"
 #include "../CommonLib/thread/cl_sdl_thread.h"
 #include "../StreamMedia/buffer/sm_video_data_buffer.h"
 #include "../StreamMedia/display/sm_egl.h"
 #include "../CommonLib/log/cl_sdl_log.h"
 #include "../StreamMedia/model/sm_video_fourcc.h"
+
 
 
 ClThread displayThread;
@@ -37,12 +41,14 @@ static int videoDisplayThread(void *arg){
         }
         egl->EglRelease(egl);
     }
+    return 0;
 }
 
 
 JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_setSurface
         (JNIEnv * env, jobject object, jobject surface){
     mANativeWindow = ANativeWindow_fromSurface(env, surface);
+    return 0;
 }
 
 JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_start
@@ -59,7 +65,7 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_start
 
     displayThreadRunFlag = 1;
     displayThread = clCreateThread(videoDisplayThread,NULL,"display thread");
-
+    return 0;
 }
 
 /*
@@ -88,6 +94,7 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_stop
         smDestroyVideoDataQueue(videoDataQueue);
     }
 
+    return 0;
 }
 
 /*

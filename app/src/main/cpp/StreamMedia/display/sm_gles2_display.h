@@ -10,7 +10,7 @@
 #include <GLES2/gl2platform.h>
 #include <malloc.h>
 
-#include "../CommonLib/log/cl_sdl_abstract_log.h"
+#include "../../CommonLib/log/cl_sdl_abstract_log.h"
 #include "../model/sm_video_data.h"
 #include "gles2/gles2_internal.h"
 
