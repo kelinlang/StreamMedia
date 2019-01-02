@@ -50,6 +50,7 @@ static int videoDisplayThread(void *arg){
         LOGI("videoDisplayThread 2");
         egl->EglRelease(egl);
     }
+    LOGI("videoDisplayThread finish");
     return 0;
 }
 
@@ -63,6 +64,7 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_setSurface
 JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_start
         (JNIEnv * env, jobject object){
     LOGI("display  start");
+    cl_init_log();
 
     videoParam = smCreateVideoParam();
     videoParam->viewWidth = 640;
@@ -95,12 +97,19 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_stop
     }
 
     if (videoParam){
+        LOGI("smDestroyVideoParam  start");
+
         smDestroyVideoParam(videoParam);
         videoParam = NULL;
+        LOGI("smDestroyVideoParam  finish");
+
     }
 
     if (videoDataQueue){
+        LOGI("smDestroyVideoDataQueue  start");
         smDestroyVideoDataQueue(videoDataQueue);
+        videoDataQueue = NULL;
+        LOGI("smDestroyVideoDataQueue  finish");
     }
 
     return 0;

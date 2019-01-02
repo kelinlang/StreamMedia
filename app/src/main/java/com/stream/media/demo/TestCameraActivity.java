@@ -54,8 +54,8 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mVideoSeviceTest.setPreviewSurface(holder.getSurface());
-        openGlEs.setSurface(holder.getSurface());
-        openGlEs.start();
+//        openGlEs.setSurface(holder.getSurface());
+//        openGlEs.start();
 
         if (PermssionUtils.checkPermision(this, Manifest.permission.CAMERA)){
             mVideoSeviceTest.openCamera();
@@ -74,6 +74,6 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
     public void surfaceDestroyed(SurfaceHolder holder) {
         MLog.i("surfaceDestroyed");
         mVideoSeviceTest.closeCamera();
-        openGlEs.stop();
+//        openGlEs.stop();
     }
 }

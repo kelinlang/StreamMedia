@@ -123,6 +123,7 @@ void smVideoDataQueueEnqueueData(SmVideoDataQueue videoDataQueue, SmVideoDataNod
 
         clUnlockMutex(videoDataQueue->clMutex);
 
+        LOGI("notify");
         clCondSignal(videoDataQueue->clCond);
     }
 }
@@ -133,7 +134,9 @@ SmVideoDataNode  smVideoDataQueueDequeueData(SmVideoDataQueue videoDataQueue){
     if (videoDataQueue){
         clLockMutex(videoDataQueue->clMutex);
         if (videoDataQueue->numNode <= 0){
+            LOGI("wait start");
             clCondWait(videoDataQueue->clCond,videoDataQueue->clMutex);
+            LOGI("wait end");
         }
 
         videoDataNode = videoDataQueue->firstNode;

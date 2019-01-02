@@ -312,10 +312,10 @@ static  int SmEglInit(SmEGL egl){
         egl->gles2Impl = SmGles2ImplCreate();
         if (egl->gles2Impl){
             egl->gles2Impl->SmGles2SetVideoParam(egl->gles2Impl,egl->videoParam);
-            retVal = egl->gles2Impl->SmGles2Init(egl->gles2Impl);
-            if (retVal == 0 && egl->window != NULL){
+            if (/*retVal == 0 && */egl->window != NULL){
                 retVal = EglInitInternal(egl,egl->window);
             }
+            retVal = egl->gles2Impl->SmGles2Init(egl->gles2Impl);
         }
     }
     return retVal;

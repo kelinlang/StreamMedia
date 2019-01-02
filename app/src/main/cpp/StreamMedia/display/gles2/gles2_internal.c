@@ -56,6 +56,8 @@ static  GLboolean yunv420pPrepare(SmGles2Impl gles2Impl){
 
     glUniformMatrix3fv(gles2Impl->um3_color_conversion, 1, GL_FALSE, SM_GLES2_getColorMatrix_bt709());
 
+    LOGI("yunv420pPrepare finish");
+
     return GL_TRUE;
 }
 
@@ -103,6 +105,13 @@ static GLboolean yunv420pDisplay(SmGles2Impl gles2Impl,SmVideoData videoData){
 
 static int SmGles2Init(SmGles2Impl gles2Impl){
     if(gles2Impl != NULL){
+        Sm_GLES2_Renderer_setupGLES();
+
+        SmGles2PrintString("Version", GL_VERSION);
+        SmGles2PrintString("Vendor", GL_VENDOR);
+        SmGles2PrintString("Renderer", GL_RENDERER);
+        SmGles2PrintString("Extensions", GL_EXTENSIONS);
+
         gles2Impl->vertex_shader = SmGles2LoadShader(GL_VERTEX_SHADER,Sm_GLES2_getVertexShader_default());
         if(!gles2Impl->vertex_shader){
             LOGE("load GL_VERTEX_SHADER error");
@@ -160,8 +169,11 @@ static int SmGles2Init(SmGles2Impl gles2Impl){
         //目前yuv420p
 
 
-        return  yunv420pPrepare(gles2Impl);
-//        return 0;
+        if(yunv420pPrepare(gles2Impl) == JNI_TRUE){
+            return 0;
+        } else{
+            return -1;
+        }
     } else{
         LOGE("gles2Impl is NULL");
         return -1;

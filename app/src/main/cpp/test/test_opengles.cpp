@@ -37,6 +37,7 @@ static int videoDisplayThread(void *arg){
             while (displayThreadRunFlag){
                 SmVideoDataNode videoDataNode = smVideoDataQueueDequeueData(videoDataQueue);
                 if(videoDataNode){
+                    LOGI("display loop do display");
                     egl->EglDisplay(egl,videoDataNode->videoData);
                     smCacheVideoDataNodeToCache(videoDataQueue,videoDataNode);
                 }

@@ -238,8 +238,8 @@ public class Camera2Holder {
                     videoEncoder.inputData(yuvData);
                 }*/
                if (yuvData!=null && yuvData.length > 0){
-//                    MLog.d("yuvData len : "+yuvData.length);
-                   TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
+                    MLog.d("yuvData len : "+yuvData.length);
+//                   TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
                }else {
                    MLog.i("yuv data empty");
                }
@@ -258,6 +258,7 @@ public class Camera2Holder {
     };
 
     private void createImageReader(){
+        MLog.d("createImageReader");
         CameraManager manager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
         try {
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(curCameraId);
