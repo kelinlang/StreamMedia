@@ -1,8 +1,7 @@
 //
 // Created by dengjun on 2018/12/25.
 //
-extern "C"
-{
+
 #include "../StreamMedia/model/sm_video_fourcc.h"
 #include "../StreamMedia/model/sm_video_data.h"
 #include "../CommonLib/thread/cl_sdl_thread.h"
@@ -11,7 +10,6 @@ extern "C"
 
 #include "../CommonLib/log/cl_sdl_log.h"
 #include "com_medialib_video_OpenGlEs.h"
-}
 
 #include <android/native_window_jni.h>
 #include <string.h>
@@ -108,7 +106,7 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_stop
  */
 JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
         (JNIEnv * env, jobject object, jint yunType, jbyteArray yuvData, jint yuvDataLen){
-    jbyte* yuvJniData = env->GetByteArrayElements(yuvData, NULL);
+    jbyte* yuvJniData = (*env)->GetByteArrayElements(env,yuvData, NULL);
 
     if(videoDataQueue) {
         SmVideoDataNode videoDataNode = smCreateVideoDataNodeFromCache(videoDataQueue);
@@ -139,5 +137,5 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
         }
     }
 
-    env->ReleaseByteArrayElements(yuvData,yuvJniData,0);
+    (*env)->ReleaseByteArrayElements(env,yuvData,yuvJniData,0);
 }

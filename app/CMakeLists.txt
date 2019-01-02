@@ -83,7 +83,8 @@ add_library( # Sets the name of the library.
               src/main/cpp/MediaCodecTest.cpp
 
 
-              src/main/cpp/test/test_opengles.cpp
+              #src/main/cpp/test/test_opengles.cpp
+              src/main/cpp/test/test_opengles.c
               src/main/cpp/test/test_opensles.cpp)
 
 # Searches for a specified prebuilt library and stores the path as a
