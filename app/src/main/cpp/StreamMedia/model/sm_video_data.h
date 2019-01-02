@@ -18,7 +18,7 @@ typedef struct SmVideoData_{
     int width;
     int height;
 
-    uint16_t *pitches; /**< in bytes, Read-only */  //像素长度
+    int pitches[SM_GLES2_MAX_PLANE]; /**< in bytes, Read-only */  //像素长度
     uint8_t **pixels;//像素数据
 
     unsigned char* pixelsY;

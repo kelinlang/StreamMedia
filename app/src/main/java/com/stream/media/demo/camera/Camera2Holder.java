@@ -237,7 +237,12 @@ public class Camera2Holder {
                /* if (videoEncoder != null && videoEncoder.isWorking()){
                     videoEncoder.inputData(yuvData);
                 }*/
-                TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
+               if (yuvData!=null && yuvData.length > 0){
+                    MLog.d("yuvData len : "+yuvData.length);
+                   TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
+               }else {
+                   MLog.i("yuv data empty");
+               }
 //                StreamMediaNative.pushVideoData(yuvData,null);
 
 

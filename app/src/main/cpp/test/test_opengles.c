@@ -26,21 +26,28 @@ SmVideoParam videoParam;
 ANativeWindow* mANativeWindow;
 
 static int videoDisplayThread(void *arg){
+    LOGI("videoDisplayThread 0");
     SmEGL egl = smCreateEgl();
     if (egl){
+        LOGI("videoDisplayThread 1");
+
         egl->window = mANativeWindow;
         egl->EglSetVideoParam(egl,videoParam);
         if (egl->EglInit(egl) == 0){
             LOGI("display loop start");
             while (displayThreadRunFlag){
+                LOGI("display loop ------------- 1");
                 SmVideoDataNode videoDataNode = smVideoDataQueueDequeueData(videoDataQueue);
                 if(videoDataNode){
+                    LOGI("display loop ------------ 2");
                     egl->EglDisplay(egl,videoDataNode->videoData);
                     smCacheVideoDataNodeToCache(videoDataQueue,videoDataNode);
                 }
+                LOGI("display loop ------------ 4");
             }
             LOGI("display loop finish");
         }
+        LOGI("videoDisplayThread 2");
         egl->EglRelease(egl);
     }
     return 0;
@@ -111,29 +118,42 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
     if(videoDataQueue) {
         SmVideoDataNode videoDataNode = smCreateVideoDataNodeFromCache(videoDataQueue);
         if(videoDataNode){
+            LOGI("sendYuvData  ------------ 1");
+
             SmVideoData  videoData = videoDataNode->videoData;
-            if(videoData->pixelsY){
+            videoData->pitches[0] = videoParam->viewWidth*videoParam->viewHeight;
+            videoData->pitches[1] = videoParam->viewWidth*videoParam->viewHeight/4;
+            videoData->pitches[2] = videoParam->viewWidth*videoParam->viewHeight/4;
+
+//            if(videoData->pixelsY){
                 //如果没有存储空间，则分配
-                videoData->pixelsY = (unsigned char*)malloc(videoParam->viewWidth*videoParam->viewHeight);
-                videoData->pitches[0] = videoParam->viewWidth*videoParam->viewHeight;
-            }
-            if(videoData->pixelsU){
+                videoData->pixelsY = (unsigned char*)malloc(videoData->pitches[0]);
+//            }
+            LOGI("sendYuvData  ------------ 2");
+
+//            if(videoData->pixelsU){
                 //如果没有存储空间，则分配
-                videoData->pixelsU = (unsigned char*)malloc(videoParam->viewWidth*videoParam->viewHeight/4);
-                videoData->pitches[1] = videoParam->viewWidth*videoParam->viewHeight;
-            }
-            if(videoData->pixelsV){
+                videoData->pixelsU = (unsigned char*)malloc(videoData->pitches[1]);
+
+//            }
+            LOGI("sendYuvData  ------------ 3");
+
+//            if(videoData->pixelsV){
                 //如果没有存储空间，则分配
-                videoData->pixelsV = (unsigned char*)malloc(videoParam->viewWidth*videoParam->viewHeight/4);
-                videoData->pitches[2] = videoParam->viewWidth*videoParam->viewHeight;
-            }
+                videoData->pixelsV = (unsigned char*)malloc(videoData->pitches[2]);
+
+//            }
+            LOGI("sendYuvData  ------------ 4");
+
             //复制数据
             memcpy(videoData->pixelsY, yuvJniData, videoData->pitches[0]);
             memcpy(videoData->pixelsY, yuvJniData+videoData->pitches[0], videoData->pitches[1]);
             memcpy(videoData->pixelsY, yuvJniData+videoData->pitches[0]+videoData->pitches[2], videoData->pitches[2]);
 
+            LOGI("sendYuvData  ------------ 5");
             //数据放到队列
             smVideoDataQueueEnqueueData(videoDataQueue,videoDataNode);
+            LOGI("sendYuvData  ------------ 6");
         }
     }
 
