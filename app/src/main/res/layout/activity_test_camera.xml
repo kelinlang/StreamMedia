@@ -4,12 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.stream.media.demo.TestCameraActivity">
 
 
     <SurfaceView
         android:id="@+id/camera_preview_sv"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_width="480sp"
+        android:layout_height="240sp" />
 
+    <SurfaceView
+        android:id="@+id/camera_preview_jni_sv"
+        android:layout_width="640sp"
+        android:layout_height="480sp" />
 </LinearLayout>

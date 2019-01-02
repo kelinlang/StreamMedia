@@ -19,6 +19,7 @@ import com.stream.media.demo.utils.PermssionUtils;
 public class TestCameraActivity extends AppCompatActivity implements SurfaceHolder.Callback{
     private static final int RESULT_CODE_CAMERA = 105;
     private SurfaceView mCameraPreviewView;
+    private SurfaceView mCameraPreviewViewJni;
 
     private VideoSeviceTest mVideoSeviceTest;
 
@@ -29,6 +30,8 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
         setContentView(R.layout.activity_test_camera);
         mCameraPreviewView = (SurfaceView)findViewById(R.id.camera_preview_sv);
         mCameraPreviewView.getHolder().addCallback(this);
+        mCameraPreviewViewJni = (SurfaceView)findViewById(R.id.camera_preview_jni_sv);
+        mCameraPreviewViewJni.getHolder().addCallback(jniCallback);
 
         mVideoSeviceTest = new VideoSeviceTest();
         mVideoSeviceTest.init(this.getApplicationContext());
@@ -54,8 +57,7 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         mVideoSeviceTest.setPreviewSurface(holder.getSurface());
-//        openGlEs.setSurface(holder.getSurface());
-//        openGlEs.start();
+
 
         if (PermssionUtils.checkPermision(this, Manifest.permission.CAMERA)){
             mVideoSeviceTest.openCamera();
@@ -74,6 +76,25 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
     public void surfaceDestroyed(SurfaceHolder holder) {
         MLog.i("surfaceDestroyed");
         mVideoSeviceTest.closeCamera();
-//        openGlEs.stop();
+
     }
+
+
+    SurfaceHolder.Callback jniCallback = new SurfaceHolder.Callback() {
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            openGlEs.setSurface(holder.getSurface());
+            openGlEs.start();
+        }
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            openGlEs.stop();
+        }
+    };
 }

@@ -123,7 +123,7 @@ void smVideoDataQueueEnqueueData(SmVideoDataQueue videoDataQueue, SmVideoDataNod
 
         clUnlockMutex(videoDataQueue->clMutex);
 
-        LOGI("notify");
+//        LOGI("notify");
         clCondSignal(videoDataQueue->clCond);
     }
 }
