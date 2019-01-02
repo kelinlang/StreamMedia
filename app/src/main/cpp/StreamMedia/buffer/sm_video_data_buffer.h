@@ -8,6 +8,8 @@
 #include "../model/sm_video_data.h"
 #include "../../CommonLib/thread/cl_sdl_mutex.h"
 
+#define MAX_CACHE_FRAME  30
+
 typedef struct SmVideoDataNode_* SmVideoDataNode;
 typedef struct SmVideoDataNode_{
     SmVideoData videoData;
@@ -19,7 +21,7 @@ typedef struct SmVideoDataNode_{
 //多线程，需要多线程同步
 typedef struct SmVideoDataQueue_* SmVideoDataQueue;
 typedef struct SmVideoDataQueue_{
-    SmVideoDataNode fistNode;
+    SmVideoDataNode firstNode;
     SmVideoDataNode lastNode;
     int numNode;
     ClMutex clMutex;

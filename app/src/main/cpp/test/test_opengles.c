@@ -118,7 +118,7 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
     if(videoDataQueue) {
         SmVideoDataNode videoDataNode = smCreateVideoDataNodeFromCache(videoDataQueue);
         if(videoDataNode){
-            LOGI("sendYuvData  ------------ 1");
+//            LOGI("sendYuvData  ------------ 1");
 
             SmVideoData  videoData = videoDataNode->videoData;
             videoData->pitches[0] = videoParam->viewWidth*videoParam->viewHeight;
@@ -129,31 +129,31 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
                 //如果没有存储空间，则分配
                 videoData->pixelsY = (unsigned char*)malloc(videoData->pitches[0]);
 //            }
-            LOGI("sendYuvData  ------------ 2");
+//            LOGI("sendYuvData  ------------ 2");
 
 //            if(videoData->pixelsU){
                 //如果没有存储空间，则分配
                 videoData->pixelsU = (unsigned char*)malloc(videoData->pitches[1]);
 
 //            }
-            LOGI("sendYuvData  ------------ 3");
+//            LOGI("sendYuvData  ------------ 3");
 
 //            if(videoData->pixelsV){
                 //如果没有存储空间，则分配
                 videoData->pixelsV = (unsigned char*)malloc(videoData->pitches[2]);
 
 //            }
-            LOGI("sendYuvData  ------------ 4");
+//            LOGI("sendYuvData  ------------ 4");
 
             //复制数据
             memcpy(videoData->pixelsY, yuvJniData, videoData->pitches[0]);
             memcpy(videoData->pixelsY, yuvJniData+videoData->pitches[0], videoData->pitches[1]);
             memcpy(videoData->pixelsY, yuvJniData+videoData->pitches[0]+videoData->pitches[2], videoData->pitches[2]);
 
-            LOGI("sendYuvData  ------------ 5");
+//            LOGI("sendYuvData  ------------ 5");
             //数据放到队列
             smVideoDataQueueEnqueueData(videoDataQueue,videoDataNode);
-            LOGI("sendYuvData  ------------ 6");
+//            LOGI("sendYuvData  ------------ 6");
         }
     }
 

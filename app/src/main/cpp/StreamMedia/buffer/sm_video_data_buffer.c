@@ -5,6 +5,7 @@
 #include <malloc.h>
 #include "sm_video_data_buffer.h"
 #include "../../CommonLib/thread/cl_sdl_mutex.h"
+#include "../../CommonLib/log/cl_sdl_log.h"
 
 
 static SmVideoDataNode smCreateVideoDataNode(){
@@ -29,7 +30,7 @@ static void smDestroyVideoDataNode(SmVideoDataNode videoDataNode){
 SmVideoDataQueue smCreateVideoDataQueue(){
     SmVideoDataQueue  videoDataQueue = (SmVideoDataQueue)malloc(sizeof(SmVideoDataQueue_));
     if (videoDataQueue){
-        videoDataQueue->fistNode = NULL;
+        videoDataQueue->firstNode = NULL;
         videoDataQueue->lastNode = NULL;
         videoDataQueue->numNode = 0;
         videoDataQueue->clMutex = clCreateMutex();
@@ -47,18 +48,19 @@ void smDestroyVideoDataQueue(SmVideoDataQueue videoDataQueue){
         smVideoDataQueueClearData(videoDataQueue);
         clDestroyMutex(videoDataQueue->clMutex);
 //        clDestroyMutex(videoDataQueue->recycleClMutex);
+        clDestroyCond(videoDataQueue->clCond);
         free(videoDataQueue);
     }
 }
 void smVideoDataQueueClearData(SmVideoDataQueue videoDataQueue){
     if (videoDataQueue){
         clLockMutex(videoDataQueue->clMutex);
-        while (videoDataQueue->fistNode){
-            SmVideoDataNode tmp = videoDataQueue->fistNode;
-            videoDataQueue->fistNode = tmp->next;
+        while (videoDataQueue->firstNode){
+            SmVideoDataNode tmp = videoDataQueue->firstNode;
+            videoDataQueue->firstNode = tmp->next;
             smDestroyVideoDataNode(tmp);
         }
-        videoDataQueue->fistNode = NULL;
+        videoDataQueue->firstNode = NULL;
         videoDataQueue->lastNode = NULL;
         videoDataQueue->numNode = 0;
 //        clUnlockMutex(videoDataQueue->clMutex);
@@ -73,8 +75,8 @@ void smVideoDataQueueClearData(SmVideoDataQueue videoDataQueue){
             }
         }
         videoDataQueue->numRecycleNode = 0;
-        clLockMutex(videoDataQueue->clMutex);
-        clDestroyCond(videoDataQueue->clCond);
+        clUnlockMutex(videoDataQueue->clMutex);
+//        clDestroyCond(videoDataQueue->clCond);
     }
 }
 
@@ -98,14 +100,26 @@ int smGetVideoDataQueueSize(SmVideoDataQueue videoDataQueue){
 }
 
 void smVideoDataQueueEnqueueData(SmVideoDataQueue videoDataQueue, SmVideoDataNode videoDataNode){
+
+    if (videoDataNode && videoDataQueue->numNode > MAX_CACHE_FRAME){
+//        LOGI("cache num node big than max cache num,clear");
+        smVideoDataQueueClearData(videoDataQueue);
+//        LOGI("cache num node big than max cache num,clear finish");
+    }
+
     if(videoDataQueue && videoDataNode){
         clLockMutex(videoDataQueue->clMutex);
 
-        if(!videoDataQueue->fistNode){
-            videoDataQueue->fistNode = videoDataNode;
+        if(videoDataQueue->lastNode){
+            videoDataQueue->lastNode->next = videoDataNode;
         }
-        videoDataQueue->numNode++;
         videoDataQueue->lastNode = videoDataNode;
+        videoDataQueue->numNode++;
+
+
+        if(!videoDataQueue->firstNode){
+            videoDataQueue->firstNode = videoDataNode;
+        }
 
         clUnlockMutex(videoDataQueue->clMutex);
 
@@ -122,8 +136,8 @@ SmVideoDataNode  smVideoDataQueueDequeueData(SmVideoDataQueue videoDataQueue){
             clCondWait(videoDataQueue->clCond,videoDataQueue->clMutex);
         }
 
-        videoDataNode = videoDataQueue->fistNode;
-        videoDataQueue->fistNode = videoDataQueue->fistNode->next;
+        videoDataNode = videoDataQueue->firstNode;
+        videoDataQueue->firstNode = videoDataQueue->firstNode->next;
         videoDataQueue->numNode--;
 
         clUnlockMutex(videoDataQueue->clMutex);

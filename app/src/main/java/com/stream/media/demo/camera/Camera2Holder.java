@@ -181,7 +181,7 @@ public class Camera2Holder {
             MLog.e("CameraAccessException error ",e);
         }
 
-        initCodec();
+//        initCodec();
 //        StreamMediaNative.init();
     }
 
@@ -238,7 +238,7 @@ public class Camera2Holder {
                     videoEncoder.inputData(yuvData);
                 }*/
                if (yuvData!=null && yuvData.length > 0){
-                    MLog.d("yuvData len : "+yuvData.length);
+//                    MLog.d("yuvData len : "+yuvData.length);
                    TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
                }else {
                    MLog.i("yuv data empty");
