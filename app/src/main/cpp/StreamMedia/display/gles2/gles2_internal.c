@@ -33,6 +33,9 @@ static  GLboolean yunv420pPrepare(SmGles2Impl gles2Impl){
     }
     LOGI("yunv420pPrepare");
 
+//    glViewport(0, 0, gles2Impl->videoParam->viewWidth, gles2Impl->videoParam->viewHeight);
+//    SmGles2CheckErrorTrace("glViewport");
+
     glPixelStorei(GL_UNPACK_ALIGNMENT,1);
 
     glUseProgram(gles2Impl->program);
@@ -58,14 +61,22 @@ static  GLboolean yunv420pPrepare(SmGles2Impl gles2Impl){
 
     LOGI("yunv420pPrepare finish");
 
+    glViewport(0, 0, gles2Impl->videoParam->viewWidth, gles2Impl->videoParam->viewHeight);
+    SmGles2CheckErrorTrace("glViewport");
+
     return GL_TRUE;
 }
 
 
+
 static GLboolean yunv420pDisplay(SmGles2Impl gles2Impl,SmVideoData videoData){
-    if (!gles2Impl || ! videoData || !videoData->pixels){
+    if (!gles2Impl || ! videoData /*|| !videoData->pixels*/){
         return GL_FALSE;
     }
+
+//    glViewport(0, 0, videoData->width, videoData->height);
+//    SmGles2CheckErrorTrace("glViewport");
+
     int planes[3] = {0,1,2};
     const GLsizei widths[3]    = { videoData->pitches[0], videoData->pitches[1], videoData->pitches[2] };
     const GLsizei heights[3]   = { videoData->height,          videoData->height / 2,      videoData->height / 2 };
@@ -101,6 +112,30 @@ static GLboolean yunv420pDisplay(SmGles2Impl gles2Impl,SmVideoData videoData){
     }
 
     return GL_TRUE;
+}
+
+static void IJK_GLES2_Renderer_TexCoords_reset(SmGles2Impl gles2Impl)
+{
+    gles2Impl->texcoords[0] = 0.0f;
+    gles2Impl->texcoords[1] = 1.0f;
+    gles2Impl->texcoords[2] = 1.0f;
+    gles2Impl->texcoords[3] = 1.0f;
+    gles2Impl->texcoords[4] = 0.0f;
+    gles2Impl->texcoords[5] = 0.0f;
+    gles2Impl->texcoords[6] = 1.0f;
+    gles2Impl->texcoords[7] = 0.0f;
+}
+
+static void IJK_GLES2_Renderer_Vertices_reset(SmGles2Impl renderer)
+{
+    renderer->vertices[0] = -1.0f;
+    renderer->vertices[1] = -1.0f;
+    renderer->vertices[2] =  1.0f;
+    renderer->vertices[3] = -1.0f;
+    renderer->vertices[4] = -1.0f;
+    renderer->vertices[5] =  1.0f;
+    renderer->vertices[6] =  1.0f;
+    renderer->vertices[7] =  1.0f;
 }
 
 static int SmGles2Init(SmGles2Impl gles2Impl){
@@ -170,6 +205,26 @@ static int SmGles2Init(SmGles2Impl gles2Impl){
 
 
         if(yunv420pPrepare(gles2Impl) == JNI_TRUE){
+            SmGlesMatrix modelViewProj;
+            SmGLES2LoadOrtho(&modelViewProj, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+            glUniformMatrix4fv(gles2Impl->um4_mvp, 1, GL_FALSE, modelViewProj.m);
+            SmGles2CheckErrorTrace("glUniformMatrix4fv(um4_mvp)");
+
+            IJK_GLES2_Renderer_TexCoords_reset( gles2Impl);
+
+            glVertexAttribPointer(gles2Impl->av2_texcoord, 2, GL_FLOAT, GL_FALSE, 0, gles2Impl->texcoords);
+            SmGles2CheckErrorTrace("glVertexAttribPointer(av2_texcoord)");
+
+            glEnableVertexAttribArray(gles2Impl->av2_texcoord);
+            SmGles2CheckErrorTrace("glEnableVertexAttribArray(av2_texcoord)");
+
+            IJK_GLES2_Renderer_Vertices_reset(gles2Impl);
+            glVertexAttribPointer(gles2Impl->av4_position, 2, GL_FLOAT, GL_FALSE, 0, gles2Impl->vertices);
+            SmGles2CheckErrorTrace("glVertexAttribPointer(av2_texcoord)");
+
+            glEnableVertexAttribArray(gles2Impl->av4_position);
+            SmGles2CheckErrorTrace("glEnableVertexAttribArray(av2_texcoord)");
+
             return 0;
         } else{
             return -1;

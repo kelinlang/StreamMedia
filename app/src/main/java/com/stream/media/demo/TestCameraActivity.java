@@ -89,7 +89,7 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
+            MLog.d("surfaceChanged weight : "+width+ " ,height : "+ height);
         }
 
         @Override

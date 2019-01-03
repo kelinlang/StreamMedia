@@ -36,14 +36,14 @@ static int videoDisplayThread(void *arg){
         if (egl->EglInit(egl) == 0){
             LOGI("display loop start");
             while (displayThreadRunFlag){
-                LOGI("display loop ------------- 1");
+//                LOGI("display loop ------------- 1");
                 SmVideoDataNode videoDataNode = smVideoDataQueueDequeueData(videoDataQueue);
                 if(videoDataNode){
-                    LOGI("display loop ------------ 2");
+//                    LOGI("display loop ------------ 2");
                     egl->EglDisplay(egl,videoDataNode->videoData);
                     smCacheVideoDataNodeToCache(videoDataQueue,videoDataNode);
                 }
-                LOGI("display loop ------------ 4");
+//                LOGI("display loop ------------ 4");
             }
             LOGI("display loop finish");
         }
@@ -122,7 +122,7 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_stop
  */
 JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
         (JNIEnv * env, jobject object, jint yunType, jbyteArray yuvData, jint yuvDataLen){
-    jbyte* yuvJniData = (*env)->GetByteArrayElements(env,yuvData, NULL);
+    unsigned char * yuvJniData = (unsigned char *)(*env)->GetByteArrayElements(env,yuvData, 0);
 
     if(videoDataQueue) {
         SmVideoDataNode videoDataNode = smCreateVideoDataNodeFromCache(videoDataQueue);
@@ -130,34 +130,32 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
 //            LOGI("sendYuvData  ------------ 1");
 
             SmVideoData  videoData = videoDataNode->videoData;
+            videoData->dataFormat = SM_VIDEO_FCC_I420;
             videoData->pitches[0] = videoParam->viewWidth*videoParam->viewHeight;
             videoData->pitches[1] = videoParam->viewWidth*videoParam->viewHeight/4;
             videoData->pitches[2] = videoParam->viewWidth*videoParam->viewHeight/4;
+            videoData->width = videoParam->viewWidth;
+            videoData->height = videoParam->viewHeight;
 
-//            if(videoData->pixelsY){
+            if(videoData->pixelsY == NULL){
                 //如果没有存储空间，则分配
                 videoData->pixelsY = (unsigned char*)malloc(videoData->pitches[0]);
-//            }
-//            LOGI("sendYuvData  ------------ 2");
+            }
 
-//            if(videoData->pixelsU){
+            if(videoData->pixelsU == NULL){
                 //如果没有存储空间，则分配
                 videoData->pixelsU = (unsigned char*)malloc(videoData->pitches[1]);
+            }
 
-//            }
-//            LOGI("sendYuvData  ------------ 3");
-
-//            if(videoData->pixelsV){
+            if(videoData->pixelsV== NULL){
                 //如果没有存储空间，则分配
                 videoData->pixelsV = (unsigned char*)malloc(videoData->pitches[2]);
-
-//            }
-//            LOGI("sendYuvData  ------------ 4");
+            }
 
             //复制数据
             memcpy(videoData->pixelsY, yuvJniData, videoData->pitches[0]);
-            memcpy(videoData->pixelsY, yuvJniData+videoData->pitches[0], videoData->pitches[1]);
-            memcpy(videoData->pixelsY, yuvJniData+videoData->pitches[0]+videoData->pitches[2], videoData->pitches[2]);
+            memcpy(videoData->pixelsU, yuvJniData+videoData->pitches[0], videoData->pitches[1]);
+            memcpy(videoData->pixelsV, yuvJniData+videoData->pitches[0]+videoData->pitches[1], videoData->pitches[2]);
 
 //            LOGI("sendYuvData  ------------ 5");
             //数据放到队列
@@ -166,5 +164,5 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
         }
     }
 
-    (*env)->ReleaseByteArrayElements(env,yuvData,yuvJniData,0);
+    (*env)->ReleaseByteArrayElements(env,yuvData,(jbyte*)yuvJniData,0);
 }

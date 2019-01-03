@@ -48,15 +48,14 @@ static EGLBoolean IJK_EGL_setSurfaceSize(SmEGL egl, int width, int height)
     if (!SM_EGL_isValid(egl))
         return EGL_FALSE;
 
-#ifdef __ANDROID__
     egl->width  = IJK_EGL_getSurfaceWidth(egl);
     egl->height = IJK_EGL_getSurfaceHeight(egl);
 
     if (width != egl->width || height != egl->height) {
         int format = ANativeWindow_getFormat(egl->window);
         LOGI("ANativeWindow_setBuffersGeometry(w=%d,h=%d) -> (w=%d,h=%d);",
-              egl->width, egl->height,
-              width, height);
+             egl->width, egl->height,
+             width, height);
         int ret = ANativeWindow_setBuffersGeometry(egl->window, width, height, format);
         if (ret) {
             LOGE("[EGL] ANativeWindow_setBuffersGeometry() returned error %d", ret);
@@ -69,150 +68,8 @@ static EGLBoolean IJK_EGL_setSurfaceSize(SmEGL egl, int width, int height)
     }
 
     return EGL_TRUE;
-#else
-    // FIXME: other platform?
-#endif
-    return EGL_FALSE;
 }
 
-/*static EGLBoolean IJK_EGL_makeCurrent(SmEGL egl, EGLNativeWindowType window)
-{
-    if (window && window == egl->window &&
-        egl->display &&
-        egl->surface &&
-        egl->context) {
-
-        if (!eglMakeCurrent(egl->display, egl->surface, egl->surface, egl->context)) {
-            LOGE("[EGL] elgMakeCurrent() failed (cached)\n");
-            return EGL_FALSE;
-        }
-
-        return EGL_TRUE;
-    }
-
-    sm_egl_terminate(egl);
-    egl->window = window;
-
-    if (!window)
-        return EGL_FALSE;
-
-    EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-    if (display == EGL_NO_DISPLAY) {
-        LOGE("[EGL] eglGetDisplay failed\n");
-        return EGL_FALSE;
-    }
-
-
-    EGLint major, minor;
-    if (!eglInitialize(display, &major, &minor)) {
-        LOGE("[EGL] eglInitialize failed\n");
-        return EGL_FALSE;
-    }
-    LOGI("[EGL] eglInitialize %d.%d\n", (int)major, (int)minor);
-
-
-    static const EGLint configAttribs[] = {
-            EGL_RENDERABLE_TYPE,    EGL_OPENGL_ES2_BIT,
-            EGL_SURFACE_TYPE,       EGL_WINDOW_BIT,
-            EGL_BLUE_SIZE,          8,
-            EGL_GREEN_SIZE,         8,
-            EGL_RED_SIZE,           8,
-            EGL_NONE
-    };
-
-    static const EGLint contextAttribs[] = {
-            EGL_CONTEXT_CLIENT_VERSION, 2,
-            EGL_NONE
-    };
-
-    EGLConfig config;
-    EGLint numConfig;
-    if (!eglChooseConfig(display, configAttribs, &config, 1, &numConfig)) {
-        LOGE("[EGL] eglChooseConfig failed\n");
-        eglTerminate(display);
-        return EGL_FALSE;
-    }
-
-#ifdef __ANDROID__
-    {
-        EGLint native_visual_id = 0;
-        if (!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &native_visual_id)) {
-            LOGE("[EGL] eglGetConfigAttrib() returned error %d", eglGetError());
-            eglTerminate(display);
-            return EGL_FALSE;
-        }
-
-        int32_t width  = ANativeWindow_getWidth(window);
-        int32_t height = ANativeWindow_getWidth(window);
-        LOGI("[EGL] ANativeWindow_setBuffersGeometry(f=%d);", native_visual_id);
-        int ret = ANativeWindow_setBuffersGeometry(window, width, height, native_visual_id);
-        if (ret) {
-            LOGE("[EGL] ANativeWindow_setBuffersGeometry(format) returned error %d", ret);
-            eglTerminate(display);
-            return EGL_FALSE;
-        }
-    }
-#endif
-
-    EGLSurface surface = eglCreateWindowSurface(display, config, window, NULL);
-    if (surface == EGL_NO_SURFACE) {
-        LOGE("[EGL] eglCreateWindowSurface failed\n");
-        eglTerminate(display);
-        return EGL_FALSE;
-    }
-
-    EGLSurface context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
-    if (context == EGL_NO_CONTEXT) {
-        LOGE("[EGL] eglCreateContext failed\n");
-        eglDestroySurface(display, surface);
-        eglTerminate(display);
-        return EGL_FALSE;
-    }
-
-    if (!eglMakeCurrent(display, surface, surface, context)) {
-        LOGE("[EGL] elgMakeCurrent() failed (new)\n");
-        eglDestroyContext(display, context);
-        eglDestroySurface(display, surface);
-        eglTerminate(display);
-        return EGL_FALSE;
-    }
-
-#if 0
-    #if defined(__ANDROID__)
-    {
-        const char *extensions = (const char *) glGetString(GL_EXTENSIONS);
-        if (extensions) {
-            char *dup_extensions = strdup(extensions);
-            if (dup_extensions) {
-                char *brk = NULL;
-                char *ext = strtok_r(dup_extensions, " ", &brk);
-                while (ext) {
-                    if (0 == strcmp(ext, "GL_EXT_texture_rg"))
-                        egl->gles2_extensions[IJK_GLES2__GL_EXT_texture_rg] = 1;
-
-                    ext = strtok_r(NULL, " ", &brk);
-                }
-
-                free(dup_extensions);
-            }
-        }
-    }
-#elif defined(__APPLE__)
-    egl->gles2_extensions[IJK_GLES2__GL_EXT_texture_rg] = 1;
-#endif
-
-    ALOGI("[EGL] GLES2 extensions begin:\n");
-    ALOGI("[EGL]     GL_EXT_texture_rg: %d\n", egl->gles2_extensions[IJK_GLES2__GL_EXT_texture_rg]);
-    ALOGI("[EGL] GLES2 extensions end.\n");
-#endif
-
-    Sm_GLES2_Renderer_setupGLES();
-
-    egl->context = context;
-    egl->surface = surface;
-    egl->display = display;
-    return EGL_TRUE;
-}*/
 
 int SmEglSetVideoParam(SmEGL egl,SmVideoParam videoParam1){
     if (egl != NULL){
@@ -272,6 +129,24 @@ static int EglInitInternal(SmEGL egl,EGLNativeWindowType window){
     LOGV("eglChooseConfig ok");
 
 
+    EGLint native_visual_id = 0;
+    if (!eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &native_visual_id)) {
+        LOGE("[EGL] eglGetConfigAttrib() returned error %d", eglGetError());
+        eglTerminate(display);
+        return EGL_FALSE;
+    }
+
+    int32_t width  = ANativeWindow_getWidth(window);
+    int32_t height = ANativeWindow_getHeight(window);
+    LOGI("width : %d, height : %d",width,height);
+    LOGI("[EGL] ANativeWindow_setBuffersGeometry(f=%d);", native_visual_id);
+    int ret = ANativeWindow_setBuffersGeometry(window, width, height, native_visual_id);
+    if (ret) {
+        LOGE("[EGL] ANativeWindow_setBuffersGeometry(format) returned error %d", ret);
+        eglTerminate(display);
+        return EGL_FALSE;
+    }
+
     EGLSurface surface = eglCreateWindowSurface(display, config, window, NULL);
     if (surface == EGL_NO_SURFACE) {
         LOGE("[EGL] eglCreateWindowSurface failed\n");
@@ -301,7 +176,8 @@ static int EglInitInternal(SmEGL egl,EGLNativeWindowType window){
     }
     LOGV("eglMakeCurrent ok");
 
-    Sm_GLES2_Renderer_setupGLES();
+//    Sm_GLES2_Renderer_setupGLES();
+//    return IJK_EGL_setSurfaceSize(egl,egl->videoParam->viewWidth,egl->videoParam->viewHeight);
 
     return EGL_TRUE;
 }
@@ -314,6 +190,7 @@ static  int SmEglInit(SmEGL egl){
             egl->gles2Impl->SmGles2SetVideoParam(egl->gles2Impl,egl->videoParam);
             if (/*retVal == 0 && */egl->window != NULL){
                 retVal = EglInitInternal(egl,egl->window);
+                LOGI("EglInitInternal return val : %d",retVal);
             }
             retVal = egl->gles2Impl->SmGles2Init(egl->gles2Impl);
         }

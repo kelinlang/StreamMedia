@@ -134,9 +134,9 @@ SmVideoDataNode  smVideoDataQueueDequeueData(SmVideoDataQueue videoDataQueue){
     if (videoDataQueue){
         clLockMutex(videoDataQueue->clMutex);
         if (videoDataQueue->numNode <= 0){
-            LOGI("wait start");
+//            LOGI("wait start");
             clCondWait(videoDataQueue->clCond,videoDataQueue->clMutex);
-            LOGI("wait end");
+//            LOGI("wait end");
         }
 
         videoDataNode = videoDataQueue->firstNode;

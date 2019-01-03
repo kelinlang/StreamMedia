@@ -11,6 +11,9 @@ SmVideoData smCreateVideoData(){
     if(videoData){
         videoData->pixels = NULL;
 //        videoData->pitches = NULL;
+        videoData->pixelsY = NULL;
+        videoData->pixelsU = NULL;
+        videoData->pixelsV = NULL;
     }
     return videoData;
 }
