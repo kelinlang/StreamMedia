@@ -232,11 +232,11 @@ public class Camera2Holder {
             Image image = reader.acquireNextImage();
             if (image != null){
 //                MLog.i("image != null");
-                byte[] yuvData = mImageUtil.getBytesFromImageAsType(image,ImageUtil.NV21);
+                byte[] yuvData = mImageUtil.getBytesFromImageAsType(image,ImageUtil.YUV420P);
 
-               /* if (videoEncoder != null && videoEncoder.isWorking()){
-                    videoEncoder.inputData(yuvData);
-                }*/
+//                if (videoEncoder != null && videoEncoder.isWorking()){
+//                    videoEncoder.inputData(yuvData);
+//                }
                if (yuvData!=null && yuvData.length > 0){
 //                    MLog.d("yuvData len : "+yuvData.length);
                    TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);

@@ -61,8 +61,8 @@ static  GLboolean yunv420pPrepare(SmGles2Impl gles2Impl){
 
     LOGI("yunv420pPrepare finish");
 
-    glViewport(0, 0, gles2Impl->videoParam->viewWidth, gles2Impl->videoParam->viewHeight);
-    SmGles2CheckErrorTrace("glViewport");
+//    glViewport(0, 0, gles2Impl->videoParam->viewWidth, gles2Impl->videoParam->viewHeight);
+//    SmGles2CheckErrorTrace("glViewport");
 
     return GL_TRUE;
 }
@@ -205,6 +205,7 @@ static int SmGles2Init(SmGles2Impl gles2Impl){
 
 
         if(yunv420pPrepare(gles2Impl) == JNI_TRUE){
+            LOGI("yunv420pPrepare success");
             SmGlesMatrix modelViewProj;
             SmGLES2LoadOrtho(&modelViewProj, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
             glUniformMatrix4fv(gles2Impl->um4_mvp, 1, GL_FALSE, modelViewProj.m);
@@ -225,6 +226,8 @@ static int SmGles2Init(SmGles2Impl gles2Impl){
             glEnableVertexAttribArray(gles2Impl->av4_position);
             SmGles2CheckErrorTrace("glEnableVertexAttribArray(av2_texcoord)");
 
+            glViewport(0, 0, gles2Impl->videoParam->viewWidth, gles2Impl->videoParam->viewHeight);
+            SmGles2CheckErrorTrace("glViewport");
             return 0;
         } else{
             return -1;
