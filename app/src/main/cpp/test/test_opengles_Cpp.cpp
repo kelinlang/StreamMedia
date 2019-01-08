@@ -24,6 +24,9 @@ const char *vertexShaderString = GET_STR(
         attribute vec4 aPosition;
         attribute vec2 aTexCoord;
         varying vec2 vTexCoord;
+
+        uniform         mat4 um4_ModelViewProjection;
+
         void main() {
             vTexCoord=vec2(aTexCoord.x,1.0-aTexCoord.y);
             gl_Position = aPosition;
@@ -108,6 +111,13 @@ static int videoDisplayThread(void *arg){
             1.0f, 1.0f,//右上
             0.0f, 1.0f//左上
     };
+
+    const GLfloat g_bt709[] = {
+            1.164,  1.164,  1.164,
+            0.0,   -0.213,  2.112,
+            1.793, -0.533,  0.0,
+    };
+
     ShaderUtils *shaderUtils = new ShaderUtils();
 
     GLuint programId = shaderUtils->createProgram(vertexShaderString,fragmentShaderString );
@@ -118,7 +128,7 @@ static int videoDisplayThread(void *arg){
     GLuint textureSamplerHandleY = (GLuint) glGetUniformLocation(programId, "yTexture");
     GLuint textureSamplerHandleU = (GLuint) glGetUniformLocation(programId, "uTexture");
     GLuint textureSamplerHandleV = (GLuint) glGetUniformLocation(programId, "vTexture");
-
+    GLuint um4_mvp = glGetUniformLocation(programId,"um4_ModelViewProjection");
 
 
     //因为没有用矩阵所以就手动自适应
@@ -178,6 +188,7 @@ static int videoDisplayThread(void *arg){
 
     glUniform1i(textureSamplerHandleV,2);
 
+//    glUniformMatrix3fv(um4_mvp, 1, GL_FALSE, SM_GLES2_getColorMatrix_bt709());
 
     /***
      * 开始解码

@@ -74,16 +74,19 @@ static GLboolean yunv420pDisplay(SmGles2Impl gles2Impl,SmVideoData videoData){
         return GL_FALSE;
     }
 
+    glClear(GL_COLOR_BUFFER_BIT);
+    SmGles2CheckErrorTrace("glClear");
+
 //    glViewport(0, 0, videoData->width, videoData->height);
 //    SmGles2CheckErrorTrace("glViewport");
 
     int planes[3] = {0,1,2};
-    const GLsizei widths[3]    = { videoData->pitches[0], videoData->pitches[1], videoData->pitches[2] };
+    const GLsizei widths[3]    = { videoData->width, videoData->width/2, videoData->width/2 };
     const GLsizei heights[3]   = { videoData->height,          videoData->height / 2,      videoData->height / 2 };
 //    const GLubyte *pixels[3]   = { videoData->pixels[0],  videoData->pixels[1],  videoData->pixels[2] };
     const GLubyte *pixels[3]   = { videoData->pixelsY,  videoData->pixelsU,  videoData->pixelsV };
 
-    switch (videoData->dataFormat) {
+    /*switch (videoData->dataFormat) {
         case SM_VIDEO_FCC_I420:
             break;
         case SM_VIDEO_FCC_YV12:
@@ -93,11 +96,11 @@ static GLboolean yunv420pDisplay(SmGles2Impl gles2Impl,SmVideoData videoData){
         default:
             LOGE("[yuv420p] unexpected format %x\n", videoData->dataFormat);
             return GL_FALSE;
-    }
+    }*/
 
     for (int i = 0; i < 3; ++i) {
         int plane = planes[i];
-
+//        glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, gles2Impl->plane_textures[i]);
 
         glTexImage2D(GL_TEXTURE_2D,
@@ -110,6 +113,9 @@ static GLboolean yunv420pDisplay(SmGles2Impl gles2Impl,SmVideoData videoData){
                      GL_UNSIGNED_BYTE,
                      pixels[plane]);
     }
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    SmGles2CheckErrorTrace("glDrawArrays");
 
     return GL_TRUE;
 }
@@ -140,12 +146,12 @@ static void IJK_GLES2_Renderer_Vertices_reset(SmGles2Impl renderer)
 
 static int SmGles2Init(SmGles2Impl gles2Impl){
     if(gles2Impl != NULL){
-        Sm_GLES2_Renderer_setupGLES();
+//        Sm_GLES2_Renderer_setupGLES();
 
-        SmGles2PrintString("Version", GL_VERSION);
-        SmGles2PrintString("Vendor", GL_VENDOR);
-        SmGles2PrintString("Renderer", GL_RENDERER);
-        SmGles2PrintString("Extensions", GL_EXTENSIONS);
+//        SmGles2PrintString("Version", GL_VERSION);
+//        SmGles2PrintString("Vendor", GL_VENDOR);
+//        SmGles2PrintString("Renderer", GL_RENDERER);
+//        SmGles2PrintString("Extensions", GL_EXTENSIONS);
 
         gles2Impl->vertex_shader = SmGles2LoadShader(GL_VERTEX_SHADER,Sm_GLES2_getVertexShader_default());
         if(!gles2Impl->vertex_shader){
@@ -177,7 +183,7 @@ static int SmGles2Init(SmGles2Impl gles2Impl){
         GLint  link_status = GL_FALSE;
         glGetProgramiv(gles2Impl->program,GL_LINK_STATUS,&link_status);
         if(!link_status){
-            LOGE("glGetProgramiv error");
+            LOGE("glLinkProgram glGetProgramiv error");
             return -1;
         }
 
@@ -203,7 +209,9 @@ static int SmGles2Init(SmGles2Impl gles2Impl){
         SmGles2CheckErrorTrace("glGetUniformLocation(um3_ColorConversionMatrix)");
         //目前yuv420p
 
-
+//        glViewport(0, 0, gles2Impl->videoParam->viewWidth, gles2Impl->videoParam->viewHeight);
+//        SmGles2CheckErrorTrace("glViewport");
+        
         if(yunv420pPrepare(gles2Impl) == JNI_TRUE){
             LOGI("yunv420pPrepare success");
             SmGlesMatrix modelViewProj;
