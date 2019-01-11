@@ -2,6 +2,7 @@ package com.stream.media.demo;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.opengl.Matrix;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -24,6 +25,11 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
     private VideoSeviceTest mVideoSeviceTest;
 
     public static OpenGlEs openGlEs = new OpenGlEs();
+
+    private float[] mViewMatrix=new float[16];
+    private float[] mProjectMatrix=new float[16];
+    private float[] mMVPMatrix=new float[16];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +90,20 @@ public class TestCameraActivity extends AppCompatActivity implements SurfaceHold
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
             openGlEs.setSurface(holder.getSurface());
+
+            Matrix.orthoM(mProjectMatrix,0,-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 2.0f);
+
+//            Matrix.orthoM(mProjectMatrix,0,);
+            Matrix.rotateM(mProjectMatrix,0,270.0f,0.0f,0.0f,1.0f);
+
+            //设置相机位置
+            Matrix.setLookAtM(mViewMatrix, 0, 0, 0, 2.0f, 0f, 0f, 0f, 0f, 1.0f, 0.0f);
+            //计算变换矩阵
+            Matrix.multiplyMM(mMVPMatrix,0,mProjectMatrix,0,mViewMatrix,0);
+
+
+            openGlEs.setMatrix(mMVPMatrix);
+
             openGlEs.start();
         }
 

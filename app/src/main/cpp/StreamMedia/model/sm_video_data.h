@@ -44,6 +44,8 @@ typedef struct SmVideoParam_{
     unsigned int displayFormat;
 
 //    void (*destroy)(SmVideoParam videoParam);
+
+    float*matrix;
 }SmVideoParam_;
 
 SmVideoParam smCreateVideoParam();

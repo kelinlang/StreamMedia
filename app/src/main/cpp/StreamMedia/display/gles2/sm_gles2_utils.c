@@ -17,6 +17,7 @@ void SmGles2PrintString( char *name, GLenum s) {
     AbstractLogI(v, 0);
 }
 
+//设置透视
 void SmGLES2LoadOrtho(SmGlesMatrix *matrix, GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far)
 {
     GLfloat r_l = right - left;

@@ -24,6 +24,7 @@ SmVideoDataQueue videoDataQueue;
 
 SmVideoParam videoParam;
 ANativeWindow* mANativeWindow;
+float* cacheMatrixTmp;
 
 static int videoDisplayThread(void *arg){
     LOGI("videoDisplayThread 0");
@@ -61,6 +62,16 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_setSurface
     return 0;
 }
 
+JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_setMatrix
+        (JNIEnv * env, jobject object, jfloatArray matrix){
+    cacheMatrixTmp = (float*)malloc(16* sizeof(float));
+
+    float * matrixs = (unsigned char *)(*env)->GetFloatArrayElements(env,matrix, 0);
+    memcpy(cacheMatrixTmp, matrixs, 16);
+    (*env)->ReleaseFloatArrayElements(env,matrix,(jfloat *)matrixs,0);
+    return 0;
+}
+
 JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_start
         (JNIEnv * env, jobject object){
     LOGI("display  start");
@@ -70,8 +81,10 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_start
     videoParam->viewWidth = 640;
     videoParam->viewHeight= 480;
     videoParam->displayFormat = SM_VIDEO_FCC_I420;
+    videoParam->matrix = cacheMatrixTmp;
 
     videoDataQueue = smCreateVideoDataQueue();
+
 
 
     displayThreadRunFlag = 1;

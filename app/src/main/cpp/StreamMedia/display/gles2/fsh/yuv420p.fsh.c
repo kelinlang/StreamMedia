@@ -34,7 +34,7 @@ static const char g_shader[] = SM_GLES_STRING(
         mediump vec3 yuv;
         lowp    vec3 rgb;
 
-        yuv.x = (texture2D(us2_SamplerX, vv2_Texcoord).r - (16.0 / 255.0));
+        yuv.x = (texture2D(us2_SamplerX, vv2_Texcoord).r );
         yuv.y = (texture2D(us2_SamplerY, vv2_Texcoord).r - 0.5);
         yuv.z = (texture2D(us2_SamplerZ, vv2_Texcoord).r - 0.5);
         rgb = um3_ColorConversion * yuv;

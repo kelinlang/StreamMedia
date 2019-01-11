@@ -2,8 +2,6 @@
 #include <jni.h>
 /* Header for class com_medialib_video_OpenGlEs */
 
-
-
 #ifndef _Included_com_medialib_video_OpenGlEs
 #define _Included_com_medialib_video_OpenGlEs
 #ifdef __cplusplus
@@ -16,6 +14,14 @@ extern "C" {
  */
 JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_setSurface
   (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     com_medialib_video_OpenGlEs
+ * Method:    setMatrix
+ * Signature: ([F)I
+ */
+JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_setMatrix
+  (JNIEnv *, jobject, jfloatArray);
 
 /*
  * Class:     com_medialib_video_OpenGlEs

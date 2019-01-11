@@ -74,8 +74,7 @@ static GLboolean yunv420pDisplay(SmGles2Impl gles2Impl,SmVideoData videoData){
         return GL_FALSE;
     }
 
-    glClear(GL_COLOR_BUFFER_BIT);
-    SmGles2CheckErrorTrace("glClear");
+
 
 //    glViewport(0, 0, videoData->width, videoData->height);
 //    SmGles2CheckErrorTrace("glViewport");
@@ -114,6 +113,9 @@ static GLboolean yunv420pDisplay(SmGles2Impl gles2Impl,SmVideoData videoData){
                      pixels[plane]);
     }
 
+    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    SmGles2CheckErrorTrace("glClear");
+
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     SmGles2CheckErrorTrace("glDrawArrays");
 
@@ -146,7 +148,7 @@ static void IJK_GLES2_Renderer_Vertices_reset(SmGles2Impl renderer)
 
 static int SmGles2Init(SmGles2Impl gles2Impl){
     if(gles2Impl != NULL){
-//        Sm_GLES2_Renderer_setupGLES();
+        Sm_GLES2_Renderer_setupGLES();
 
 //        SmGles2PrintString("Version", GL_VERSION);
 //        SmGles2PrintString("Vendor", GL_VENDOR);
@@ -215,8 +217,9 @@ static int SmGles2Init(SmGles2Impl gles2Impl){
         if(yunv420pPrepare(gles2Impl) == JNI_TRUE){
             LOGI("yunv420pPrepare success");
             SmGlesMatrix modelViewProj;
-            SmGLES2LoadOrtho(&modelViewProj, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
-            glUniformMatrix4fv(gles2Impl->um4_mvp, 1, GL_FALSE, modelViewProj.m);
+//            SmGLES2LoadOrtho(&modelViewProj, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+//            glUniformMatrix4fv(gles2Impl->um4_mvp, 1, GL_FALSE, modelViewProj.m);
+            glUniformMatrix4fv(gles2Impl->um4_mvp, 1, GL_FALSE, gles2Impl->videoParam->matrix);
             SmGles2CheckErrorTrace("glUniformMatrix4fv(um4_mvp)");
 
             IJK_GLES2_Renderer_TexCoords_reset( gles2Impl);
