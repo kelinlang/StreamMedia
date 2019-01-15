@@ -83,8 +83,8 @@ add_library( # Sets the name of the library.
               src/main/cpp/MediaCodecTest.cpp
 
 
-              src/main/cpp/test/test_opengles.c
-              #src/main/cpp/test/test_opengles_cpp.cpp
+              #src/main/cpp/test/test_opengles.c
+              src/main/cpp/test/test_opengles_cpp.cpp
               src/main/cpp/test/ShaderUtils.cpp
 
 

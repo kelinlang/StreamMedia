@@ -181,7 +181,7 @@ public class Camera2Holder {
             MLog.e("CameraAccessException error ",e);
         }
 
-//        initCodec();
+        initCodec();
 //        StreamMediaNative.init();
     }
 
@@ -204,6 +204,9 @@ public class Camera2Holder {
 
         if (videoEncoder != null){
             videoEncoder.stop();
+        }
+        if (videoDecode != null){
+            videoDecode.stop();
         }
 
         StreamMediaNative.release();
@@ -234,12 +237,12 @@ public class Camera2Holder {
 //                MLog.i("image != null");
                 byte[] yuvData = mImageUtil.getBytesFromImageAsType(image,ImageUtil.YUV420P);
 
-//                if (videoEncoder != null && videoEncoder.isWorking()){
-//                    videoEncoder.inputData(yuvData);
-//                }
+                if (videoEncoder != null && videoEncoder.isWorking()){
+                    videoEncoder.inputData(yuvData);
+                }
                if (yuvData!=null && yuvData.length > 0){
 //                    MLog.d("yuvData len : "+yuvData.length);
-                   TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
+//                   TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
                }else {
                    MLog.i("yuv data empty");
                }
@@ -256,6 +259,24 @@ public class Camera2Holder {
         }
 
     };
+
+
+
+    private DataCallback h264DataCallback = new DataCallback() {
+        @Override
+        public void onData(int type, Object data) {
+            byte[] h264Data = (byte[])data;
+            videoDecode.inputData(h264Data);
+        }
+    } ;
+
+    private DataCallback yuvDataCallback = new DataCallback() {
+        @Override
+        public void onData(int type, Object data) {
+            byte[] yuvData = (byte[])data;
+            TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
+        }
+    } ;
 
     private void createImageReader(){
         MLog.d("createImageReader");
@@ -304,12 +325,17 @@ public class Camera2Holder {
 
     private VideoParam videoParam = new VideoParam();
     private VideoEncoder videoEncoder = new VideoEncoder();
+    private VideoDecode videoDecode = new VideoDecode();
 
     private void initCodec(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && CodecUtils.supportAvcCodec()){
             videoEncoder.setVideoParam(videoParam);
-            videoEncoder.setDataCallback(null);
+            videoEncoder.setDataCallback(h264DataCallback);
             videoEncoder.start();
+
+            videoDecode.setVideoParam(videoParam);
+            videoDecode.setDataCallback(yuvDataCallback);
+            videoDecode.start();
         }
     }
 

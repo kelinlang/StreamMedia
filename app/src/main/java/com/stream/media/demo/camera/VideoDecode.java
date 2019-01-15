@@ -6,7 +6,6 @@ import android.media.MediaFormat;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 
-
 import com.stream.media.demo.utils.ArrayUtils;
 import com.stream.media.demo.utils.FileStorage;
 import com.stream.media.demo.utils.MLog;
@@ -20,14 +19,14 @@ import java.util.concurrent.TimeUnit;
  * Created by dengjun on 2018/6/28.
  */
 
-public class VideoEncoder {
+public class VideoDecode {
     private static final long WAIT_TIME = 12000;
     private VideoParam videoParam;
     private MediaCodec mediaCodec;
 
     private DataCallback dataCallback;
 
-    public ArrayBlockingQueue<byte[]> yuvDataQueue = new ArrayBlockingQueue<byte[]>(30);
+    public ArrayBlockingQueue<byte[]> h264DataQueue = new ArrayBlockingQueue<byte[]>(30);
     private Thread inputThread;
     private Thread outputThread;
     private volatile  boolean runFlag = false;
@@ -55,7 +54,7 @@ public class VideoEncoder {
 //        mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar);
 //        mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar);
 
-        mediaCodec = MediaCodec.createEncoderByType(videoParam.getMediaFormat());
+        mediaCodec = MediaCodec.createDecoderByType("video/avc");
 
         for (int colorFormats: mediaCodec.getCodecInfo().getCapabilitiesForType(mediaFormat.getString(MediaFormat.KEY_MIME)).colorFormats){
             MLog.i("mediaCodec colorFormats : "+ colorFormats);
@@ -73,9 +72,9 @@ public class VideoEncoder {
             MLog.i("tragetFormats = MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar ");
         }
         mediaFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, tragetFormats);
-        videoParam.setColorFormat(tragetFormats);
+//        videoParam.setColorFormat(tragetFormats);
 
-        mediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+        mediaCodec.configure(mediaFormat, null, null, 0);
         mediaCodec.start();
     }
 
@@ -105,7 +104,7 @@ public class VideoEncoder {
     public void inputData(byte[] videoData){
         if (mediaCodec != null){
             try {
-                yuvDataQueue.add(videoData);
+                h264DataQueue.add(videoData);
             }catch (IllegalStateException e){
                 e.printStackTrace();
             }
@@ -139,16 +138,12 @@ public class VideoEncoder {
                     startOutputThread();
 
                     while (runFlag){
-                        byte[] nv21Data = null;
+                        byte[] h264Data = null;
                         if (runFlag){
-                            nv21Data = take();
+                            h264Data = take();
                         }
-                        if (nv21Data != null){
+                        if (h264Data != null){
                             try {
-                                //camera预留设置NV21需要转换
-//                                byte[] yuv420sp = changeColorFormat(nv21Data);
-                                byte[] yuv420sp = nv21Data;
-
                                 int inputBufferIndex = mediaCodec.dequeueInputBuffer(-1);
                                 if (inputBufferIndex >= 0){
                                     ByteBuffer byteBuffer;
@@ -158,9 +153,9 @@ public class VideoEncoder {
                                         byteBuffer = mediaCodec.getInputBuffers()[inputBufferIndex];
                                     }
                                     byteBuffer.clear();
-                                    byteBuffer.put(yuv420sp);
+                                    byteBuffer.put(h264Data);
 //                                    MLog.d("inputBufferIndex : "+inputBufferIndex);
-                                    mediaCodec.queueInputBuffer(inputBufferIndex,0,yuv420sp.length,computePresentationTime(generateIndex),0);
+                                    mediaCodec.queueInputBuffer(inputBufferIndex,0,h264Data.length,computePresentationTime(generateIndex),0);
                                     generateIndex +=1;
                                 }
 
@@ -195,13 +190,13 @@ public class VideoEncoder {
     }
 
     private byte[] take(){
-        byte[] nv21Data = null;
+        byte[] h264Data = null;
         try {
-            nv21Data = yuvDataQueue.poll(500, TimeUnit.MILLISECONDS);
+            h264Data = h264DataQueue.poll(500, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return nv21Data;
+        return h264Data;
     }
 
     private long computePresentationTime(long frameIndex) {
@@ -215,7 +210,7 @@ public class VideoEncoder {
                 MLog.d(Thread.currentThread().getName()+" start run() tid=" + Thread.currentThread().getId());
                 if (mediaCodec != null){
                     MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-                    byte[] configbyte = null;
+
                     while (runFlag){
                         try {
                             int outputBufferIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, WAIT_TIME);
@@ -226,33 +221,12 @@ public class VideoEncoder {
                                 }else {
                                     outputBuffer = mediaCodec.getOutputBuffers()[outputBufferIndex];
                                 }
-                                byte[] h264Data = new byte[bufferInfo.size];
-                                outputBuffer.get(h264Data);
+                                byte[] yuvData = new byte[bufferInfo.size];
+                                outputBuffer.get(yuvData);
 
-                                switch (bufferInfo.flags){
-                                    case MediaCodec.BUFFER_FLAG_CODEC_CONFIG:
-                                        MLog.d("config frame : "+ bufferInfo.flags);
-                                        configbyte = h264Data;
-                                        break;
-                                    case MediaCodec.BUFFER_FLAG_KEY_FRAME:
-//                                        MLog.d("key frame : "+ bufferInfo.flags+", dataLen: "+ h264Data.length);
-                                        byte[] keyframe = new byte[bufferInfo.size + configbyte.length];
-                                        System.arraycopy(configbyte, 0, keyframe, 0, configbyte.length);
-                                        System.arraycopy(h264Data, 0, keyframe, configbyte.length, h264Data.length);
-
-                                        fileStorage.wirte(keyframe);
-
-                                        if (dataCallback != null){
-                                            dataCallback.onData(0,keyframe);
-                                        }
-                                        break;
-                                    default:
-//                                        MLog.d("normal frame :"+ bufferInfo.flags+", dataLen: "+ h264Data.length+ ", outputBufferIndex :"+outputBufferIndex);
-                                        fileStorage.wirte(h264Data);
-                                        if (dataCallback != null){
-                                            dataCallback.onData(1,h264Data);
-                                        }
-                                        break;
+                                fileStorage.wirte(yuvData);
+                                if (dataCallback != null){
+                                    dataCallback.onData(1,yuvData);
                                 }
                                 mediaCodec.releaseOutputBuffer(outputBufferIndex, false);
                             }
@@ -302,7 +276,7 @@ public class VideoEncoder {
             MLog.i("video encoder finish");
         }
         closeSave();
-        yuvDataQueue.clear();
+        h264DataQueue.clear();
     }
 
     private FileStorage fileStorage;
