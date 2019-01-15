@@ -29,7 +29,7 @@ const char *vertexShaderString = GET_STR(
 
         void main() {
             vTexCoord=vec2(aTexCoord.x,1.0-aTexCoord.y);
-            gl_Position = aPosition;
+            gl_Position = um4_ModelViewProjection *aPosition;
         }
 );
 const char *fragmentShaderString = GET_STR(
@@ -57,6 +57,9 @@ SmVideoDataQueue videoDataQueue;
 
 SmVideoParam videoParam;
 ANativeWindow* mANativeWindow;
+
+float* cacheMatrixTmp;
+
 
 static int videoDisplayThread(void *arg){
     LOGI("videoDisplayThread 0");
@@ -189,6 +192,7 @@ static int videoDisplayThread(void *arg){
     glUniform1i(textureSamplerHandleV,2);
 
 //    glUniformMatrix3fv(um4_mvp, 1, GL_FALSE, SM_GLES2_getColorMatrix_bt709());
+    glUniformMatrix4fv(um4_mvp, 1, GL_FALSE, cacheMatrixTmp);
 
     /***
      * 开始解码
@@ -244,6 +248,16 @@ static int videoDisplayThread(void *arg){
 JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_setSurface
         (JNIEnv * env, jobject object, jobject surface){
     mANativeWindow = ANativeWindow_fromSurface(env, surface);
+    return 0;
+}
+
+JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_setMatrix
+        (JNIEnv * env, jobject object, jfloatArray matrix){
+    cacheMatrixTmp = (float*)malloc(16* sizeof(float));
+
+    float * matrixs = (float *)env->GetFloatArrayElements(matrix, 0);
+    memcpy(cacheMatrixTmp, matrixs, 16);
+    env->ReleaseFloatArrayElements(matrix,(jfloat *)matrixs,0);
     return 0;
 }
 
