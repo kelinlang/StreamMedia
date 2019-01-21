@@ -266,7 +266,8 @@ public class Camera2Holder {
         @Override
         public void onData(int type, Object data) {
             byte[] h264Data = (byte[])data;
-            videoDecode.inputData(h264Data);
+//            videoDecode.inputData(h264Data);//java层解码
+            TestCameraActivity.openGlEs.sendData(0,h264Data,h264Data.length);//jni层解码
         }
     } ;
 
@@ -325,7 +326,7 @@ public class Camera2Holder {
 
     private VideoParam videoParam = new VideoParam();
     private VideoEncoder videoEncoder = new VideoEncoder();
-    private VideoDecode videoDecode = new VideoDecode();
+    private VideoDecode videoDecode;
 
     private void initCodec(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && CodecUtils.supportAvcCodec()){
@@ -333,9 +334,10 @@ public class Camera2Holder {
             videoEncoder.setDataCallback(h264DataCallback);
             videoEncoder.start();
 
-            videoDecode.setVideoParam(videoParam);
-            videoDecode.setDataCallback(yuvDataCallback);
-            videoDecode.start();
+//            videoDecode = new VideoDecode();
+//            videoDecode.setVideoParam(videoParam);
+//            videoDecode.setDataCallback(yuvDataCallback);
+//            videoDecode.start();
         }
     }
 

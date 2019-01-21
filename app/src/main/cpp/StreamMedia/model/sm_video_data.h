@@ -25,6 +25,9 @@ typedef struct SmVideoData_{
     unsigned char* pixelsU;
     unsigned char* pixelsV;
 
+    int pixelsDataLen;
+    uint8_t * pixelsData;
+
 //    void (*destroy)(SmVideoData videoData);
 
 } SmVideoData_;

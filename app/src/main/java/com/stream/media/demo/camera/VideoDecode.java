@@ -119,7 +119,7 @@ public class VideoDecode {
         if (runFlag){
             return;
         }
-        MLog.i("video encoder start");
+        MLog.i("video decode start");
 //        startMediaCodec();
 //        if (mediaCodec == null){
 //            return;
@@ -214,6 +214,7 @@ public class VideoDecode {
                     while (runFlag){
                         try {
                             int outputBufferIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, WAIT_TIME);
+//                            MLog.d("decode outputBufferIndex : "+ outputBufferIndex);
                             if (outputBufferIndex >= 0){
                                 ByteBuffer outputBuffer;
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
@@ -263,8 +264,6 @@ public class VideoDecode {
 
     public void stop(){
         runFlag = false;
-//        stopMeiaCodec();
-
         if (inputThread != null) {
             MLog.i("video encoder stop");
             try {
@@ -277,6 +276,7 @@ public class VideoDecode {
         }
         closeSave();
         h264DataQueue.clear();
+        stopMeiaCodec();
     }
 
     private FileStorage fileStorage;

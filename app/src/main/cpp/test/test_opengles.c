@@ -179,3 +179,8 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
 
     (*env)->ReleaseByteArrayElements(env,yuvData,(jbyte*)yuvJniData,0);
 }
+
+JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendData
+(JNIEnv *, jobject, jint, jbyteArray, jint){
+
+}

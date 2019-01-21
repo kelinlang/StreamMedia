@@ -80,7 +80,7 @@
  * @{
  *
  * The avcodec_send_packet()/avcodec_receive_frame()/avcodec_send_frame()/
- * avcodec_receive_packet() functions provide an encode/decode API, which
+ * avcodec_receive_packet() functions provide an decode/decode API, which
  * decouples input and output.
  *
  * The API is very similar for encoding/decoding and audio/video, and works as
@@ -177,7 +177,7 @@
  * Identify the syntax and semantics of the bitstream.
  * The principle is roughly:
  * Two decoders with the same ID can decode the same streams.
- * Two encoders with the same ID can encode compatible streams.
+ * Two encoders with the same ID can decode compatible streams.
  * There may be slight deviations from the principle due to implementation
  * details.
  *
@@ -856,7 +856,7 @@ typedef struct RcOverride{
  */
 #define AV_CODEC_FLAG_LOOP_FILTER     (1 << 11)
 /**
- * Only decode/encode grayscale.
+ * Only decode/decode grayscale.
  */
 #define AV_CODEC_FLAG_GRAY            (1 << 13)
 /**
@@ -963,7 +963,7 @@ typedef struct RcOverride{
  * give the complete and correct output.
  *
  * NOTE: If this flag is not set, the codec is guaranteed to never be fed with
- *       with NULL data. The user can still send NULL data to the public encode
+ *       with NULL data. The user can still send NULL data to the public decode
  *       or decode function, but libavcodec will not pass it along to the codec
  *       unless this flag is set.
  *
@@ -1155,7 +1155,7 @@ typedef struct RcOverride{
  * give the complete and correct output.
  *
  * NOTE: If this flag is not set, the codec is guaranteed to never be fed with
- *       with NULL data. The user can still send NULL data to the public encode
+ *       with NULL data. The user can still send NULL data to the public decode
  *       or decode function, but libavcodec will not pass it along to the codec
  *       unless this flag is set.
  *
@@ -3684,7 +3684,7 @@ typedef struct AVCodec {
     int (*decode)(AVCodecContext *, void *outdata, int *outdata_size, AVPacket *avpkt);
     int (*close)(AVCodecContext *);
     /**
-     * Decode/encode API with decoupled packet/frame dataflow. The API is the
+     * Decode/decode API with decoupled packet/frame dataflow. The API is the
      * same as the avcodec_ prefixed APIs (avcodec_send_frame() etc.), except
      * that:
      * - never called if the codec is closed or the wrong type,
@@ -4224,7 +4224,7 @@ const AVClass *avcodec_get_subtitle_rect_class(void);
  * Copy the settings of the source AVCodecContext into the destination
  * AVCodecContext. The resulting destination codec context will be
  * unopened, i.e. you are required to call avcodec_open2() before you
- * can use this AVCodecContext to decode/encode video/audio data.
+ * can use this AVCodecContext to decode/decode video/audio data.
  *
  * @param dest target codec context, should be initialized with
  *             avcodec_alloc_context3(NULL), but otherwise uninitialized

@@ -12,4 +12,5 @@ public class OpenGlEs {
     public native int start();
     public native int stop();
     public native void sendYuvData(int yuvType,byte[] yuvData,int yuvDataLen);
+    public native void sendData(int type,byte[] data,int dataLen);
 }

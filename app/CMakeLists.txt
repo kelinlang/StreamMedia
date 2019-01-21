@@ -66,6 +66,7 @@ add_library( # Sets the name of the library.
             src/main/cpp/StreamMedia/display/gles2/vsh/mvp.vsh.c
 
             src/main/cpp/StreamMedia/video/sm_video_codec.c
+            src/main/cpp/StreamMedia/video/sm_mediacodec_test.c
 
 
             src/main/cpp/StreamMedia/buffer/sm_video_data_buffer.c

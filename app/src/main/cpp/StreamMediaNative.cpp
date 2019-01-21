@@ -44,12 +44,12 @@ void create_encode(){
         LOGD("status : %d",status);
     }
     AMediaFormat_delete(videoFormat);
-//    AMediaCodec_configure(pdata->encode,videoFormat,NULL,NULL,AMEDIACODEC_CONFIGURE_FLAG_ENCODE);
+//    AMediaCodec_configure(pdata->decode,videoFormat,NULL,NULL,AMEDIACODEC_CONFIGURE_FLAG_ENCODE);
 
 
 
 
-//    media_status_t media_status =  AMediaCodec_start(pdata->encode);
+//    media_status_t media_status =  AMediaCodec_start(pdata->decode);
 //    LOGD("media_status_t : %d",media_status);
 }
 

@@ -289,8 +289,6 @@ public class VideoEncoder {
 
     public void stop(){
         runFlag = false;
-//        stopMeiaCodec();
-
         if (inputThread != null) {
             MLog.i("video encoder stop");
             try {
@@ -303,6 +301,7 @@ public class VideoEncoder {
         }
         closeSave();
         yuvDataQueue.clear();
+        stopMeiaCodec();
     }
 
     private FileStorage fileStorage;

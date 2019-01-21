@@ -47,6 +47,14 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_stop
 JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
   (JNIEnv *, jobject, jint, jbyteArray, jint);
 
+/*
+ * Class:     com_medialib_video_OpenGlEs
+ * Method:    sendData
+ * Signature: (I[BI)V
+ */
+JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendData
+  (JNIEnv *, jobject, jint, jbyteArray, jint);
+
 #ifdef __cplusplus
 }
 #endif
