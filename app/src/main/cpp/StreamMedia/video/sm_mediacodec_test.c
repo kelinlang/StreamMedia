@@ -16,6 +16,7 @@ typedef struct SmMediaCodec_{
 
     DataCallback  dataCallback;
 
+    pthread_t readThreadId;
     SmVideoDataQueue videoDataQueue;
 
 }SmMediaCodec_;
@@ -39,13 +40,10 @@ void smMediaCodecSetDataCallback(SmMediaCodec mediaCodec, DataCallback dataCallb
     }
 }
 
-static  void* decode_func(void *arg){
-    LOGI("decode_func start");
+static  void* readThreadFunc(void *arg){
+    LOGI("readThreadFunc start");
     SmMediaCodec  mediaCodec = (SmMediaCodec)arg;
 
-    ssize_t bufidx = -1;
-    size_t bufsize;
-    AMediaCodecBufferInfo info;
 
     while (mediaCodec->encodeThreadRunFlag == 1){
         ssize_t bufidx = -1;
@@ -62,6 +60,34 @@ static  void* decode_func(void *arg){
         }
 
         smCacheVideoDataNodeToCache(mediaCodec->videoDataQueue,videoDataNode);
+    }
+
+    LOGI("readThreadFunc finish");
+}
+
+static  void* decode_func(void *arg){
+    LOGI("decode_func start");
+    SmMediaCodec  mediaCodec = (SmMediaCodec)arg;
+
+    ssize_t bufidx = -1;
+    size_t bufsize;
+    AMediaCodecBufferInfo info;
+
+    while (mediaCodec->encodeThreadRunFlag == 1){
+        /*ssize_t bufidx = -1;
+
+        SmVideoDataNode videoDataNode = smVideoDataQueueDequeueData(mediaCodec->videoDataQueue);
+
+        bufidx = AMediaCodec_dequeueInputBuffer(mediaCodec->decode,2000);
+//        LOGI("input data bufidx : %d",bufidx);
+        if(bufidx >= 0){
+            size_t bufsize;
+            uint8_t* buf = AMediaCodec_getInputBuffer(mediaCodec->decode,bufidx,&bufsize);
+            memcpy(buf,videoDataNode->videoData->pixelsData,videoDataNode->videoData->pixelsDataLen);
+            AMediaCodec_queueInputBuffer(mediaCodec->decode,bufidx,0,videoDataNode->videoData->pixelsDataLen,0,0);
+        }
+
+        smCacheVideoDataNodeToCache(mediaCodec->videoDataQueue,videoDataNode);*/
 
 
         bufidx = AMediaCodec_dequeueOutputBuffer(mediaCodec->decode,&info,2000);
@@ -118,6 +144,10 @@ void smMediaCodecstart(SmMediaCodec mediaCodec){
             int retval = pthread_create(&mediaCodec->encodeThreadId,NULL,decode_func,mediaCodec);
 //
             LOGD("start decode thread retval : %d", retval);
+
+            int retval1 = pthread_create(&mediaCodec->readThreadId,NULL,readThreadFunc,mediaCodec);
+            LOGD("start decode read thread retval : %d", retval1);
+
         }
 
         AMediaFormat_delete(videoFormat);
@@ -135,6 +165,12 @@ void smMediaCodecstop(SmMediaCodec mediaCodec){
             pthread_join(mediaCodec->encodeThreadId,NULL);
             LOGD("pthread_join  finish");
             mediaCodec->encodeThreadId = -1;
+        }
+        if(mediaCodec->readThreadId != -1){
+            LOGD("pthread_join  start 2");
+            pthread_join(mediaCodec->readThreadId,NULL);
+            LOGD("pthread_join  finish 2");
+            mediaCodec->readThreadId = -1;
         }
         if(mediaCodec->decode){
             AMediaCodec_stop(mediaCodec->decode);
