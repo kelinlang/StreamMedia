@@ -49,6 +49,13 @@ public class VideoEncoder {
         mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, videoParam.getBitRate());
         mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, videoParam.getFrameRate());
         mediaFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, videoParam.getiFrameInterval());
+
+
+//        CQ  表示完全不控制码率，尽最大可能保证图像质量；
+//        CBR 表示编码器会尽量把输出码率控制为设定值，即我们前面提到的“不为所动”；
+//        VBR 表示编码器会根据图像内容的复杂度（实际上是帧间变化量的大小）来动态调整输出码率，图像复杂则码率高，图像简单则码率低；
+
+        mediaFormat.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CQ);
 //        mediaFormat.setInteger(MediaFormat.KEY_PROFILE, MediaCodecInfo.CodecProfileLevel.AVCProfileBaseline);
 //        mediaFormat.setInteger(MediaFormat.KEY_LEVEL,  MediaCodecInfo.CodecProfileLevel.AVCLevel31);
 //        mediaFormat.setInteger(MediaFormat.KEY_BITRATE_MODE, MediaCodecInfo.EncoderCapabilities.BITRATE_MODE_CBR);
