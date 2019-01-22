@@ -30,9 +30,14 @@ typedef struct SmVideoDataQueue_{
 
     SmVideoDataNode recycleNode;
     int numRecycleNode;
-//    ClMutex recycleClMutex;
+    ClMutex recycleClMutex;
 
 }  SmVideoDataQueue_;
+
+
+SmVideoDataNode smCreateVideoDataNode();
+void smDestoryVideoDataNode(SmVideoDataNode videoDataNode);
+
 
 SmVideoDataQueue smCreateVideoDataQueue();
 void smDestroyVideoDataQueue(SmVideoDataQueue videoDataQueue);

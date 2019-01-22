@@ -5,6 +5,7 @@
 #include <malloc.h>
 #include <asm/errno.h>
 #include "cl_sdl_mutex.h"
+#include "../log/cl_sdl_log.h"
 
 
 ClMutex_ * clCreateMutex(void){
@@ -124,6 +125,6 @@ int clCondWaitTimeout(ClCond_ *cond, ClMutex_ *mutex, uint32_t ms){
 int clCondWait(ClCond_ *cond, ClMutex_ *mutex){
     if (!cond || !mutex)
         return -1;
-
+//    LOGI("clCondWait");
     return pthread_cond_wait(&cond->id, &mutex->id);
 }

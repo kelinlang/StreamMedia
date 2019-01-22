@@ -21,7 +21,7 @@ public class VideoParam {
     private int frameRate = 30;
 
     /* I帧间隔*/
-    private int iFrameInterval = 5;
+    private int iFrameInterval = 1;
 
 
 

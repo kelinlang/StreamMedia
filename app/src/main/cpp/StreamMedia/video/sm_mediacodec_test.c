@@ -55,9 +55,14 @@ static  void* readThreadFunc(void *arg){
         if(bufidx >= 0){
             size_t bufsize;
             uint8_t* buf = AMediaCodec_getInputBuffer(mediaCodec->decode,bufidx,&bufsize);
+//            LOGI("input data bufsize : %d",bufsize);
             memcpy(buf,videoDataNode->videoData->pixelsData,videoDataNode->videoData->pixelsDataLen);
             AMediaCodec_queueInputBuffer(mediaCodec->decode,bufidx,0,videoDataNode->videoData->pixelsDataLen,0,0);
         }
+//        LOGI("smDestoryVideoDataNode start");
+//        smDestoryVideoDataNode(videoDataNode);
+//
+//        LOGI("smDestoryVideoDataNode finish");
 
         smCacheVideoDataNodeToCache(mediaCodec->videoDataQueue,videoDataNode);
     }
@@ -74,21 +79,6 @@ static  void* decode_func(void *arg){
     AMediaCodecBufferInfo info;
 
     while (mediaCodec->encodeThreadRunFlag == 1){
-        /*ssize_t bufidx = -1;
-
-        SmVideoDataNode videoDataNode = smVideoDataQueueDequeueData(mediaCodec->videoDataQueue);
-
-        bufidx = AMediaCodec_dequeueInputBuffer(mediaCodec->decode,2000);
-//        LOGI("input data bufidx : %d",bufidx);
-        if(bufidx >= 0){
-            size_t bufsize;
-            uint8_t* buf = AMediaCodec_getInputBuffer(mediaCodec->decode,bufidx,&bufsize);
-            memcpy(buf,videoDataNode->videoData->pixelsData,videoDataNode->videoData->pixelsDataLen);
-            AMediaCodec_queueInputBuffer(mediaCodec->decode,bufidx,0,videoDataNode->videoData->pixelsDataLen,0,0);
-        }
-
-        smCacheVideoDataNodeToCache(mediaCodec->videoDataQueue,videoDataNode);*/
-
 
         bufidx = AMediaCodec_dequeueOutputBuffer(mediaCodec->decode,&info,2000);
 //        LOGI("decode_func ing------------bufidx ： %d ",bufidx);
@@ -195,15 +185,17 @@ void smMediaCodecRelease(SmMediaCodec mediaCodec){
 
 void smMediaCodecAddData(SmMediaCodec mediaCodec, uint8_t *h264Data,int h264DataLen){
     if (mediaCodec && mediaCodec->decode && mediaCodec->encodeThreadRunFlag == 1){
-//        LOGI("input data bufidx ---------------------------------------------");
+//        LOGI("input data bufidx h264DataLen : %d",h264DataLen);
+
+
         SmVideoDataNode videoDataNode = smCreateVideoDataNodeFromCache(mediaCodec->videoDataQueue);
 
         SmVideoData videoData = videoDataNode->videoData;
 
-        if (videoData->pixelsData == NULL) {
-            //如果没有存储空间，则分配
-            videoData->pixelsDataLen = h264DataLen;
-            videoData->pixelsData = (unsigned char *) malloc(h264DataLen);
+        videoData->pixelsDataLen = h264DataLen;
+        if(!videoData->pixelsData){
+            LOGI("smMediaCodecAddData  malloc");
+            videoData->pixelsData = (uint8_t *) malloc(640*480);
         }
 
         memcpy(videoData->pixelsData, h264Data, h264DataLen);
