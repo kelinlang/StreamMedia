@@ -291,7 +291,7 @@ public class Camera2Holder {
 
     private NetDataCallback netDataCallback = new NetDataCallback() {
         @Override
-        public void onData(byte[] data, int pos, int len) {
+        public void onData(byte[] data, int pos, int len) {//网络接收数据回调
             TestCameraActivity.openGlEs.sendData(0,data,len);//jni层解码
         }
     };

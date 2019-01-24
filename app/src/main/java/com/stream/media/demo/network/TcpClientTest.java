@@ -58,7 +58,7 @@ public class TcpClientTest {
                         }
 
                         if (data != null && socket.isConnected()&& outputStream != null){
-                            MLog.i("send data len :"+data.length);
+//                            MLog.i("send data len :"+data.length);
                             outputStream.write(ByteTools.intToByteArray(data.length));
                             outputStream.flush();
                             outputStream.write(data);
@@ -110,7 +110,7 @@ public class TcpClientTest {
 //                        MLog.i("read data len :"+len+"  ,  h264 len : "+(int)ByteTools.parseIntFromArrayAsBig(buffer,0));
                         if (h264len == 0){
                             h264len = (int)ByteTools.parseIntFromArrayAsBig(buffer,0);
-                            MLog.i("1  h264 len : "+ h264len);
+//                            MLog.i("1  h264 len : "+ h264len);
                         }
                         if (len > 0){
                             byteBuffer.put(buffer,0,len);
@@ -128,7 +128,7 @@ public class TcpClientTest {
                                     byte[] lenData = new byte[4];
                                     byteBuffer.get(lenData);
                                     h264len = (int)ByteTools.parseIntFromArrayAsBig(lenData,0);
-                                    MLog.i("2  h264 len : "+ h264len);
+//                                    MLog.i("2  h264 len : "+ h264len);
 
                                     byteBuffer.position(byteBuffer.position() -4);
                                 }else {
