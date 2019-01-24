@@ -26,6 +26,8 @@ import android.view.Surface;
 
 import com.stream.media.demo.TestCameraActivity;
 import com.stream.media.demo.nativelib.StreamMediaNative;
+import com.stream.media.demo.network.NetDataCallback;
+import com.stream.media.demo.network.TcpClientTest;
 import com.stream.media.demo.utils.MLog;
 
 import java.util.Arrays;
@@ -208,6 +210,9 @@ public class Camera2Holder {
         if (videoDecode != null){
             videoDecode.stop();
         }
+        if (tcpClientTest != null){
+            tcpClientTest.stop();
+        }
 
         StreamMediaNative.release();
     }
@@ -267,7 +272,11 @@ public class Camera2Holder {
         public void onData(int type, Object data) {
             byte[] h264Data = (byte[])data;
 //            videoDecode.inputData(h264Data);//java层解码
-            TestCameraActivity.openGlEs.sendData(0,h264Data,h264Data.length);//jni层解码
+//            TestCameraActivity.openGlEs.sendData(0,h264Data,h264Data.length);//jni层解码
+
+            if (tcpClientTest != null){//网络发送
+                tcpClientTest.sendData(h264Data,0,h264Data.length);
+            }
         }
     } ;
 
@@ -278,6 +287,14 @@ public class Camera2Holder {
             TestCameraActivity.openGlEs.sendYuvData(0,yuvData,yuvData.length);
         }
     } ;
+
+
+    private NetDataCallback netDataCallback = new NetDataCallback() {
+        @Override
+        public void onData(byte[] data, int pos, int len) {
+            TestCameraActivity.openGlEs.sendData(0,data,len);//jni层解码
+        }
+    };
 
     private void createImageReader(){
         MLog.d("createImageReader");
@@ -328,6 +345,8 @@ public class Camera2Holder {
     private VideoEncoder videoEncoder = new VideoEncoder();
     private VideoDecode videoDecode;
 
+    private TcpClientTest tcpClientTest = new TcpClientTest();
+
     private void initCodec(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && CodecUtils.supportAvcCodec()){
             videoEncoder.setVideoParam(videoParam);
@@ -338,6 +357,10 @@ public class Camera2Holder {
 //            videoDecode.setVideoParam(videoParam);
 //            videoDecode.setDataCallback(yuvDataCallback);
 //            videoDecode.start();
+
+
+            tcpClientTest.setNetDataCallback(netDataCallback);
+            tcpClientTest.start();
         }
     }
 
