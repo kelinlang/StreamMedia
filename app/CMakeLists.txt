@@ -21,7 +21,9 @@ include_directories(CommonLib/common
                                      StreamMedia/gles2
                                      StreamMedia/gles2/fsh
                                      StreamMedia/gles2/vsh
-                                      StreamMedia/video)
+                                      StreamMedia/video
+
+                                      librtmp)
 
 
 add_library( # Sets the name of the library.
@@ -89,7 +91,17 @@ add_library( # Sets the name of the library.
               src/main/cpp/test/ShaderUtils.cpp
 
 
-              src/main/cpp/test/test_opensles.cpp)
+              src/main/cpp/test/test_opensles.cpp
+
+
+
+              #LibRtmp
+              src/main/cpp/librtmp/amf.c
+              src/main/cpp/librtmp/hashswf.c
+              src/main/cpp/librtmp/log.c
+              src/main/cpp/librtmp/parseurl.c
+              src/main/cpp/librtmp/rtmp.c
+              )
 
 # Searches for a specified prebuilt library and stores the path as a
 # variable. Because CMake includes system libraries in the search path by
@@ -120,4 +132,6 @@ target_link_libraries( # Specifies the target library.
                        OpenMAXAL
                        OpenSLES
                        GLESv2
-                       EGL)
+                       EGL
+                       crypto
+                       ssl)
