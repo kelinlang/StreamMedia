@@ -8,7 +8,12 @@
 #include <stdint.h>
 
 #define SM_GLES2_MAX_PLANE 3
-
+#define SM_ID_MAX_LEN 32
+typedef enum
+{   VDIEO_FORMAT_H264 = 0,
+    VDIEO_FORMAT_YUV,
+    VDIEO_FORMAT_RGB
+} SmVideoDataFormat;
 
 typedef struct SmVideoData_ * SmVideoData;
 
@@ -28,6 +33,12 @@ typedef struct SmVideoData_{
     int pixelsDataLen;
     uint8_t * pixelsData;
 
+    long timeStamp;//事件戳
+    int frameType;//帧类型，关键帧，非关键帧
+
+
+    char id[SM_ID_MAX_LEN];
+    int idLen;
 //    void (*destroy)(SmVideoData videoData);
 
 } SmVideoData_;

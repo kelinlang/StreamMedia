@@ -243,6 +243,7 @@ public class Camera2Holder {
                 byte[] yuvData = mImageUtil.getBytesFromImageAsType(image,ImageUtil.YUV420P);
 
                 if (videoEncoder != null && videoEncoder.isWorking()){
+//                    MLog.i("cur thread id : "+ Thread.currentThread().getId());
                     videoEncoder.inputData(yuvData);
                 }
                if (yuvData!=null && yuvData.length > 0){
@@ -269,7 +270,7 @@ public class Camera2Holder {
 
     private DataCallback h264DataCallback = new DataCallback() {
         @Override
-        public void onData(int type, Object data) {
+        public void onData(int type, Object data) {//回调h264数据
             byte[] h264Data = (byte[])data;
 //            videoDecode.inputData(h264Data);//java层解码
 //            TestCameraActivity.openGlEs.sendData(0,h264Data,h264Data.length);//jni层解码

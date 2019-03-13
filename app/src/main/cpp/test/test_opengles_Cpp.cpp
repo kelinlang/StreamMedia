@@ -12,6 +12,7 @@ extern "C"{
 #include "../CommonLib/log/cl_sdl_log.h"
 #include "com_medialib_video_OpenGlEs.h"
 #include "../StreamMedia/video/sm_mediacodec_test.h"
+#include "RtmpPushClient.h"
 }
 
 #include <android/native_window_jni.h>
@@ -64,6 +65,8 @@ float* cacheMatrixTmp;
 
 
 SmMediaCodec  mediaCodec;
+
+SmRtmpPushClient rtmpPushClient;
 
 
 static int videoDisplayThread(void *arg){
@@ -336,6 +339,8 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_start
     smMediaCodecSetDataCallback(mediaCodec,yuvDataCallback);
     smMediaCodecstart(mediaCodec);
 
+    rtmpPushClient = smCreateRtmpPushClient();
+    smRtmpPushClientStart(rtmpPushClient);
 
     return 0;
 }
@@ -375,6 +380,10 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_stop
         LOGI("smDestroyVideoDataQueue  finish");
     }
 
+    if(rtmpPushClient){
+        smRtmpPushClientStop(rtmpPushClient);
+        rtmpPushClient = NULL;
+    }
     return 0;
 }
 
@@ -399,4 +408,42 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendData
     smMediaCodecAddData(mediaCodec,h264Data,dataLen);
 
     env->ReleaseByteArrayElements(data,(jbyte*)h264Data,0);
+}
+
+JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
+        (JNIEnv *env, jobject object, jobject videoData){
+
+    jclass videoDataClass = env->FindClass("com/stream/media/demo/camera/VideoData");
+    jfieldID  jId = env->GetFieldID(videoDataClass,"id","Ljava/lang/String;");
+    jfieldID  jDataFormat = env->GetFieldID(videoDataClass,"dataFormat","I");
+    jfieldID  jwidth = env->GetFieldID(videoDataClass,"width","I");
+    jfieldID  jheight = env->GetFieldID(videoDataClass,"height","I");
+    jfieldID  jframeType = env->GetFieldID(videoDataClass,"frameType","I");
+    jfieldID  jtimeStamp = env->GetFieldID(videoDataClass,"timeStamp","L");
+    jfieldID  jvideoDataLen = env->GetFieldID(videoDataClass,"videoDataLen","I");
+    jfieldID  jvideoData = env->GetFieldID(videoDataClass,"videoData","[B");
+
+    if (rtmpPushClient != NULL){
+        SmVideoDataNode videoDataNode = smRtmpPushClientGetCacheVideoData(rtmpPushClient);
+        SmVideoData smVideoData = videoDataNode->videoData;
+
+        jstring id = (jstring)env->GetObjectField(videoData, jId);
+        char* idString = (char*)env->GetStringUTFChars(id ,NULL);
+        strncpy(smVideoData->id,idString,SM_ID_MAX_LEN);
+        env->ReleaseStringUTFChars(id, smVideoData->id);
+
+        smVideoData->dataFormat = env->GetIntField(videoData,jDataFormat);
+        smVideoData->width = env->GetIntField(videoData,jwidth);
+        smVideoData->height = env->GetIntField(videoData,jheight);
+        smVideoData->frameType = env->GetIntField(videoData,jframeType);
+        smVideoData->timeStamp = env->GetLongField(videoData,jtimeStamp);
+        smVideoData->pixelsDataLen = env->GetIntField(videoData,jvideoDataLen);
+
+        jbyteArray dataArray = (jbyteArray)env->GetObjectField(videoData,jvideoData);
+        unsigned char * buffer = (unsigned char *)env->GetByteArrayElements(dataArray, 0);
+        memcpy(smVideoData->pixelsData,buffer,smVideoData->pixelsDataLen);
+        env->ReleaseByteArrayElements(dataArray, (jbyte*)buffer, 0);
+
+        smRtmpPushClientAddData(rtmpPushClient,videoDataNode);
+    }
 }

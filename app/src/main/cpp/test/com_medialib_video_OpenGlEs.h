@@ -55,6 +55,14 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendYuvData
 JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendData
   (JNIEnv *, jobject, jint, jbyteArray, jint);
 
+/*
+ * Class:     com_medialib_video_OpenGlEs
+ * Method:    sendVideoData
+ * Signature: (Lcom/stream/media/demo/camera/VideoData;)V
+ */
+JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
+  (JNIEnv *, jobject, jobject);
+
 #ifdef __cplusplus
 }
 #endif

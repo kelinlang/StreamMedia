@@ -90,6 +90,8 @@ add_library( # Sets the name of the library.
               src/main/cpp/test/test_opengles_cpp.cpp
               src/main/cpp/test/ShaderUtils.cpp
 
+              src/main/cpp/test/RtmpPushClient.c
+
 
               src/main/cpp/test/test_opensles.cpp
 
