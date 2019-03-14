@@ -211,6 +211,9 @@ public class VideoEncoder {
         return nv21Data;
     }
 
+    private long startTime = 0;
+    private VideoData videoData = new VideoData();
+
     private long computePresentationTime(long frameIndex) {
         return 132 + frameIndex * 1000000 / videoParam.getFrameRate();
     }
@@ -223,6 +226,7 @@ public class VideoEncoder {
                 if (mediaCodec != null){
                     MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
                     byte[] configbyte = null;
+
                     while (runFlag){
                         try {
                             int outputBufferIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, WAIT_TIME);
@@ -241,6 +245,9 @@ public class VideoEncoder {
                                         MLog.d("config frame : "+ bufferInfo.flags);
                                         configbyte = h264Data;
                                         break;
+                                    case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:
+                                        MLog.i("-------------output format change---------------");
+                                        break;
                                     case MediaCodec.BUFFER_FLAG_KEY_FRAME:
 //                                        MLog.d("key frame : "+ bufferInfo.flags+", dataLen: "+ h264Data.length);
                                         byte[] keyframe = new byte[bufferInfo.size + configbyte.length];
@@ -249,15 +256,51 @@ public class VideoEncoder {
 
                                         fileStorage.wirte(keyframe);
 
+
                                         if (dataCallback != null){
                                             dataCallback.onData(0,keyframe);
+                                        }
+
+                                        if (startTime == 0) {
+                                            startTime = bufferInfo.presentationTimeUs / 1000;
+                                        }
+
+                                        videoData.videoData = keyframe;
+                                        videoData.videoDataLen = keyframe.length;
+                                        videoData.dataFormat = VideoConstants.VDIEO_FORMAT_H264;
+                                        videoData.frameType = 1;
+                                        videoData.width = videoParam.getWidth();
+                                        videoData.height = videoParam.getHeight();
+                                        videoData.id = "test";
+                                        videoData.timeStamp = bufferInfo.presentationTimeUs / 1000 - startTime;
+
+                                        if (dataCallback != null){
+                                            dataCallback.onData(2,videoData);
                                         }
                                         break;
                                     default:
 //                                        MLog.d("normal frame :"+ bufferInfo.flags+", dataLen: "+ h264Data.length+ ", outputBufferIndex :"+outputBufferIndex);
                                         fileStorage.wirte(h264Data);
+
                                         if (dataCallback != null){
                                             dataCallback.onData(1,h264Data);
+                                        }
+
+                                        if (startTime == 0) {
+                                            startTime = bufferInfo.presentationTimeUs / 1000;
+                                        }
+//                                        MLog.i("h264DataLen : "+ h264Data.length);
+                                        videoData.videoData = h264Data;
+                                        videoData.videoDataLen = h264Data.length;
+                                        videoData.dataFormat = VideoConstants.VDIEO_FORMAT_H264;
+                                        videoData.frameType = 0;
+                                        videoData.width = videoParam.getWidth();
+                                        videoData.height = videoParam.getHeight();
+                                        videoData.id = "test";
+                                        videoData.timeStamp = bufferInfo.presentationTimeUs / 1000 - startTime;
+
+                                        if (dataCallback != null){
+                                            dataCallback.onData(2,videoData);
                                         }
                                         break;
                                 }

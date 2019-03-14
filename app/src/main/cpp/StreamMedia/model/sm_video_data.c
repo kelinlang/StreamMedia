@@ -15,7 +15,7 @@ SmVideoData smCreateVideoData(){
         videoData->pixelsU = NULL;
         videoData->pixelsV = NULL;
         videoData->pixelsData = NULL;
-        videoData->id = NULL;
+//        videoData->id = NULL;
     }
     return videoData;
 }
@@ -45,10 +45,10 @@ void smDestroyVideoData(SmVideoData videoData){
             videoData->pixelsData = NULL;
 
         }
-       /* if (videoData->id){
+      /*  if (videoData->id){
             free(videoData->id);
-            */videoData->id = NULL;
-        }
+            videoData->id = NULL;
+        }*/
     }
 }
 

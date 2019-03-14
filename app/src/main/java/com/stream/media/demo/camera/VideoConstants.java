@@ -1,0 +1,11 @@
+package com.stream.media.demo.camera;
+
+/**
+ * Created by dengjun on 2019/3/14.
+ */
+
+public class VideoConstants {
+    public final static int VDIEO_FORMAT_H264 = 0;
+    public final static int VDIEO_FORMAT_YUV = 1;
+    public final static int VDIEO_FORMAT_RGB = 2;
+}

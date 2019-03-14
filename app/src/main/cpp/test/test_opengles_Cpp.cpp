@@ -419,7 +419,7 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
     jfieldID  jwidth = env->GetFieldID(videoDataClass,"width","I");
     jfieldID  jheight = env->GetFieldID(videoDataClass,"height","I");
     jfieldID  jframeType = env->GetFieldID(videoDataClass,"frameType","I");
-    jfieldID  jtimeStamp = env->GetFieldID(videoDataClass,"timeStamp","L");
+    jfieldID  jtimeStamp = env->GetFieldID(videoDataClass,"timeStamp","J");
     jfieldID  jvideoDataLen = env->GetFieldID(videoDataClass,"videoDataLen","I");
     jfieldID  jvideoData = env->GetFieldID(videoDataClass,"videoData","[B");
 
@@ -430,7 +430,7 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
         jstring id = (jstring)env->GetObjectField(videoData, jId);
         char* idString = (char*)env->GetStringUTFChars(id ,NULL);
         strncpy(smVideoData->id,idString,SM_ID_MAX_LEN);
-        env->ReleaseStringUTFChars(id, smVideoData->id);
+        env->ReleaseStringUTFChars(id, idString);
 
         smVideoData->dataFormat = env->GetIntField(videoData,jDataFormat);
         smVideoData->width = env->GetIntField(videoData,jwidth);
@@ -442,6 +442,7 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
         jbyteArray dataArray = (jbyteArray)env->GetObjectField(videoData,jvideoData);
         unsigned char * buffer = (unsigned char *)env->GetByteArrayElements(dataArray, 0);
         memcpy(smVideoData->pixelsData,buffer,smVideoData->pixelsDataLen);
+
         env->ReleaseByteArrayElements(dataArray, (jbyte*)buffer, 0);
 
         smRtmpPushClientAddData(rtmpPushClient,videoDataNode);

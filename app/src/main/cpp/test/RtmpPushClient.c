@@ -9,6 +9,8 @@
 #include <StreamMedia/model/sm_video_data.h>
 #include <StreamMedia/buffer/sm_video_data_buffer.h>
 #include "RtmpPushClient.h"
+#include <stdarg.h>
+#include <librtmp/log.h>
 
 struct SmRtmpPushClient_ {
     RTMP *rtmp;
@@ -21,7 +23,7 @@ struct SmRtmpPushClient_ {
 static void sendRtmpPacket(SmRtmpPushClient rtmpPushClient, unsigned int nPacketType,
                            unsigned char *data, unsigned int size,
                            unsigned int nTimestamp) {
-    RTMPPacket *packet = (RTMPPacket*)malloc(sizeof(RTMPPacket));
+    RTMPPacket *packet = (RTMPPacket *) malloc(sizeof(RTMPPacket));
     RTMPPacket_Alloc(packet, size);
     RTMPPacket_Reset(packet);
     if (nPacketType == RTMP_PACKET_TYPE_INFO) { // metadata
@@ -33,23 +35,62 @@ static void sendRtmpPacket(SmRtmpPushClient rtmpPushClient, unsigned int nPacket
     } else {
         packet->m_nChannel = -1;
     }
-    packet->m_nInfoField2  =  rtmpPushClient->rtmp->m_stream_id;
-    memcpy(packet->m_body,  data,  size);
+    packet->m_nInfoField2 = rtmpPushClient->rtmp->m_stream_id;
+    memcpy(packet->m_body, data, size);
 
     packet->m_headerType = RTMP_PACKET_SIZE_LARGE;
     packet->m_hasAbsTimestamp = FALSE;
     packet->m_nTimeStamp = nTimestamp;
     packet->m_packetType = nPacketType;
-    packet->m_nBodySize  = size;
-    int ret = RTMP_SendPacket( rtmpPushClient->rtmp, packet, 0);
+    packet->m_nBodySize = size;
+    int ret = RTMP_SendPacket(rtmpPushClient->rtmp, packet, 0);
 
-//    LOGD("RTMP_SendPacket=%d",ret);
+    LOGD("RTMP_SendPacket=%d", ret);
+    if (!ret) {
+//        LOGD("RTMP_SendPacket   error------------");
+    }
 
     RTMPPacket_Free(packet);
     free(packet);
 }
 
+static void sendData(SmRtmpPushClient rtmpPushClient, SmVideoData videoData) {
+    if (videoData && videoData->pixelsDataLen > 11) {
+        int size = videoData->pixelsDataLen + 9;
+        unsigned char *body = (unsigned char *) malloc(size);
+        memset(body, 0, size);
+
+        int i = 0;
+        body[i++] = videoData->frameType ? 0x17 : 0x27;
+        body[i++] = 0x01;// AVC NALU
+        body[i++] = 0x00;
+        body[i++] = 0x00;
+        body[i++] = 0x00;
+
+        // NALU size
+        body[i++] = videoData->pixelsDataLen >> 24 & 0xff;
+        body[i++] = videoData->pixelsDataLen >> 16 & 0xff;
+        body[i++] = videoData->pixelsDataLen >> 8 & 0xff;
+        body[i++] = videoData->pixelsDataLen & 0xff;
+        // NALU data
+//        LOGI("pixelsData pos 3 : %d, SmVideoData : %d",videoData->pixelsData,videoData);
+        memcpy(&body[i], videoData->pixelsData, videoData->pixelsDataLen);
+//        LOGI("pixelsData pos 4 : %d, SmVideoData : %d",videoData->pixelsData,videoData);
+
+        sendRtmpPacket(rtmpPushClient, RTMP_PACKET_TYPE_VIDEO, body, size, videoData->timeStamp);
+        free(body);
+    }
+}
+
+static void rtmpLogPrint(int level, const char *fmt, va_list args) {
+    char log[2048];
+    vsprintf(log, fmt, args);
+    LOGI("%s",log);
+}
+
 static void initRtmpClient(SmRtmpPushClient rtmpPushClient) {
+    LOGD("-----------initRtmpClient------------");
+    RTMP_LogSetCallback(rtmpLogPrint);
     char *url = "rtmp://192.168.3.209:1395/mylive/rtmpstream";
     if (rtmpPushClient) {
         rtmpPushClient->rtmp = RTMP_Alloc();
@@ -77,9 +118,15 @@ static void initRtmpClient(SmRtmpPushClient rtmpPushClient) {
                 RTMP_Close(rtmpPushClient->rtmp);
                 RTMP_Free(rtmpPushClient->rtmp);
                 rtmpPushClient->rtmp = NULL;
-                LOGD("RTMP_ConnectStream=%d",ret);
+                LOGD("RTMP_ConnectStream=%d", ret);
                 return;
             }
+            LOGD("RTMP_ConnectStream=%d, -----------------success---------------", ret);
+            LOGI("");
+            LOGI("");
+            LOGI("");
+            LOGI("");
+            LOGI("");
             rtmpPushClient->openFlag = 1;
         }
     }
@@ -128,8 +175,8 @@ static void sendMetaData(SmRtmpPushClient rtmpPushClient) {
         *enc++ = AMF_OBJECT_END;
         size = enc - buf;
 
-
-        sendRtmpPacket(rtmpPushClient->rtmp, RTMP_PACKET_TYPE_INFO, buf, size, 0);
+        LOGD("-----------sendMetaData--------");
+        sendRtmpPacket(rtmpPushClient, RTMP_PACKET_TYPE_INFO, buf, size, 0);
     }
 }
 
@@ -144,50 +191,53 @@ SmRtmpPushClient smCreateRtmpPushClient() {
 }
 
 
-static  void* sendThreadFunc(void *arg){
+static void *sendThreadFunc(void *arg) {
     LOGI("sendThreadFunc start");
-    SmRtmpPushClient  rtmpPushClient = (SmRtmpPushClient)arg;
+    SmRtmpPushClient rtmpPushClient = (SmRtmpPushClient) arg;
 
-    initRtmpClient(rtmpPushClient->rtmp);
+    initRtmpClient(rtmpPushClient);
 
-    if(rtmpPushClient->openFlag == 1){
+    if (rtmpPushClient->openFlag == 1) {
         sendMetaData(rtmpPushClient);
     }
 
-    while (rtmpPushClient->openFlag == 1){
+    while (rtmpPushClient->openFlag == 1) {
 
         SmVideoDataNode videoDataNode = smVideoDataQueueDequeueData(rtmpPushClient->videoDataQueue);
 
-        if(videoDataNode){
-            sendData(rtmpPushClient,videoDataNode->videoData);
+        if (videoDataNode) {
+//            LOGD("send rtmp data ");
+            sendData(rtmpPushClient, videoDataNode->videoData);
+//            LOGD("send rtmp data end");
         }
 
-        smCacheVideoDataNodeToCache(rtmpPushClient->videoDataQueue,videoDataNode);
+        smCacheVideoDataNodeToCache(rtmpPushClient->videoDataQueue, videoDataNode);
     }
     releaseRtmpClient(rtmpPushClient->rtmp);
     LOGI("sendThreadFunc finish");
 }
 
 void smRtmpPushClientStart(SmRtmpPushClient rtmpPushClient) {
-    if(rtmpPushClient){
-        if(!rtmpPushClient->videoDataQueue){
+    if (rtmpPushClient) {
+        if (!rtmpPushClient->videoDataQueue) {
             rtmpPushClient->videoDataQueue = smCreateVideoDataQueue();
         }
-        int retval1 = pthread_create(&rtmpPushClient->sendThreadId,NULL,sendThreadFunc,rtmpPushClient);
+        int retval1 = pthread_create(&rtmpPushClient->sendThreadId, NULL, sendThreadFunc,
+                                     rtmpPushClient);
         LOGD("smRtmpPushClientStart retval : %d", retval1);
     }
 }
 
 
 void smRtmpPushClientStop(SmRtmpPushClient rtmpPushClient) {
-    if (rtmpPushClient){
-        if(rtmpPushClient->sendThreadId != -1){
+    if (rtmpPushClient) {
+        if (rtmpPushClient->sendThreadId != -1) {
             LOGD("pthread_join  start 2");
-            pthread_join(rtmpPushClient->sendThreadId,NULL);
+            pthread_join(rtmpPushClient->sendThreadId, NULL);
             LOGD("pthread_join  finish 2");
             rtmpPushClient->sendThreadId = -1;
         }
-        if(rtmpPushClient->videoDataQueue){
+        if (rtmpPushClient->videoDataQueue) {
             smDestroyVideoDataQueue(rtmpPushClient->videoDataQueue);
             rtmpPushClient->videoDataQueue = NULL;
         }
@@ -195,64 +245,38 @@ void smRtmpPushClientStop(SmRtmpPushClient rtmpPushClient) {
 }
 
 
-
-static void sendData(SmRtmpPushClient rtmpPushClient,SmVideoData videoData) {
-    if (videoData && videoData->pixelsDataLen > 11) {
-        int size = videoData->pixelsDataLen + 9;
-        unsigned char *body = (unsigned char *) malloc(size);
-        memset(body, 0, size);
-
-        int i = 0;
-        body[i++] = videoData->frameType ? 0x27 : 0x17;
-        body[i++] = 0x01;// AVC NALU
-        body[i++] = 0x00;
-        body[i++] = 0x00;
-        body[i++] = 0x00;
-
-        // NALU size
-        body[i++] = videoData->pixelsDataLen >> 24 & 0xff;
-        body[i++] = videoData->pixelsDataLen >> 16 & 0xff;
-        body[i++] = videoData->pixelsDataLen >> 8 & 0xff;
-        body[i++] = videoData->pixelsDataLen & 0xff;
-        // NALU data
-        memcpy(&body[i], videoData->pixelsData, videoData->pixelsDataLen);
-
-        sendRtmpPacket(rtmpPushClient, RTMP_PACKET_TYPE_VIDEO, body, size, videoData->timeStamp);
-    }
-}
-
-SmVideoDataNode smRtmpPushClientGetCacheVideoData(SmRtmpPushClient rtmpPushClient){
+SmVideoDataNode smRtmpPushClientGetCacheVideoData(SmRtmpPushClient rtmpPushClient) {
     SmVideoDataNode videoDataNode = NULL;
-    if (rtmpPushClient){
+    if (rtmpPushClient) {
         videoDataNode = smCreateVideoDataNodeFromCache(rtmpPushClient->videoDataQueue);
 
         SmVideoData videoData = videoDataNode->videoData;
 
         videoData->pixelsDataLen = videoData->pixelsDataLen;
-        if(!videoData->pixelsData){
-            LOGI("smMediaCodecAddData  malloc");
-            videoData->pixelsData = (uint8_t *) malloc(640*480);
+        if (!videoData->pixelsData) {
+            videoData->pixelsData = (uint8_t *) malloc(640 * 480);//后面再考虑重用内存
         }
     }
     return videoDataNode;
 }
 
 void smRtmpPushClientAddData(SmRtmpPushClient rtmpPushClient, SmVideoDataNode videoDataNode) {
-    if (rtmpPushClient && videoDataNode != NULL && videoDataNode->videoData->dataFormat == VDIEO_FORMAT_H264){
+    if (rtmpPushClient && videoDataNode != NULL &&
+        videoDataNode->videoData->dataFormat == VDIEO_FORMAT_H264) {
 //        LOGI("input data bufidx h264DataLen : %d",h264DataLen);
 
 
-      /*  SmVideoDataNode videoDataNode = smCreateVideoDataNodeFromCache(rtmpPushClient->videoDataQueue);
+        /*  SmVideoDataNode videoDataNode = smCreateVideoDataNodeFromCache(rtmpPushClient->videoDataQueue);
 
-        SmVideoData videoData = videoDataNode->videoData;
+          SmVideoData videoData = videoDataNode->videoData;
 
-        videoData->pixelsDataLen = videoData->pixelsDataLen;
-        if(!videoData->pixelsData){
-            LOGI("smMediaCodecAddData  malloc");
-            videoData->pixelsData = (uint8_t *) malloc(640*480);
-        }
+          videoData->pixelsDataLen = videoData->pixelsDataLen;
+          if(!videoData->pixelsData){
+              LOGI("smMediaCodecAddData  malloc");
+              videoData->pixelsData = (uint8_t *) malloc(640*480);
+          }
 
-        memcpy(videoData->pixelsData, videoData->pixelsData, videoData->pixelsDataLen);*/
+          memcpy(videoData->pixelsData, videoData->pixelsData, videoData->pixelsDataLen);*/
         smVideoDataQueueEnqueueData(rtmpPushClient->videoDataQueue, videoDataNode);
     }
 }

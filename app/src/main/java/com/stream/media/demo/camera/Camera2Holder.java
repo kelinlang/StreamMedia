@@ -270,13 +270,26 @@ public class Camera2Holder {
 
     private DataCallback h264DataCallback = new DataCallback() {
         @Override
-        public void onData(int type, Object data) {//回调h264数据
-            byte[] h264Data = (byte[])data;
+        public void onData(int type, Object data) {//回调h264数
+            switch (type){
+                case 0:
+                case 1:
+                    byte[] h264Data = (byte[])data;
 //            videoDecode.inputData(h264Data);//java层解码
 //            TestCameraActivity.openGlEs.sendData(0,h264Data,h264Data.length);//jni层解码
 
-            if (tcpClientTest != null){//网络发送
-                tcpClientTest.sendData(h264Data,0,h264Data.length);
+                    if (tcpClientTest != null){//网络发送
+//                        tcpClientTest.sendData(h264Data,0,h264Data.length);
+                    }
+                    break;
+                case 2:
+                    VideoData videoData = (VideoData)data;
+                    try {
+                        TestCameraActivity.openGlEs.sendVideoData(videoData);
+                    }catch (Exception e){
+                        MLog.e("",e);
+                    }
+                    break;
             }
         }
     } ;
@@ -361,7 +374,7 @@ public class Camera2Holder {
 
 
             tcpClientTest.setNetDataCallback(netDataCallback);
-            tcpClientTest.start();
+//            tcpClientTest.start();
         }
     }
 
