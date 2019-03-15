@@ -43,15 +43,65 @@ static void sendRtmpPacket(SmRtmpPushClient rtmpPushClient, unsigned int nPacket
     packet->m_nTimeStamp = nTimestamp;
     packet->m_packetType = nPacketType;
     packet->m_nBodySize = size;
-    int ret = RTMP_SendPacket(rtmpPushClient->rtmp, packet, 0);
+    int ret = RTMP_SendPacket(rtmpPushClient->rtmp, packet, 1);
 
-    LOGD("RTMP_SendPacket=%d", ret);
+//    LOGD("RTMP_SendPacket ret = %d", ret);
     if (!ret) {
-//        LOGD("RTMP_SendPacket   error------------");
+        LOGD("RTMP_SendPacket   error------sockerr :");
+        rtmpPushClient->openFlag = 0;
     }
 
     RTMPPacket_Free(packet);
     free(packet);
+}
+static void sendSpsPpsData(SmRtmpPushClient rtmpPushClient, SmVideoData videoData){
+    int bodySize = videoData->spsLen + videoData->ppsLen + 16;
+    unsigned char *body = (unsigned char *) malloc(bodySize);
+    int i = 0;
+    //frame type(4bit)和CodecId(4bit)合成一个字节(byte)
+    //frame type 关键帧1  非关键帧2
+    //CodecId  7表示avc
+    body[i++] = 0x17;
+
+    //fixed 4byte
+    body[i++] = 0x00;
+    body[i++] = 0x00;
+    body[i++] = 0x00;
+    body[i++] = 0x00;
+
+    //configurationVersion： 版本 1byte
+    body[i++] = 0x01;
+
+    //AVCProfileIndication：Profile 1byte  sps[1]
+    body[i++] = videoData->sps[1];
+
+    //compatibility：  兼容性 1byte  sps[2]
+    body[i++] = videoData->sps[2];
+
+    //AVCLevelIndication： ProfileLevel 1byte  sps[3]
+    body[i++] = videoData->sps[3];
+
+    //lengthSizeMinusOne： 包长数据所使用的字节数  1byte
+    body[i++] = 0xff;
+
+    //sps个数 1byte
+    body[i++] = 0xe1;
+    //sps长度 2byte
+    body[i++] = (videoData->spsLen >> 8) & 0xff;
+    body[i++] = videoData->spsLen & 0xff;
+
+    //sps data 内容
+    memcpy(&body[i], videoData->sps, videoData->spsLen);
+    i += videoData->spsLen;
+    //pps个数 1byte
+    body[i++] = 0x01;
+    //pps长度 2byte
+    body[i++] = (videoData->ppsLen >> 8) & 0xff;
+    body[i++] = videoData->ppsLen & 0xff;
+    //pps data 内容
+    memcpy(&body[i], videoData->pps, videoData->ppsLen);
+    sendRtmpPacket(rtmpPushClient, RTMP_PACKET_TYPE_VIDEO, body, bodySize, videoData->timeStamp);
+    free(body);
 }
 
 static void sendData(SmRtmpPushClient rtmpPushClient, SmVideoData videoData) {
@@ -90,7 +140,9 @@ static void rtmpLogPrint(int level, const char *fmt, va_list args) {
 
 static void initRtmpClient(SmRtmpPushClient rtmpPushClient) {
     LOGD("-----------initRtmpClient------------");
-    RTMP_LogSetCallback(rtmpLogPrint);
+
+//    RTMP_LogSetCallback(rtmpLogPrint);
+
     char *url = "rtmp://192.168.3.209:1395/mylive/rtmpstream";
     if (rtmpPushClient) {
         rtmpPushClient->rtmp = RTMP_Alloc();
@@ -133,7 +185,7 @@ static void initRtmpClient(SmRtmpPushClient rtmpPushClient) {
 }
 
 static void releaseRtmpClient(SmRtmpPushClient rtmpPushClient) {
-    if (rtmpPushClient && rtmpPushClient->rtmp && rtmpPushClient->openFlag == 1) {
+    if (rtmpPushClient && rtmpPushClient->rtmp) {
         RTMP_Close(rtmpPushClient->rtmp);
         RTMP_Free(rtmpPushClient->rtmp);
         rtmpPushClient->rtmp = NULL;
@@ -181,7 +233,7 @@ static void sendMetaData(SmRtmpPushClient rtmpPushClient) {
 }
 
 SmRtmpPushClient smCreateRtmpPushClient() {
-    SmRtmpPushClient rtmpPushClient = (SmRtmpPushClient) malloc(sizeof(SmRtmpPushClient_));
+    SmRtmpPushClient rtmpPushClient = (SmRtmpPushClient) malloc(sizeof(struct SmRtmpPushClient_));
     if (rtmpPushClient) {
         rtmpPushClient->openFlag = 0;
         rtmpPushClient->rtmp = NULL;
@@ -198,22 +250,40 @@ static void *sendThreadFunc(void *arg) {
     initRtmpClient(rtmpPushClient);
 
     if (rtmpPushClient->openFlag == 1) {
-        sendMetaData(rtmpPushClient);
+//        sendMetaData(rtmpPushClient);
     }
 
     while (rtmpPushClient->openFlag == 1) {
 
+        LOGD("send rtmp data first : %d",rtmpPushClient->videoDataQueue);
         SmVideoDataNode videoDataNode = smVideoDataQueueDequeueData(rtmpPushClient->videoDataQueue);
 
         if (videoDataNode) {
 //            LOGD("send rtmp data ");
-            sendData(rtmpPushClient, videoDataNode->videoData);
-//            LOGD("send rtmp data end");
+//            LOGD("  ");
+            LOGD("send rtmp data frameType : %d",videoDataNode->videoData->frameType);
+            if (videoDataNode->videoData->dataFormat == VDIEO_FORMAT_H264){
+                sendData(rtmpPushClient, videoDataNode->videoData);
+            } else if(videoDataNode->videoData->dataFormat == VDIEO_FORMAT_H264_SPS_PPS){
+                sendSpsPpsData(rtmpPushClient, videoDataNode->videoData);
+
+                if(videoDataNode->videoData->sps){
+                    free(videoDataNode->videoData->sps);
+                }
+                videoDataNode->videoData->sps = NULL;
+
+                if (videoDataNode->videoData->pps){
+                    free(videoDataNode->videoData->pps);
+                }
+                videoDataNode->videoData->pps = NULL;
+            }
+
+            LOGD("send rtmp data end");
         }
 
         smCacheVideoDataNodeToCache(rtmpPushClient->videoDataQueue, videoDataNode);
     }
-    releaseRtmpClient(rtmpPushClient->rtmp);
+    releaseRtmpClient(rtmpPushClient);
     LOGI("sendThreadFunc finish");
 }
 
@@ -224,13 +294,14 @@ void smRtmpPushClientStart(SmRtmpPushClient rtmpPushClient) {
         }
         int retval1 = pthread_create(&rtmpPushClient->sendThreadId, NULL, sendThreadFunc,
                                      rtmpPushClient);
-        LOGD("smRtmpPushClientStart retval : %d", retval1);
+        LOGD("smRtmpPushClientStart retval : %d,  send threat id : %d", retval1,rtmpPushClient->sendThreadId);
     }
 }
 
 
 void smRtmpPushClientStop(SmRtmpPushClient rtmpPushClient) {
     if (rtmpPushClient) {
+        rtmpPushClient->openFlag = 0;
         if (rtmpPushClient->sendThreadId != -1) {
             LOGD("pthread_join  start 2");
             pthread_join(rtmpPushClient->sendThreadId, NULL);
@@ -261,8 +332,8 @@ SmVideoDataNode smRtmpPushClientGetCacheVideoData(SmRtmpPushClient rtmpPushClien
 }
 
 void smRtmpPushClientAddData(SmRtmpPushClient rtmpPushClient, SmVideoDataNode videoDataNode) {
-    if (rtmpPushClient && videoDataNode != NULL &&
-        videoDataNode->videoData->dataFormat == VDIEO_FORMAT_H264) {
+    if (rtmpPushClient && videoDataNode != NULL
+            && rtmpPushClient->openFlag == 1) {
 //        LOGI("input data bufidx h264DataLen : %d",h264DataLen);
 
 

@@ -231,7 +231,7 @@ public class VideoEncoder {
                         try {
                             int outputBufferIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, WAIT_TIME);
                             if (outputBufferIndex >= 0){
-                                ByteBuffer outputBuffer;
+                                 ByteBuffer outputBuffer;
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
                                     outputBuffer = mediaCodec.getOutputBuffer(outputBufferIndex);
                                 }else {
@@ -240,7 +240,7 @@ public class VideoEncoder {
                                 byte[] h264Data = new byte[bufferInfo.size];
                                 outputBuffer.get(h264Data);
 
-                                switch (bufferInfo.flags){
+                               switch (bufferInfo.flags){
                                     case MediaCodec.BUFFER_FLAG_CODEC_CONFIG:
                                         MLog.d("config frame : "+ bufferInfo.flags);
                                         configbyte = h264Data;
@@ -249,6 +249,7 @@ public class VideoEncoder {
                                         MLog.i("-------------output format change---------------");
                                         break;
                                     case MediaCodec.BUFFER_FLAG_KEY_FRAME:
+//                                        MLog.d("  ");
 //                                        MLog.d("key frame : "+ bufferInfo.flags+", dataLen: "+ h264Data.length);
                                         byte[] keyframe = new byte[bufferInfo.size + configbyte.length];
                                         System.arraycopy(configbyte, 0, keyframe, 0, configbyte.length);
@@ -304,7 +305,60 @@ public class VideoEncoder {
                                         }
                                         break;
                                 }
+
+
+                                //新的实现开始
+                           /*     ByteBuffer outputBuffer;
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                                    outputBuffer = mediaCodec.getOutputBuffer(outputBufferIndex);
+                                }else {
+                                    outputBuffer = mediaCodec.getOutputBuffers()[outputBufferIndex];
+                                }
+                                outputBuffer.position(bufferInfo.offset);
+                                outputBuffer.limit(bufferInfo.offset + bufferInfo.size);
+                                byte[] h264Data = new byte[outputBuffer.remaining()];
+                                outputBuffer.get(h264Data);
+
+                                if (startTime == 0) {
+                                    startTime = bufferInfo.presentationTimeUs / 1000;
+                                }
+//                                        MLog.i("h264DataLen : "+ h264Data.length);
+                                videoData.videoData = h264Data;
+                                videoData.videoDataLen = h264Data.length;
+                                videoData.dataFormat = VideoConstants.VDIEO_FORMAT_H264;
+                                videoData.frameType = bufferInfo.flags == MediaCodec.BUFFER_FLAG_KEY_FRAME ? 1 :0;
+                                videoData.width = videoParam.getWidth();
+                                videoData.height = videoParam.getHeight();
+                                videoData.id = "test";
+                                videoData.timeStamp = bufferInfo.presentationTimeUs / 1000 - startTime;
+
+                                if (dataCallback != null){
+                                    dataCallback.onData(2,videoData);
+                                }*/
+                                //新的实现结束
+
+
                                 mediaCodec.releaseOutputBuffer(outputBufferIndex, false);
+                            }else if (outputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED){
+                                MLog.i("-------------output format change---------------");
+                                ByteBuffer spsb = mediaCodec.getOutputFormat().getByteBuffer("csd-0");
+                                byte[] sps = new byte[spsb.remaining()];
+                                spsb.get(sps,0,sps.length);
+
+                                ByteBuffer ppsb = mediaCodec.getOutputFormat().getByteBuffer("csd-1");
+                                byte[] pps = new byte[spsb.remaining()];
+                                ppsb.get(pps,0,pps.length);
+                                MLog.d("sps len "+ sps.length + "  pps len : "+ pps.length);
+
+                                videoData.dataFormat = VideoConstants.VDIEO_FORMAT_H264_PPS_SPS;
+                                videoData.id = "test";
+                                videoData.sps = sps;
+                                videoData.spsLen = sps.length;
+                                videoData.pps = pps;
+                                videoData.ppsLen = pps.length;
+                                if (dataCallback != null){
+                                    dataCallback.onData(2,videoData);
+                                }
                             }
                         }catch (IllegalStateException e){
                             e.printStackTrace();

@@ -20,5 +20,9 @@ public class VideoData {
 
 
 
+    byte[] sps;
+    int spsLen;
+    byte[] pps;
+    int ppsLen;
 
 }

@@ -423,28 +423,57 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
     jfieldID  jvideoDataLen = env->GetFieldID(videoDataClass,"videoDataLen","I");
     jfieldID  jvideoData = env->GetFieldID(videoDataClass,"videoData","[B");
 
+    jfieldID  jspsLen = env->GetFieldID(videoDataClass,"spsLen","I");
+    jfieldID  jspsData = env->GetFieldID(videoDataClass,"sps","[B");
+    jfieldID  jppsDataLen = env->GetFieldID(videoDataClass,"ppsLen","I");
+    jfieldID  jppsData = env->GetFieldID(videoDataClass,"pps","[B");
+
     if (rtmpPushClient != NULL){
         SmVideoDataNode videoDataNode = smRtmpPushClientGetCacheVideoData(rtmpPushClient);
         SmVideoData smVideoData = videoDataNode->videoData;
 
-        jstring id = (jstring)env->GetObjectField(videoData, jId);
-        char* idString = (char*)env->GetStringUTFChars(id ,NULL);
-        strncpy(smVideoData->id,idString,SM_ID_MAX_LEN);
-        env->ReleaseStringUTFChars(id, idString);
-
+        LOGD("debug -------------------------  0");
         smVideoData->dataFormat = env->GetIntField(videoData,jDataFormat);
-        smVideoData->width = env->GetIntField(videoData,jwidth);
-        smVideoData->height = env->GetIntField(videoData,jheight);
-        smVideoData->frameType = env->GetIntField(videoData,jframeType);
-        smVideoData->timeStamp = env->GetLongField(videoData,jtimeStamp);
-        smVideoData->pixelsDataLen = env->GetIntField(videoData,jvideoDataLen);
 
-        jbyteArray dataArray = (jbyteArray)env->GetObjectField(videoData,jvideoData);
-        unsigned char * buffer = (unsigned char *)env->GetByteArrayElements(dataArray, 0);
-        memcpy(smVideoData->pixelsData,buffer,smVideoData->pixelsDataLen);
+        if (smVideoData->dataFormat == VDIEO_FORMAT_H264){
+            jstring id = (jstring)env->GetObjectField(videoData, jId);
+            char* idString = (char*)env->GetStringUTFChars(id ,NULL);
+            strncpy(smVideoData->id,idString,SM_ID_MAX_LEN);
+            env->ReleaseStringUTFChars(id, idString);
 
-        env->ReleaseByteArrayElements(dataArray, (jbyte*)buffer, 0);
+            LOGD("debug -------------------------  1");
 
+            smVideoData->width = env->GetIntField(videoData,jwidth);
+            smVideoData->height = env->GetIntField(videoData,jheight);
+            smVideoData->frameType = env->GetIntField(videoData,jframeType);
+            smVideoData->timeStamp = env->GetLongField(videoData,jtimeStamp);
+            smVideoData->pixelsDataLen = env->GetIntField(videoData,jvideoDataLen);
+
+            LOGD("debug -------------------------  2");
+
+            jbyteArray dataArray = (jbyteArray)env->GetObjectField(videoData,jvideoData);
+            unsigned char * buffer = (unsigned char *)env->GetByteArrayElements(dataArray, 0);
+            memcpy(smVideoData->pixelsData,buffer,smVideoData->pixelsDataLen);
+            env->ReleaseByteArrayElements(dataArray, (jbyte*)buffer, 0);
+
+            LOGD("debug -------------------------  3");
+        } else if(smVideoData->dataFormat == VDIEO_FORMAT_H264_SPS_PPS){
+            smVideoData->spsLen = env->GetIntField(videoData,jspsLen);
+            jbyteArray spsdataArray = (jbyteArray)env->GetObjectField(videoData,jspsData);
+            unsigned char * sps = (unsigned char *)env->GetByteArrayElements(spsdataArray, 0);
+            smVideoData->sps = (uint8_t*) malloc(smVideoData->spsLen);
+            memcpy(smVideoData->sps,sps,smVideoData->spsLen);
+            env->ReleaseByteArrayElements(spsdataArray, (jbyte*)sps, 0);
+
+            smVideoData->ppsLen = env->GetIntField(videoData,jppsDataLen);
+            jbyteArray ppsdataArray = (jbyteArray)env->GetObjectField(videoData,jppsData);
+            unsigned char * pps = (unsigned char *)env->GetByteArrayElements(ppsdataArray, 0);
+            smVideoData->pps = (uint8_t*) malloc(smVideoData->ppsLen);
+            memcpy(smVideoData->pps,pps,smVideoData->ppsLen);
+            env->ReleaseByteArrayElements(ppsdataArray, (jbyte*)pps, 0);
+        }
+
+        LOGD("debug -------------------------  4");
         smRtmpPushClientAddData(rtmpPushClient,videoDataNode);
     }
 }

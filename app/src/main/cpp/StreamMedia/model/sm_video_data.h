@@ -12,7 +12,8 @@
 typedef enum
 {   VDIEO_FORMAT_H264 = 0,
     VDIEO_FORMAT_YUV,
-    VDIEO_FORMAT_RGB
+    VDIEO_FORMAT_RGB,
+    VDIEO_FORMAT_H264_SPS_PPS
 } SmVideoDataFormat;
 
 typedef struct SmVideoData_ * SmVideoData;
@@ -41,6 +42,11 @@ typedef struct SmVideoData_{
     int idLen;
 //    void (*destroy)(SmVideoData videoData);
 
+    uint8_t * sps;
+    int spsLen;
+
+    uint8_t * pps;
+    int ppsLen;
 } SmVideoData_;
 
 SmVideoData smCreateVideoData();
