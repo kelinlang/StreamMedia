@@ -250,7 +250,7 @@ public class VideoEncoder {
                                         break;
                                     case MediaCodec.BUFFER_FLAG_KEY_FRAME:
 //                                        MLog.d("  ");
-                                        MLog.d("key frame : "+ bufferInfo.flags+", dataLen: "+ h264Data.length);
+//                                        MLog.d("key frame : "+ bufferInfo.flags+", dataLen: "+ h264Data.length);
                                         byte[] keyframe = new byte[bufferInfo.size + configbyte.length];
                                         System.arraycopy(configbyte, 0, keyframe, 0, configbyte.length);
                                         System.arraycopy(h264Data, 0, keyframe, configbyte.length, h264Data.length);
@@ -280,7 +280,7 @@ public class VideoEncoder {
                                         }
                                         break;
                                     default:
-                                        MLog.d("normal frame :"+ bufferInfo.flags+", dataLen: "+ h264Data.length+ ", outputBufferIndex :"+outputBufferIndex);
+//                                        MLog.d("normal frame :"+ bufferInfo.flags+", dataLen: "+ h264Data.length+ ", outputBufferIndex :"+outputBufferIndex);
                                         fileStorage.wirte(h264Data);
 
                                         if (dataCallback != null){

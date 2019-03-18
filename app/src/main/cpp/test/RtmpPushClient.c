@@ -23,6 +23,8 @@ struct SmRtmpPushClient_ {
 static void sendRtmpPacket(SmRtmpPushClient rtmpPushClient, unsigned int nPacketType,
                            unsigned char *data, unsigned int size,
                            unsigned int nTimestamp) {
+    LOGI("rtmp push size : %d",size);
+
     RTMPPacket *packet = (RTMPPacket *) malloc(sizeof(RTMPPacket));
     RTMPPacket_Alloc(packet, size);
     RTMPPacket_Reset(packet);
@@ -127,6 +129,7 @@ static void sendData(SmRtmpPushClient rtmpPushClient, SmVideoData videoData) {
         memcpy(&body[i], videoData->pixelsData, videoData->pixelsDataLen);
 //        LOGI("pixelsData pos 4 : %d, SmVideoData : %d",videoData->pixelsData,videoData);
 
+
         sendRtmpPacket(rtmpPushClient, RTMP_PACKET_TYPE_VIDEO, body, size, videoData->timeStamp);
         free(body);
     }
@@ -139,7 +142,7 @@ static void rtmpLogPrint(int level, const char *fmt, va_list args) {
 }
 
 static void initRtmpClient(SmRtmpPushClient rtmpPushClient) {
-    LOGD("-----------initRtmpClient------------");
+    LOGI("-----------initRtmp push Client------------");
 
 //    RTMP_LogSetCallback(rtmpLogPrint);
 
@@ -152,7 +155,7 @@ static void initRtmpClient(SmRtmpPushClient rtmpPushClient) {
             if (!ret) {
                 RTMP_Free(rtmpPushClient->rtmp);
                 rtmpPushClient->rtmp = NULL;
-                LOGD("RTMP_SetupURL=%d", ret);
+                LOGI("push RTMP_SetupURL=%d", ret);
                 return;
             }
             RTMP_EnableWrite(rtmpPushClient->rtmp);
@@ -161,7 +164,7 @@ static void initRtmpClient(SmRtmpPushClient rtmpPushClient) {
             if (!ret) {
                 RTMP_Free(rtmpPushClient->rtmp);
                 rtmpPushClient->rtmp = NULL;
-                LOGD("RTMP_Connect=%d", ret);
+                LOGI("push RTMP_Connect=%d", ret);
                 return;
             }
 
@@ -170,10 +173,10 @@ static void initRtmpClient(SmRtmpPushClient rtmpPushClient) {
                 RTMP_Close(rtmpPushClient->rtmp);
                 RTMP_Free(rtmpPushClient->rtmp);
                 rtmpPushClient->rtmp = NULL;
-                LOGD("RTMP_ConnectStream=%d", ret);
+                LOGI("push RTMP_ConnectStream=%d", ret);
                 return;
             }
-            LOGD("RTMP_ConnectStream=%d, -----------------success---------------", ret);
+            LOGI("push RTMP_ConnectStream=%d, -----------------success---------------", ret);
             LOGI("");
             LOGI("");
             LOGI("");

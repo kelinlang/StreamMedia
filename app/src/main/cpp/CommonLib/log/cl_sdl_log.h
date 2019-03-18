@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 #define TAG "RealTimeVoice"
-static jboolean DEBUG_FLAG = JNI_TRUE;
+static jboolean DEBUG_FLAG = JNI_FALSE;
 static jboolean LOG_V_FLAG = JNI_TRUE;
 
 void setDebug(jboolean isDebug);

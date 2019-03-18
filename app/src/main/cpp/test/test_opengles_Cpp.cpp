@@ -13,12 +13,14 @@ extern "C"{
 #include "com_medialib_video_OpenGlEs.h"
 #include "../StreamMedia/video/sm_mediacodec_test.h"
 #include "RtmpPushClient.h"
+#include "RtmpPullClient.h"
 }
 
 #include <android/native_window_jni.h>
 #include <string.h>
 
 #include "ShaderUtils.h"
+
 
 #include <EGL/egl.h>
 
@@ -67,6 +69,7 @@ float* cacheMatrixTmp;
 SmMediaCodec  mediaCodec;
 
 SmRtmpPushClient rtmpPushClient;
+SmRtmpPullClient rtmpPullClient;
 
 
 static int videoDisplayThread(void *arg){
@@ -302,6 +305,9 @@ static void yuvDataCallback(int type,  int dataSize,void * data, void * ext){
     yuvDataToQueue(yuvJniData);
 }
 
+static void h264DataCallback(int type,  int dataSize,void * data, void * ext){
+    smMediaCodecAddData(mediaCodec,(uint8_t*)data,dataSize);
+}
 
 JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_setSurface
         (JNIEnv * env, jobject object, jobject surface){
@@ -342,6 +348,9 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_start
     rtmpPushClient = smCreateRtmpPushClient();
     smRtmpPushClientStart(rtmpPushClient);
 
+    rtmpPullClient = smCreateRtmpPullClient();
+    smRtmpPullClientSetDataCallback(rtmpPullClient,h264DataCallback);
+    smRtmpPullClientStart(rtmpPullClient);
     return 0;
 }
 
@@ -382,7 +391,13 @@ JNIEXPORT jint JNICALL Java_com_medialib_video_OpenGlEs_stop
 
     if(rtmpPushClient){
         smRtmpPushClientStop(rtmpPushClient);
+        free(rtmpPushClient);
         rtmpPushClient = NULL;
+    }
+    if (rtmpPullClient){
+        smRtmpPullClientStop(rtmpPullClient);
+        free(rtmpPullClient);
+        rtmpPullClient = NULL;
     }
     return 0;
 }
