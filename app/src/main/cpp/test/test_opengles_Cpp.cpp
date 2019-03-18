@@ -412,6 +412,9 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendData
 
 JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
         (JNIEnv *env, jobject object, jobject videoData){
+    if (rtmpPushClient == NULL){
+        return;
+    }
 
     jclass videoDataClass = env->FindClass("com/stream/media/demo/camera/VideoData");
     jfieldID  jId = env->GetFieldID(videoDataClass,"id","Ljava/lang/String;");
@@ -428,8 +431,9 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
     jfieldID  jppsDataLen = env->GetFieldID(videoDataClass,"ppsLen","I");
     jfieldID  jppsData = env->GetFieldID(videoDataClass,"pps","[B");
 
-    if (rtmpPushClient != NULL){
-        SmVideoDataNode videoDataNode = smRtmpPushClientGetCacheVideoData(rtmpPushClient);
+
+    SmVideoDataNode videoDataNode = smRtmpPushClientGetCacheVideoData(rtmpPushClient);
+    if (videoDataNode && videoDataNode->videoData){
         SmVideoData smVideoData = videoDataNode->videoData;
 
         LOGD("debug -------------------------  0");
@@ -453,6 +457,9 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
 
             jbyteArray dataArray = (jbyteArray)env->GetObjectField(videoData,jvideoData);
             unsigned char * buffer = (unsigned char *)env->GetByteArrayElements(dataArray, 0);
+            if(!smVideoData->pixelsData){
+                smVideoData->pixelsData = (uint8_t *) malloc(smVideoData->pixelsDataLen);//后面再考虑重用内存
+            }
             memcpy(smVideoData->pixelsData,buffer,smVideoData->pixelsDataLen);
             env->ReleaseByteArrayElements(dataArray, (jbyte*)buffer, 0);
 
@@ -475,5 +482,7 @@ JNIEXPORT void JNICALL Java_com_medialib_video_OpenGlEs_sendVideoData
 
         LOGD("debug -------------------------  4");
         smRtmpPushClientAddData(rtmpPushClient,videoDataNode);
+    } else{
+        LOGD("debug -------------------------error   1");
     }
 }

@@ -264,6 +264,11 @@ static void *sendThreadFunc(void *arg) {
             LOGD("send rtmp data frameType : %d",videoDataNode->videoData->frameType);
             if (videoDataNode->videoData->dataFormat == VDIEO_FORMAT_H264){
                 sendData(rtmpPushClient, videoDataNode->videoData);
+
+                if(videoDataNode->videoData->pixelsData){
+                    free(videoDataNode->videoData->pixelsData);
+                    videoDataNode->videoData->pixelsData = NULL;
+                }
             } else if(videoDataNode->videoData->dataFormat == VDIEO_FORMAT_H264_SPS_PPS){
                 sendSpsPpsData(rtmpPushClient, videoDataNode->videoData);
 
@@ -277,7 +282,6 @@ static void *sendThreadFunc(void *arg) {
                 }
                 videoDataNode->videoData->pps = NULL;
             }
-
             LOGD("send rtmp data end");
         }
 
@@ -319,14 +323,17 @@ void smRtmpPushClientStop(SmRtmpPushClient rtmpPushClient) {
 SmVideoDataNode smRtmpPushClientGetCacheVideoData(SmRtmpPushClient rtmpPushClient) {
     SmVideoDataNode videoDataNode = NULL;
     if (rtmpPushClient) {
+        LOGD("%s   SmRtmpPushClient : %d",__FUNCTION__,rtmpPushClient);
         videoDataNode = smCreateVideoDataNodeFromCache(rtmpPushClient->videoDataQueue);
 
-        SmVideoData videoData = videoDataNode->videoData;
+      /*  if (videoDataNode && videoDataNode->videoData){
+            SmVideoData videoData = videoDataNode->videoData;
 
-        videoData->pixelsDataLen = videoData->pixelsDataLen;
-        if (!videoData->pixelsData) {
-            videoData->pixelsData = (uint8_t *) malloc(640 * 480);//后面再考虑重用内存
-        }
+            videoData->pixelsDataLen = videoData->pixelsDataLen;
+            if (!videoData->pixelsData) {
+//                videoData->pixelsData = (uint8_t *) malloc(640 * 480);//后面再考虑重用内存
+            }
+        }*/
     }
     return videoDataNode;
 }
