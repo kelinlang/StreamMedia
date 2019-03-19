@@ -105,13 +105,17 @@ static void *readThreadFunc(void *arg) {
             if(RTMPPacket_IsReady(packet)){
                 switch (packet->m_packetType){
                     case RTMP_PACKET_TYPE_VIDEO:
-                        LOGI("read rtmp packet size : %d,  mBody : %d",packet->m_nBodySize, packet->m_body);
-                        char *h264Data = (char*)malloc(packet->m_nBodySize-9);
+//                        LOGI("read rtmp packet size : %d,  mBody : %d",packet->m_nBodySize, packet->m_body);
+                      /*  char *h264Data = (char*)malloc(packet->m_nBodySize-9);
                         memcpy(h264Data, packet->m_body+9, packet->m_nBodySize-9);
                         if (rtmpPullClient->dataCallback && packet->m_body[1] == 0x01){
                             rtmpPullClient->dataCallback(0,packet->m_nBodySize,h264Data,NULL);
                         }
-                        free(h264Data);
+                        free(h264Data);*/
+
+                        if (rtmpPullClient->dataCallback && packet->m_body[1] == 0x01){
+                            rtmpPullClient->dataCallback(0,packet->m_nBodySize-9,packet->m_body+9,NULL);
+                        }
                         break;
                     case RTMP_PACKET_TYPE_INFO:
                         break;
