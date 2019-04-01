@@ -27,7 +27,7 @@ static void initRtmpClient(SmRtmpPullClient rtmpPullClient) {
 
 //    RTMP_LogSetCallback(rtmpLogPrint);
 
-    char *url = "rtmp://192.168.3.209:1395/mylive/rtmpstream";
+    char *url = "rtmp://192.168.3.34:1395/mylive/rtmpstream";
     if (rtmpPullClient) {
         rtmpPullClient->rtmp = RTMP_Alloc();
         if (rtmpPullClient->rtmp) {

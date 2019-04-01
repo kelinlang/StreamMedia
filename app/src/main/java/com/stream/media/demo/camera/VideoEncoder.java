@@ -242,7 +242,7 @@ public class VideoEncoder {
 
                                switch (bufferInfo.flags){
                                     case MediaCodec.BUFFER_FLAG_CODEC_CONFIG:
-                                        MLog.d("config frame : "+ bufferInfo.flags);
+                                        MLog.d("config frame : "+ bufferInfo.flags + " config data len : "+ h264Data.length);
                                         configbyte = h264Data;
                                         break;
                                     case MediaCodec.INFO_OUTPUT_FORMAT_CHANGED:

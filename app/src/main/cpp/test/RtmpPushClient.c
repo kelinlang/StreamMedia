@@ -23,7 +23,7 @@ struct SmRtmpPushClient_ {
 static void sendRtmpPacket(SmRtmpPushClient rtmpPushClient, unsigned int nPacketType,
                            unsigned char *data, unsigned int size,
                            unsigned int nTimestamp) {
-    LOGI("rtmp push size : %d",size);
+//    LOGI("rtmp push size : %d",size);
 
     RTMPPacket *packet = (RTMPPacket *) malloc(sizeof(RTMPPacket));
     RTMPPacket_Alloc(packet, size);
@@ -146,7 +146,7 @@ static void initRtmpClient(SmRtmpPushClient rtmpPushClient) {
 
 //    RTMP_LogSetCallback(rtmpLogPrint);
 
-    char *url = "rtmp://192.168.3.209:1395/mylive/rtmpstream";
+    char *url = "rtmp://192.168.3.34:1395/mylive/rtmpstream";
     if (rtmpPushClient) {
         rtmpPushClient->rtmp = RTMP_Alloc();
         if (rtmpPushClient->rtmp) {
