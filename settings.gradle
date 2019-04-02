@@ -1,1 +1,1 @@
-include ':app', ':Commonlib'
+include ':app', ':Commonlib', ':StreamMediaJni'
