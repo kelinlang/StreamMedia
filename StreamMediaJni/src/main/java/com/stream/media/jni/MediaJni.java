@@ -28,6 +28,6 @@ public class MediaJni {
     public native void setPushStreamParam(String id,StreamParam streamParam);
     public native void startPush(String id);
     public native void stopPush(String id);
-    public native void sendVideoData(VideoData videoData);
-    public native void sendAudioData(AudioData audioData);
+    public native void sendVideoData(String id,VideoData videoData);
+    public native void sendAudioData(String id,AudioData audioData);
 }

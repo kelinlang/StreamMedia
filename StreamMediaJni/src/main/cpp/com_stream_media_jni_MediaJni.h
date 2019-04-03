@@ -162,18 +162,18 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_stopPush
 /*
  * Class:     com_stream_media_jni_MediaJni
  * Method:    sendVideoData
- * Signature: (Lcom/stream/media/jni/VideoData;)V
+ * Signature: (Ljava/lang/String;Lcom/stream/media/jni/VideoData;)V
  */
 JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_sendVideoData
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jstring, jobject);
 
 /*
  * Class:     com_stream_media_jni_MediaJni
  * Method:    sendAudioData
- * Signature: (Lcom/stream/media/jni/AudioData;)V
+ * Signature: (Ljava/lang/String;Lcom/stream/media/jni/AudioData;)V
  */
 JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_sendAudioData
-  (JNIEnv *, jobject, jobject);
+  (JNIEnv *, jobject, jstring, jobject);
 
 #ifdef __cplusplus
 }

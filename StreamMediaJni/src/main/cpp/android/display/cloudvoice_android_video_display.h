@@ -21,7 +21,7 @@ typedef struct CloudVoiceDisplay_{
     void (*setParam)(CloudVoiceDisplay self,CloudVoiceDisplayParam videoParam);
     CloudVoiceDisplayParam (*getParam)(CloudVoiceDisplay display);
 
-    void (*setVideoSurface)(CloudVoiceDisplay self,jobject surface);
+    void (*setVideoSurface)(CloudVoiceDisplay self,ANativeWindow *nativeWindow);
     void (*setVideoMatrix)(CloudVoiceDisplay self,float * matrixs);
 
     void (*setMediaStatusCallback)(CloudVoiceDisplay self, MediaStatusCallback mediaStatusCallback);

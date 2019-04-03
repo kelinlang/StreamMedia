@@ -71,6 +71,26 @@ static void setParam(CloudVoicePullStreamPlayer self,CloudVoicePlayerParam param
         rtmpParam->setUrl(rtmpParam,param->url);
     }
 }
+
+static void setParamInter(CloudVoicePullStreamPlayer self){
+    CloudVoicePlayerParam param = self->playerParam;
+
+    CloudVoiceCodecParam  codecParam = self->decodec->getParam(self->decodec);
+    codecParam->videoDataWidth = param->videoWidth;
+    codecParam->videoDataHeight = param->videoHeight;
+
+    CloudVoiceDisplayParam  displayParam = self->display->getParam(self->display);
+    displayParam->videoWidth = param->videoWidth;
+    displayParam->videoHeight = param->videoHeight;
+    displayParam->matrix = (float*)malloc(param->matrixLen);
+    memcpy(displayParam->matrix, param->matrix, param->matrixLen);
+
+
+
+    CloudVoiceRtmpParam  rtmpParam = self->rtmpClient->getParam(self->rtmpClient);
+    rtmpParam->setUrl(rtmpParam,param->url);
+}
+
 static CloudVoicePlayerParam getParam(CloudVoicePullStreamPlayer self){
     CloudVoicePlayerParam playerParam = NULL;
     if (self){
@@ -98,6 +118,8 @@ static void sendData(CloudVoicePullStreamPlayer self, CloudVoiceAVPacket srcPack
 
 static void start(CloudVoicePullStreamPlayer self){
     if (self){
+        setParamInter(self);
+
         self->display->start(self->display);
         self->decodec->start(self->decodec);
         self->rtmpClient->start(self->rtmpClient);
@@ -141,7 +163,7 @@ CloudVoicePullStreamPlayer cloudVoiceCreatePullStreamPlayer(){
         player->stop = stop;
         player->destroy = destroy;
 
-        player->playerParam = NULL;
+        player->playerParam = cloudVoiceCreatePlayerParam();
 
         CloudVoiceRtmpClient rtmpClient = cloudVoiceCreateRtmpClient();
         rtmpClient->getParam(rtmpClient)->clientType = PULL;

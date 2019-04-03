@@ -15,7 +15,10 @@ static void init(CloudVoiceMediaManager mediaManager){
     }
 }
 static void release(CloudVoiceMediaManager mediaManager){
-    
+    if(mediaManager && mediaManager->initFlag == 1){
+        map_deinit_(&mediaManager->pullStreamPlayerMap);
+        map_deinit_(&mediaManager->pushStreamClientMap);
+    }
 }
  
 static void setMediaStatusCallback(CloudVoiceMediaManager mediaManager){
@@ -40,12 +43,22 @@ static void createPlayer(CloudVoiceMediaManager mediaManager, char*id){
     }
 }
  
-static void setVideoSurface(CloudVoiceMediaManager mediaManager){
-
+static void setVideoSurface(CloudVoiceMediaManager mediaManager,char *id, ANativeWindow * nativeWindow){
+    if (mediaManager && mediaManager->initFlag == 1 && id){
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
+        if (player){
+            player->display->setVideoSurface(player->display,nativeWindow);
+        }
+    }
 }
 
-static void setVideoMatrix(CloudVoiceMediaManager mediaManager){
-
+static void setVideoMatrix(CloudVoiceMediaManager mediaManager,char *id,float* matrix ){
+    if (mediaManager && mediaManager->initFlag == 1 && id){
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
+        if (player){
+            player->display->setVideoMatrix(player->display,matrix);
+        }
+    }
 }
 
 
@@ -54,6 +67,15 @@ static void setPlayerParam(CloudVoiceMediaManager mediaManager, char *id, CloudV
         CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
         if (player){
             player->setParam(player,playerParam);
+        }
+    }
+}
+
+static CloudVoicePlayerParam getPlayerParam(CloudVoiceMediaManager mediaManager, char *id){
+    if (mediaManager && mediaManager->initFlag == 1 && id){
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
+        if (player){
+            return player->getParam(player;
         }
     }
 }
@@ -86,7 +108,12 @@ static void createPushClient(CloudVoiceMediaManager mediaManager, char*id){
 }
 
 static void setPushStreamParam(CloudVoiceMediaManager mediaManager,char*id,CloudVoiceStreamParam streamParam){
-    
+    if (mediaManager && mediaManager->initFlag == 1 && id){
+        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get_(&mediaManager->pushStreamClientMap,id);
+        if (pushStreamClient){
+            pushStreamClient->setParam(pushStreamClient,streamParam);
+        }
+    }
 }
 
 static void startPush(CloudVoiceMediaManager mediaManager,char*id){
@@ -107,11 +134,16 @@ static void stopPush(CloudVoiceMediaManager mediaManager,char*id){
     }
 }
  
-static void sendVideoData(CloudVoiceMediaManager mediaManager,CloudVoiceAVPacket avPacket){
-    
+static void sendVideoData(CloudVoiceMediaManager mediaManager,char * id,CloudVoiceAVPacket avPacket){
+    if (mediaManager && mediaManager->initFlag == 1 && id){
+        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get_(&mediaManager->pushStreamClientMap,id);
+        if (pushStreamClient){
+            pushStreamClient->sendData(pushStreamClient,avPacket);
+        }
+    }
 }
 
-static void sendAudioData(CloudVoiceMediaManager mediaManager,CloudVoiceAVPacket avPacket){
+static void sendAudioData(CloudVoiceMediaManager mediaManager,char * id,CloudVoiceAVPacket avPacket){
     
 }
 

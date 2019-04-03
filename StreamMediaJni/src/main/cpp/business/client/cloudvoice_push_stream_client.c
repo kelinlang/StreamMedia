@@ -13,7 +13,6 @@ static void setId(CloudVoicePushStreamClient self,char *id){
 
 static void setParam(CloudVoicePushStreamClient self,CloudVoiceRtmpParam param){
     if (self){
-
         CloudVoiceRtmpParam  rtmpParam = self->rtmpClient->getParam(self->rtmpClient);
         rtmpParam->setUrl(rtmpParam,param->url);
     }

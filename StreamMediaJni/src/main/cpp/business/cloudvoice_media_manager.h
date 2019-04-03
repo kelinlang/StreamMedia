@@ -9,6 +9,7 @@
 #include <business/model/cloudvoice_stream_param.h>
 #include <library/media/model/cloudvoice_audio_video_model.h>
 #include <business/model/cloudvoice_media_params.h>
+#include <media/NdkMediaCodec.h>
 
 
 typedef struct CloudVoiceMediaManager_* CloudVoiceMediaManager;
@@ -31,10 +32,11 @@ typedef struct CloudVoiceMediaManager_{
 
 
     void (*createPlayer)(CloudVoiceMediaManager mediaManager, char*id);
-    void (*setVideoSurface)(CloudVoiceMediaManager mediaManager);
-    void (*setVideoMatrix)(CloudVoiceMediaManager mediaManager);
+    void (*setVideoSurface)(CloudVoiceMediaManager mediaManager,char *id, ANativeWindow * nativeWindow);
+    void (*setVideoMatrix)(CloudVoiceMediaManager mediaManager,char *id,float* matrix );
 
     void (*setPlayerParam)(CloudVoiceMediaManager mediaManager,char*id,CloudVoicePlayerParam playerParam);
+    CloudVoicePlayerParam (*getPlayerParam)(CloudVoiceMediaManager mediaManager,char*id);
     void (*startPlay)(CloudVoiceMediaManager mediaManager,char*id);
     void (*stopPlay)(CloudVoiceMediaManager mediaManager,char*id);
 
@@ -43,8 +45,8 @@ typedef struct CloudVoiceMediaManager_{
     void (*startPush)(CloudVoiceMediaManager mediaManager,char*id);
     void (*stopPush)(CloudVoiceMediaManager mediaManager,char*id);
 
-    void (*sendVideoData)(CloudVoiceMediaManager mediaManager,CloudVoiceAVPacket avPacket);
-    void (*sendAudioData)(CloudVoiceMediaManager mediaManager,CloudVoiceAVPacket avPacket);
+    void (*sendVideoData)(CloudVoiceMediaManager mediaManager,char*id,CloudVoiceAVPacket avPacket);
+    void (*sendAudioData)(CloudVoiceMediaManager mediaManager,char*id,CloudVoiceAVPacket avPacket);
 
 
 }CloudVoiceMediaManager_;
