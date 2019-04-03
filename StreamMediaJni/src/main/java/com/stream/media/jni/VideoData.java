@@ -5,24 +5,24 @@ package com.stream.media.jni;
  */
 
 public class VideoData {
-    String id;
+    public String id;
 
-    int dataFormat;
+    public int dataFormat;
 
-    int width;
-    int height;
+    public int width;
+    public int height;
 
-    int frameType;
-    long timeStamp;
+    public int frameType;
+    public long timeStamp;
 
-    int videoDataLen;
-    byte[] videoData;
+    public int videoDataLen;
+    public byte[] videoData;
 
 
 
-    byte[] sps;
-    int spsLen;
-    byte[] pps;
-    int ppsLen;
+    public  byte[] sps;
+    public int spsLen;
+    public byte[] pps;
+    public int ppsLen;
 
 }

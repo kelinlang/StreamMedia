@@ -1,8 +1,9 @@
 package com.stream.media.jni;
 
 public class StreamParam {
-    int type;
-    String url;
+   public String id;
+   public int type;
+   public String url;
 
 
 }

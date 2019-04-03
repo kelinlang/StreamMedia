@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import com.stream.media.jni.VideoData;
 
 /**
  * Created by dengjun on 2018/6/28.
