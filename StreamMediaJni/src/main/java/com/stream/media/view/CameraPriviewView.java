@@ -149,6 +149,10 @@ public class CameraPriviewView extends SurfaceView implements SurfaceHolder.Call
         return streamParam;
     }
 
+    public void setStreamParam(StreamParam streamParam) {
+        this.streamParam = streamParam;
+    }
+
     public void setHoldCallback(SurfaceHolder.Callback holdCallback) {
         this.holdCallback = holdCallback;
     }

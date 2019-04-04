@@ -10,12 +10,9 @@
 #include <GLES2/gl2.h>
 #include <memory.h>
 
-#include "ShaderUtils.h"
 
-extern "C"{
 #include <library/CommonLib/queue/cloudvoice_blocking_queue.h>
 #include <library/CommonLib/log/cloudvoice_log.h>
-}
 
 #include "cloudvoice_android_video_display.h"
 #include "cloudvoice_shader_utils.h"
@@ -70,7 +67,7 @@ typedef  struct CloudVoiceDisplayOpaque_{
 
     //opengl相关
     float* cacheMatrixTmp;
-    ANativeWindow* aNativeWindow;
+    ANativeWindow *aNativeWindow;
 
     int pitches[SM_GLES2_MAX_PLANE]; /**< in bytes, Read-only */  //像素长度
     unsigned char* pixelsY;
@@ -174,7 +171,7 @@ static void* workThreadFunc(void *arg){
             1.793, -0.533,  0.0,
     };
 
-//    ShaderUtils *shaderUtils = new ShaderUtils();
+
 
     GLuint programId = cloudVoiceCreateProgram(vertexShaderString,fragmentShaderString );
 

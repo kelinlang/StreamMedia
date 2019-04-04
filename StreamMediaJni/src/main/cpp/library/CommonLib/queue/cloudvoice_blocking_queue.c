@@ -127,4 +127,5 @@ CloudVoiceBlockingQueue cloudVoiceCreateBlockingQueue(FreeCallback elementCallba
 
         blockingQueue->freeCallback = elementCallback;
     }
+    return blockingQueue;
 }

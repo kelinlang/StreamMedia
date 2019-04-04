@@ -69,9 +69,9 @@ add_library( # Sets the name of the library.
 
         #Android 相关代码库
         src/main/cpp/android/codec/cloudvoide_android_video_codec.c
-        src/main/cpp/android/display/ShaderUtils.cpp
         src/main/cpp/android/display/cloudvoice_shader_utils.c
         src/main/cpp/android/display/cloudvoice_android_video_display.c
+        src/main/cpp/android/log/cloudvoice_android_log.c
 
 
 

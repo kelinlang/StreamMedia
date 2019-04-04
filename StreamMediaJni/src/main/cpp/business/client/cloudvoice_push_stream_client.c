@@ -11,18 +11,19 @@ static void setId(CloudVoicePushStreamClient self,char *id){
     }
 }
 
-static void setParam(CloudVoicePushStreamClient self,CloudVoiceRtmpParam param){
+static void setParam(CloudVoicePushStreamClient self,CloudVoiceStreamParam param){
     if (self){
+        self->streamParam = param;
         CloudVoiceRtmpParam  rtmpParam = self->rtmpClient->getParam(self->rtmpClient);
         rtmpParam->setUrl(rtmpParam,param->url);
     }
 }
-static CloudVoiceRtmpParam getParam(CloudVoicePushStreamClient self){
-    CloudVoiceRtmpParam rtmpParam = NULL;
+static CloudVoiceStreamParam getParam(CloudVoicePushStreamClient self){
+    CloudVoiceStreamParam streamParam = NULL;
     if (self){
-        rtmpParam = self->rtmpClient->getParam(self->rtmpClient);
+        streamParam = self->streamParam;
     }
-    return rtmpParam;
+    return streamParam;
 }
 
 static void setMediaStatusCallback(CloudVoicePushStreamClient self, MediaStatusCallback mediaStatusCallback){
@@ -75,8 +76,9 @@ CloudVoicePushStreamClient cloudVoiceCreatePushStreamClient(){
 
         CloudVoiceRtmpClient rtmpClient = cloudVoiceCreateRtmpClient();
         rtmpClient->getParam(rtmpClient)->clientType = PUSH;
-        pushStreamClient->rtmpClient;
+        pushStreamClient->rtmpClient = rtmpClient;
 
 
+//        pushStreamClient->streamParam = cloudVoiceCreateStreamParam();
     }
 }

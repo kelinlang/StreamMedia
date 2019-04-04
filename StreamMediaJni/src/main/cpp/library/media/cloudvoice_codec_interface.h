@@ -5,6 +5,7 @@
 #ifndef VOICELIBDEMO_CLOUDVOICE_CODEC_INTERFACE_H
 #define VOICELIBDEMO_CLOUDVOICE_CODEC_INTERFACE_H
 
+#include <library/media/model/cloudvoice_audio_video_model.h>
 #include "cloudvoice_media_callback.h"
 
 typedef enum
@@ -42,7 +43,7 @@ typedef struct CloudVoiceCodec_{
     void (*setMediaStatusCallback)(CloudVoiceCodec self, MediaStatusCallback mediaStatusCallback);
     void (*setMediaDataCallback)(CloudVoiceCodec self, MediaDataCallback mediaDataCallback);
 
-    void (*addData)(CloudVoiceCodec self, void *srcPackect);
+    void (*addData)(CloudVoiceCodec self, CloudVoiceAVPacket srcPackect);
 
 
     int (*transform)(CloudVoiceCodec self, void *srcPackect,void *dstPacket );

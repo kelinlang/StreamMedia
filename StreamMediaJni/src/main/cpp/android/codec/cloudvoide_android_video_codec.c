@@ -12,6 +12,7 @@
 #include <memory.h>
 #include <library/CommonLib/log/cloudvoice_log.h>
 #include <pthread.h>
+#include <media/NdkMediaFormat.h>
 #include "cloudvoide_android_video_codec.h"
 
 typedef  struct CloudVoiceCodecOpaque_{
@@ -28,9 +29,14 @@ typedef  struct CloudVoiceCodecOpaque_{
     MediaDataCallback mediaDataCallback;
 }CloudVoiceCodecOpaque_;
 
-void cloudVoiceAVPackactFreeCallback(void *object, CloudVoiceAVPacket avPackect){
-    cloudVoiceDestroyAVPackect(avPackect);
+static void cloudVoiceAVPackactFreeCallback(void *object, void* avPackect){
+    cloudVoiceDestroyAVPackect((CloudVoiceAVPacket)avPackect);
 }
+
+static void cloudVoiceAVPackactFreeNodeCallback(CloudVoiceList object, void* avPackect){
+    cloudVoiceDestroyAVPackect((CloudVoiceAVPacket)avPackect);
+}
+
 
 static void setParam(CloudVoiceCodec codec,CloudVoiceCodecParam codecParam){
     if(codec && codec->codecOpaque && codecParam){
@@ -215,9 +221,10 @@ CloudVoiceCodec cloudVoiceCreateAndroidVideoCodec(CloudVoiceCodecParam codecPara
             codec->codecOpaque = codecOpaque;
 
             codecOpaque->blockingQueue = cloudVoiceCreateBlockingQueue(cloudVoiceAVPackactFreeCallback);
-            codecOpaque->cacheList = cloudVoiceCreateList(cloudVoiceAVPackactFreeCallback);
+            codecOpaque->cacheList = cloudVoiceCreateList(cloudVoiceAVPackactFreeNodeCallback);
 
             codecOpaque->codecParam = cloudVoiceCreateCodecParam();
         }
     }
+    return codec;
 }

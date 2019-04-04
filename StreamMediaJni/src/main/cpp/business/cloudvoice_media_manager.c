@@ -16,8 +16,8 @@ static void init(CloudVoiceMediaManager mediaManager){
 }
 static void release(CloudVoiceMediaManager mediaManager){
     if(mediaManager && mediaManager->initFlag == 1){
-        map_deinit_(&mediaManager->pullStreamPlayerMap);
-        map_deinit_(&mediaManager->pushStreamClientMap);
+        map_deinit(&mediaManager->pullStreamPlayerMap);
+        map_deinit(&mediaManager->pushStreamClientMap);
     }
 }
  
@@ -39,13 +39,13 @@ static void pause(CloudVoiceMediaManager mediaManager){
 static void createPlayer(CloudVoiceMediaManager mediaManager, char*id){
     if (mediaManager && mediaManager->initFlag == 1){
         CloudVoicePullStreamPlayer player = cloudVoiceCreatePullStreamPlayer();
-        map_set_(&mediaManager->pullStreamPlayerMap,id,player, sizeof(CloudVoicePullStreamPlayer));
+        map_set(&mediaManager->pullStreamPlayerMap,id,player);
     }
 }
  
 static void setVideoSurface(CloudVoiceMediaManager mediaManager,char *id, ANativeWindow * nativeWindow){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get(&mediaManager->pullStreamPlayerMap,id);
         if (player){
             player->display->setVideoSurface(player->display,nativeWindow);
         }
@@ -54,7 +54,7 @@ static void setVideoSurface(CloudVoiceMediaManager mediaManager,char *id, ANativ
 
 static void setVideoMatrix(CloudVoiceMediaManager mediaManager,char *id,float* matrix ){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get(&mediaManager->pullStreamPlayerMap,id);
         if (player){
             player->display->setVideoMatrix(player->display,matrix);
         }
@@ -64,7 +64,7 @@ static void setVideoMatrix(CloudVoiceMediaManager mediaManager,char *id,float* m
 
 static void setPlayerParam(CloudVoiceMediaManager mediaManager, char *id, CloudVoicePlayerParam playerParam){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get(&mediaManager->pullStreamPlayerMap,id);
         if (player){
             player->setParam(player,playerParam);
         }
@@ -73,16 +73,17 @@ static void setPlayerParam(CloudVoiceMediaManager mediaManager, char *id, CloudV
 
 static CloudVoicePlayerParam getPlayerParam(CloudVoiceMediaManager mediaManager, char *id){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get(&mediaManager->pullStreamPlayerMap,id);
         if (player){
-            return player->getParam(player;
+            return player->getParam(player);
         }
     }
+    return NULL;
 }
 
 static void startPlay(CloudVoiceMediaManager mediaManager, char *id){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get(&mediaManager->pullStreamPlayerMap,id);
         if (player){
             player->start(player);
         }
@@ -92,7 +93,7 @@ static void startPlay(CloudVoiceMediaManager mediaManager, char *id){
 
 static void stopPlay(CloudVoiceMediaManager mediaManager, char *id){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get_(&mediaManager->pullStreamPlayerMap,id);
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get(&mediaManager->pullStreamPlayerMap,id);
         if (player){
             player->stop(player);
         }
@@ -103,13 +104,13 @@ static void stopPlay(CloudVoiceMediaManager mediaManager, char *id){
 static void createPushClient(CloudVoiceMediaManager mediaManager, char*id){
     if (mediaManager && mediaManager->initFlag == 1){
         CloudVoicePushStreamClient pushStreamClient = cloudVoiceCreatePushStreamClient();
-        map_set_(&mediaManager->pushStreamClientMap,id,pushStreamClient, sizeof(CloudVoicePushStreamClient));
+        map_set(&mediaManager->pushStreamClientMap,id,pushStreamClient);
     }
 }
 
 static void setPushStreamParam(CloudVoiceMediaManager mediaManager,char*id,CloudVoiceStreamParam streamParam){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get_(&mediaManager->pushStreamClientMap,id);
+        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get(&mediaManager->pushStreamClientMap,id);
         if (pushStreamClient){
             pushStreamClient->setParam(pushStreamClient,streamParam);
         }
@@ -118,7 +119,7 @@ static void setPushStreamParam(CloudVoiceMediaManager mediaManager,char*id,Cloud
 
 static void startPush(CloudVoiceMediaManager mediaManager,char*id){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get_(&mediaManager->pushStreamClientMap,id);
+        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get(&mediaManager->pushStreamClientMap,id);
         if (pushStreamClient){
             pushStreamClient->start(pushStreamClient);
         }
@@ -127,7 +128,7 @@ static void startPush(CloudVoiceMediaManager mediaManager,char*id){
 
 static void stopPush(CloudVoiceMediaManager mediaManager,char*id){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get_(&mediaManager->pushStreamClientMap,id);
+        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get(&mediaManager->pushStreamClientMap,id);
         if (pushStreamClient){
             pushStreamClient->stop(pushStreamClient);
         }
@@ -136,7 +137,7 @@ static void stopPush(CloudVoiceMediaManager mediaManager,char*id){
  
 static void sendVideoData(CloudVoiceMediaManager mediaManager,char * id,CloudVoiceAVPacket avPacket){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get_(&mediaManager->pushStreamClientMap,id);
+        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get(&mediaManager->pushStreamClientMap,id);
         if (pushStreamClient){
             pushStreamClient->sendData(pushStreamClient,avPacket);
         }

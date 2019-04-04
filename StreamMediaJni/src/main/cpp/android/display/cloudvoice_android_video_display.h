@@ -8,7 +8,7 @@
 #include <library/media/cloudvoice_media_callback.h>
 
 #include <library/media/model/cloudvoice_audio_video_model.h>
-
+#include <android/native_window.h>
 
 typedef struct CloudVoiceDisplayOpaque_* CloudVoiceDisplayOpaque;
 

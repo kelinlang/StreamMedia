@@ -28,7 +28,7 @@ struct ListEntity_{
 
 static ElementNode createNode(){
     ElementNode  elementNode = (ElementNode)malloc(sizeof(ElementNode_));
-
+    return elementNode;
 }
 
 
@@ -111,7 +111,7 @@ static void destroy(CloudVoiceList list){
 
 
 
-CloudVoiceList cloudVoiceCreateList(FreeCallback elementCallback){
+CloudVoiceList cloudVoiceCreateList(FreeNodeCallback elementCallback){
     CloudVoiceList list = (CloudVoiceList)malloc(sizeof(CloudVoiceList_));
     if(list){
         ListEntity listEntity = (ListEntity)malloc(sizeof(struct ListEntity_));
@@ -129,4 +129,5 @@ CloudVoiceList cloudVoiceCreateList(FreeCallback elementCallback){
 
         list->freeCallback = elementCallback;
     }
+    return list;
 }

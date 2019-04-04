@@ -29,7 +29,7 @@ typedef  struct CloudVoiceRtmpClientOpaque_{
 
 static void setUrl(CloudVoiceRtmpParam playerParam, char *url){
     if (playerParam && url){
-        cloudVoiceStringCopy(&playerParam->url,url);
+        cloudVoiceStringCopy(url,&playerParam->url);
     }
 }
 
@@ -293,7 +293,7 @@ static void pullLoop(CloudVoiceRtmpClient rtmpClient){
                             CloudVoiceAVPacket avPacket = cloudVoiceCreateAVPackect();
                             int dataLen = packet->m_nBodySize-9;
                             uint8_t *data = (uint8_t*)malloc(packet->m_nBodySize-9);
-                            memcpy(data,packet->m_nBodySize-9,packet->m_body+9);
+                            memcpy(data,packet->m_body-9,packet->m_nBodySize+9);
                             avPacket->data = data;
                             avPacket->startPos = 0;
                             avPacket->dataLen = dataLen;
@@ -378,9 +378,8 @@ static void destroy(CloudVoiceRtmpClient rtmpClient){
     }
 
 }
-
-void cloudVoiceAVPackactFreeCallback(void *object, CloudVoiceAVPacket avPackect){
-    cloudVoiceDestroyAVPackect(avPackect);
+static void cloudVoiceAVPackactFreeCallback(void *object, void *element){
+    cloudVoiceDestroyAVPackect((CloudVoiceAVPacket)element);
 }
 
 

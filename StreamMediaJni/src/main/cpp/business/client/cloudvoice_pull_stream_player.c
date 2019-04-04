@@ -27,7 +27,7 @@ static void DecodeMediaDataCallback(void *externHandle,char *id, int type,  void
     CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)externHandle;
     CloudVoiceAVPacket  avPacket = (CloudVoiceAVPacket)dataPacket;
     if(player){
-        player->display->addData(player->decodec,avPacket);
+        player->display->addData(player->display,avPacket);
     } else{
         cloudVoiceDestroyAVPackect(avPacket);
     }
@@ -167,10 +167,10 @@ CloudVoicePullStreamPlayer cloudVoiceCreatePullStreamPlayer(){
 
         CloudVoiceRtmpClient rtmpClient = cloudVoiceCreateRtmpClient();
         rtmpClient->getParam(rtmpClient)->clientType = PULL;
-        player->rtmpClient;
+        player->rtmpClient = rtmpClient;
         player-> rtmpClient->externHandle = player;
         player-> rtmpClient->setMediaStatusCallback(player-> rtmpClient,RtmpMediaStatusCallback);
-        player-> rtmpClient->setMediaStatusCallback(player-> rtmpClient,RtmpMediaDataCallback);
+        player-> rtmpClient->setMediaDataCallback(player-> rtmpClient,RtmpMediaDataCallback);
 
 
         player->display = cloudVoiceCreateAndroidVideoDisplay();
@@ -180,7 +180,8 @@ CloudVoicePullStreamPlayer cloudVoiceCreatePullStreamPlayer(){
         player->decodec = cloudVoiceCreateAndroidVideoCodec(NULL);
         player->decodec->externHandle = player;
         player-> decodec->setMediaStatusCallback(player-> decodec,DecodecMediaStatusCallback);
-        player-> decodec->setMediaStatusCallback(player-> decodec,DecodeMediaDataCallback);
+        player-> decodec->setMediaDataCallback(player-> decodec,DecodeMediaDataCallback);
 
     }
+    return player;
 }

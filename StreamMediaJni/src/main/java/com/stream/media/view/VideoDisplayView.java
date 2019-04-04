@@ -15,7 +15,7 @@ import com.stream.media.jni.PlayerParam;
 
 
 @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-public class PlayerDisplayView extends SurfaceView implements SurfaceHolder.Callback{
+public class VideoDisplayView extends SurfaceView implements SurfaceHolder.Callback{
     private SurfaceHolder.Callback holdCallback;
 
     private MediaJni mediaJni;
@@ -25,22 +25,22 @@ public class PlayerDisplayView extends SurfaceView implements SurfaceHolder.Call
     private float[] mProjectMatrix=new float[16];
     private float[] mMVPMatrix=new float[16];
 
-    public PlayerDisplayView(Context context) {
+    public VideoDisplayView(Context context) {
         super(context);
         init();
     }
 
-    public PlayerDisplayView(Context context, AttributeSet attrs) {
+    public VideoDisplayView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
-    public PlayerDisplayView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public VideoDisplayView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
-    public PlayerDisplayView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public VideoDisplayView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }

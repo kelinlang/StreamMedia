@@ -6,16 +6,18 @@
 #define VOICELIBDEMO_CLOUDVOICE_PUSH_STREAM_CLIENT_H
 
 #include <business/rtmp/cloudvoice_rtmp_client.h>
+#include <business/model/cloudvoice_stream_param.h>
 
 typedef struct CloudVoicePushStreamClient_* CloudVoicePushStreamClient;
 typedef struct CloudVoicePushStreamClient_{
     CloudVoiceRtmpClient rtmpClient;
+    CloudVoiceStreamParam streamParam;
     void *externHandle;
 
     void (*setId)(CloudVoicePushStreamClient self,char *id);
 
-    void (*setParam)(CloudVoicePushStreamClient self,CloudVoiceRtmpParam param);
-    CloudVoiceRtmpParam (*getParam)(CloudVoicePushStreamClient self);
+    void (*setParam)(CloudVoicePushStreamClient self,CloudVoiceStreamParam param);
+    CloudVoiceStreamParam (*getParam)(CloudVoicePushStreamClient self);
 
     void (*setMediaStatusCallback)(CloudVoicePushStreamClient self, MediaStatusCallback mediaStatusCallback);
     void (*setMediaDataCallback)(CloudVoicePushStreamClient self, MediaDataCallback mediaDataCallback);

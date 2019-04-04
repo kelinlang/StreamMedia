@@ -19,16 +19,16 @@ typedef enum
 } LogLevel;
 
 
-typedef void (LogCallback)(int level, const char *fmt, va_list);
+typedef void (*LogCallback)(int level, const char *fmt, va_list);
 void cloudVoiceLogSetCallback(LogCallback logCallback);
 
 #ifdef __GNUC__
 void cloudVoiceLog(int level, const char *format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
-void cloudVoiceLogV(const char *format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
-void cloudVoiceLogD( const char *format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
-void cloudVoiceLogI(const char *format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
-void cloudVoiceLogW(const char *format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
-void cloudVoiceLogE(const char *format, ...) __attribute__ ((__format__ (__printf__, 2, 3)));
+void cloudVoiceLogV(const char *format, ...) __attribute__ ((__format__ (__printf__, 1, 2)));
+void cloudVoiceLogD( const char *format, ...) __attribute__ ((__format__ (__printf__, 1, 2)));
+void cloudVoiceLogI(const char *format, ...) __attribute__ ((__format__ (__printf__, 1, 2)));
+void cloudVoiceLogW(const char *format, ...) __attribute__ ((__format__ (__printf__, 1, 2)));
+void cloudVoiceLogE(const char *format, ...) __attribute__ ((__format__ (__printf__, 1, 2)));
 #else
 void cloudVoiceLog(int level, const char *format, ...);
 void cloudVoiceLogV( const char *format, ...);

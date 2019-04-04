@@ -10,6 +10,7 @@
 typedef struct CloudVoiceBlockingQueue_* CloudVoiceBlockingQueue;
 //用户回调队列的数据，clear的时候不知道具体类型，需要回调给外面free具体数据
 typedef void (*FreeCallback)(void* object, void *element);
+
 typedef struct BlockingQueueEntity_* BlockingQueueEntity;
 
 typedef struct CloudVoiceBlockingQueue_{
