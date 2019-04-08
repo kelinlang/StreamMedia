@@ -6,6 +6,6 @@
 #define VOICELIBDEMO_CLOUDVOICE_UTILS_H
 
 
-void cloudVoiceStringCopy(char* src, char ** dst);
+void cloudVoiceStringCopy(const char* src, char ** dst);
 
 #endif //VOICELIBDEMO_CLOUDVOICE_UTILS_H

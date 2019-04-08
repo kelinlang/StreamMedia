@@ -10,7 +10,7 @@
 #include <library/media/model/cloudvoice_audio_video_model.h>
 #include <business/model/cloudvoice_media_params.h>
 #include <android/native_window.h>
-
+#include <business/model/cloudvoice_player_param.h>
 
 
 typedef struct CloudVoiceMediaManager_* CloudVoiceMediaManager;

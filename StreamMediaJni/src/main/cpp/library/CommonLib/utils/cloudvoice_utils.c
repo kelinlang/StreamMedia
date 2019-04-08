@@ -6,7 +6,7 @@
 #include <malloc.h>
 #include "cloudvoice_utils.h"
 
-void cloudVoiceStringCopy(char* src, char ** dst){
+void cloudVoiceStringCopy(const char* src, char ** dst){
     if(src && dst){
         int len = strlen(src)+1;
         * dst = (char*)malloc(len);
