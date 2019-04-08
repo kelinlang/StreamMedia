@@ -147,9 +147,9 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_setPlayerParam
         jfloatArray  dataArray = (jfloatArray)(*env)->GetObjectField(env,playerParam,jMatrix);
         jfloatArray* buffer = (jfloatArray*)(*env)->GetFloatArrayElements(env,dataArray, 0);
         int matrixLen = (*env)->GetArrayLength(env,dataArray);
-        float* matrix = (uint8_t *) malloc(matrixLen);//后面再考虑重用内存
+        float* matrix = (uint8_t *) malloc(matrixLen* sizeof(float));//后面再考虑重用内存
         memcpy(matrix,buffer,matrixLen);
-        (*env)->ReleaseByteArrayElements(env,dataArray, buffer, 0);
+        (*env)->ReleaseFloatArrayElements(env,dataArray, buffer, 0);
 
         CloudVoicePlayerParam playerParam1 = mediaManager->getPlayerParam(mediaManager,idString);
         if (playerParam1){
@@ -360,6 +360,9 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_sendVideoData
                 memcpy(avPacket->pps,pps,avPacket->ppsLen);
                 (*env)->ReleaseByteArrayElements(env,ppsdataArray, (jbyte*)pps, 0);
             }
+
+
+            mediaManager->sendVideoData(mediaManager,idString,avPacket);
         }
 
         (*env)->ReleaseStringUTFChars(env,id, idString);

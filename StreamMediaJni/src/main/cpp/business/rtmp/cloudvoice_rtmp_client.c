@@ -409,4 +409,5 @@ CloudVoiceRtmpClient cloudVoiceCreateRtmpClient(){
             rtmpClientOpaque->rtmpParam = cloudVoiceCreateRtmpParam();
         }
     }
+    return rtmpClient;
 }

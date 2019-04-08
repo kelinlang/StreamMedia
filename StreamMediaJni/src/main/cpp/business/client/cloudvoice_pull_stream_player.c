@@ -112,7 +112,10 @@ static void setMediaDataCallback(CloudVoicePullStreamPlayer self, MediaDataCallb
 
 static void sendData(CloudVoicePullStreamPlayer self, CloudVoiceAVPacket srcPackect){
     if (self){
-        self->rtmpClient->sendData(self->rtmpClient,srcPackect);
+        CloudVoiceDisplay  display = self->display;
+        if(display){
+            display->addData(display,srcPackect);
+        }
     }
 }
 

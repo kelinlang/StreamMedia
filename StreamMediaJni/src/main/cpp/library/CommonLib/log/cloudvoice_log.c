@@ -11,7 +11,7 @@
 #define MAX_PRINT_LEN	2048
 
 static LogCallback logCallbackInternal;
-static LogLevel logLevelInternal = LOG_INFO;
+static LogLevel logLevelInternal = LOG_VERBOSE;
 
 void cloudVoiceLogSetCallback(LogCallback logCallback){
     logCallbackInternal = logCallback;

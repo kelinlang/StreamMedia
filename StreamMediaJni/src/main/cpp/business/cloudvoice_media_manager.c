@@ -5,19 +5,23 @@
 #include <malloc.h>
 #include <business/client/cloudvoice_pull_stream_player.h>
 #include <business/client/cloudvoice_push_stream_client.h>
+#include <library/CommonLib/log/cloudvoice_log.h>
 #include "cloudvoice_media_manager.h"
+
 
 
 static void init(CloudVoiceMediaManager mediaManager){
     if(mediaManager && mediaManager->initFlag == 0){
         map_init(&mediaManager->pullStreamPlayerMap);
         map_init(&mediaManager->pushStreamClientMap);
+        mediaManager->initFlag = 1;
     }
 }
 static void release(CloudVoiceMediaManager mediaManager){
     if(mediaManager && mediaManager->initFlag == 1){
         map_deinit(&mediaManager->pullStreamPlayerMap);
         map_deinit(&mediaManager->pushStreamClientMap);
+        mediaManager->initFlag = 0;
     }
 }
  
@@ -104,6 +108,7 @@ static void stopPlay(CloudVoiceMediaManager mediaManager, char *id){
 static void createPushClient(CloudVoiceMediaManager mediaManager, char*id){
     if (mediaManager && mediaManager->initFlag == 1){
         CloudVoicePushStreamClient pushStreamClient = cloudVoiceCreatePushStreamClient();
+        cloudVoiceLogD("%s pushStreamClient  create addr :%d", id,pushStreamClient);
         map_set(&mediaManager->pushStreamClientMap,id,pushStreamClient);
     }
 }
@@ -111,6 +116,7 @@ static void createPushClient(CloudVoiceMediaManager mediaManager, char*id){
 static void setPushStreamParam(CloudVoiceMediaManager mediaManager,char*id,CloudVoiceStreamParam streamParam){
     if (mediaManager && mediaManager->initFlag == 1 && id){
         CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get(&mediaManager->pushStreamClientMap,id);
+        cloudVoiceLogD("%s pushStreamClient  map_get addr :%d",id, pushStreamClient);
         if (pushStreamClient){
             pushStreamClient->setParam(pushStreamClient,streamParam);
         }
@@ -137,9 +143,17 @@ static void stopPush(CloudVoiceMediaManager mediaManager,char*id){
  
 static void sendVideoData(CloudVoiceMediaManager mediaManager,char * id,CloudVoiceAVPacket avPacket){
     if (mediaManager && mediaManager->initFlag == 1 && id){
-        CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get(&mediaManager->pushStreamClientMap,id);
+        //推流到服务器
+        /*CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get(&mediaManager->pushStreamClientMap,id);
         if (pushStreamClient){
             pushStreamClient->sendData(pushStreamClient,avPacket);
+        }*/
+
+
+        //直接送给播放器，界面播放
+        CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)map_get(&mediaManager->pullStreamPlayerMap,id);
+        if (player){
+            player->sendData(player,avPacket);
         }
     }
 }
@@ -155,6 +169,7 @@ CloudVoiceMediaManager cloudVoiceCreateMediaManager(){
         mediaManager->release = release;
         mediaManager->setMediaStatusCallback = setMediaStatusCallback;
         mediaManager->setParam = setParam;
+        mediaManager->getPlayerParam = getPlayerParam;
         mediaManager->resume = resume;
         mediaManager->pause = pause;
         mediaManager->createPlayer = createPlayer;

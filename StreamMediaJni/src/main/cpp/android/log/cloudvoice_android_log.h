@@ -13,7 +13,7 @@
 #include <library/CommonLib/log/cloudvoice_log.h>
 
 #define TAG "RealTimeVoice"
-static jboolean DEBUG_FLAG = JNI_FALSE;
+static jboolean DEBUG_FLAG = JNI_TRUE;
 static jboolean LOG_V_FLAG = JNI_TRUE;
 
 void setDebug(jboolean isDebug);

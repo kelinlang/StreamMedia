@@ -171,7 +171,7 @@ static void* workThreadFunc(void *arg){
             1.793, -0.533,  0.0,
     };
 
-
+//    ShaderUtils *shaderUtils = new ShaderUtils();
 
     GLuint programId = cloudVoiceCreateProgram(vertexShaderString,fragmentShaderString );
 

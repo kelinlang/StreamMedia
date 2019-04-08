@@ -74,6 +74,9 @@ CloudVoicePushStreamClient cloudVoiceCreatePushStreamClient(){
         pushStreamClient->stop = stop;
         pushStreamClient->destroy = destroy;
 
+        pushStreamClient->externHandle = NULL;
+        pushStreamClient->streamParam = NULL;
+
         CloudVoiceRtmpClient rtmpClient = cloudVoiceCreateRtmpClient();
         rtmpClient->getParam(rtmpClient)->clientType = PUSH;
         pushStreamClient->rtmpClient = rtmpClient;

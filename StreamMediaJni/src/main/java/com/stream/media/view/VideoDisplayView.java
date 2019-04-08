@@ -63,6 +63,7 @@ public class VideoDisplayView extends SurfaceView implements SurfaceHolder.Callb
             playerParam.videoWidth = getWidth();
 
             mediaJni.createPlayer(playerParam.id);
+            mediaJni.setVideoSurface(playerParam.id,holder.getSurface());
             mediaJni.setPlayerParam(playerParam.id,playerParam);
             mediaJni.startPlay(playerParam.id);
         }

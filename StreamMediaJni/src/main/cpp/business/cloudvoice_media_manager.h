@@ -12,6 +12,7 @@
 #include <android/native_window.h>
 
 
+
 typedef struct CloudVoiceMediaManager_* CloudVoiceMediaManager;
 
 typedef struct CloudVoiceMediaManager_{
