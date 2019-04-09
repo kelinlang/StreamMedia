@@ -47,8 +47,8 @@ void CloudVoiceMediaManager::pause() {
 void CloudVoiceMediaManager::createPlayer(char *id) {
     if (initFlag == 1){
         CloudVoicePullStreamPlayer player = cloudVoiceCreatePullStreamPlayer();
+        cloudVoiceLogD("%s createPlayer  create addr :%d , display : %d,display setVideoSurface : %d", id,player,player->display,player->display->setVideoSurface);
         pullStreamPlayerMap.insert(pair<char *, CloudVoicePullStreamPlayer>(id, player));
-        cloudVoiceLogD("%s createPlayer  create addr :%d , display : %d", id,player,player->display);
     }
 }
 

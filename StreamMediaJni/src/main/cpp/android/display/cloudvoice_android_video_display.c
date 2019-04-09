@@ -81,9 +81,9 @@ static void yuvDataChange(CloudVoiceDisplay display, CloudVoiceAVPacket avPackec
     CloudVoiceDisplayOpaque displayOpaque = display->displayOpaque;
     CloudVoiceDisplayParam displayParam = displayOpaque->displayParam;
 
-    displayOpaque->pitches[0] = displayParam->viewWidth * displayParam->viewHeight;
-    displayOpaque->pitches[1] = displayParam->viewWidth * displayParam->viewHeight / 4;
-    displayOpaque->pitches[2] = displayParam->viewWidth * displayParam->viewHeight / 4;
+    displayOpaque->pitches[0] = displayParam->videoWidth * displayParam->videoHeight;
+    displayOpaque->pitches[1] = displayParam->videoWidth * displayParam->videoHeight / 4;
+    displayOpaque->pitches[2] = displayParam->videoWidth * displayParam->videoHeight / 4;
 
 
     if (displayOpaque->pixelsY == NULL) {
