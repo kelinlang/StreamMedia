@@ -17,6 +17,7 @@ extern "C" {
 
 void CloudVoiceMediaManager::init() {
     if(initFlag == 0){
+
         initFlag = 1;
     }
 }
@@ -47,14 +48,19 @@ void CloudVoiceMediaManager::createPlayer(char *id) {
     if (initFlag == 1){
         CloudVoicePullStreamPlayer player = cloudVoiceCreatePullStreamPlayer();
         pullStreamPlayerMap.insert(pair<char *, CloudVoicePullStreamPlayer>(id, player));
+        cloudVoiceLogD("%s createPlayer  create addr :%d , display : %d", id,player,player->display);
     }
 }
 
 void CloudVoiceMediaManager::setVideoSurface(char *id, ANativeWindow *nativeWindow) {
     if (initFlag == 1){
         CloudVoicePullStreamPlayer player = pullStreamPlayerMap.at(id);
+        cloudVoiceLogD("%s createPlayer  get addr :%d , display : %d", id,player,player->display);
+
         if (player){
+            cloudVoiceLogD("%s createPlayer  get addr :%d , display setVideoSurface : %d", id,player,player->display->setVideoSurface);
             player->display->setVideoSurface(player->display,nativeWindow);
+            cloudVoiceLogD("setVideoSurface finish");
         }
     }
 }
@@ -116,6 +122,7 @@ void CloudVoiceMediaManager::createPushClient(char *id) {
 void CloudVoiceMediaManager::setPushStreamParam(char *id, CloudVoiceStreamParam streamParam) {
     if (initFlag == 1){
         CloudVoicePushStreamClient pushStreamClient = pushStreamClientMap.at(id);
+        cloudVoiceLogD("%s pushStreamClient  get addr :%d", id,pushStreamClient);
         if (pushStreamClient){
             pushStreamClient->setParam(pushStreamClient,streamParam);
         }
@@ -142,18 +149,16 @@ void CloudVoiceMediaManager::stopPush(char *id) {
 
 void CloudVoiceMediaManager::sendVideoData(char *id, CloudVoiceAVPacket avPacket) {
     if (initFlag == 1){
-        CloudVoicePushStreamClient pushStreamClient = pushStreamClientMap.at(id);
         //推流到服务器
-        /*CloudVoicePushStreamClient pushStreamClient = (CloudVoicePushStreamClient)map_get(&mediaManager->pushStreamClientMap,id);
-        if (pushStreamClient){
-            pushStreamClient->sendData(pushStreamClient,avPacket);
-        }*/
+//        CloudVoicePushStreamClient pushStreamClient = pushStreamClientMap.at(id);
 
-
+        cloudVoiceLogD("sendVideoData 1");
         //直接送给播放器，界面播放
-        CloudVoicePullStreamPlayer player = pullStreamPlayerMap.at(id);
-        if (player){
-            player->sendData(player,avPacket);
+        if(pullStreamPlayerMap.find(id) != pullStreamPlayerMap.end()){
+            CloudVoicePullStreamPlayer player = pullStreamPlayerMap.at(id);
+            if (player){
+                player->sendData(player,avPacket);
+            }
         }
     }
 }
@@ -163,6 +168,16 @@ void CloudVoiceMediaManager::sendAudioData(char *id, CloudVoiceAVPacket avPacket
 
     }
 }
+
+CloudVoiceMediaManager::CloudVoiceMediaManager() {
+    initFlag = 0;
+}
+
+CloudVoiceMediaManager::~CloudVoiceMediaManager() {
+
+}
+
+
 
 
 

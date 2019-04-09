@@ -125,7 +125,7 @@ public class CameraPriviewView extends SurfaceView implements SurfaceHolder.Call
     //摄像头预留数据回调
     @Override
     public void onData(int type, byte[] data) {
-        MLog.d("camera yuv data ");
+//        MLog.d("camera yuv data ");
         videoEncoder.inputData(data);
     }
 
@@ -133,7 +133,11 @@ public class CameraPriviewView extends SurfaceView implements SurfaceHolder.Call
     @Override
     public void onData(int type, Object data) {
         if (mediaJni!= null&& !TextUtils.isEmpty(streamParam.url)&& !TextUtils.isEmpty(streamParam.id)){
-            mediaJni.sendVideoData(streamParam.id,(VideoData)data);
+            switch (type){
+                case 2:
+                    mediaJni.sendVideoData(streamParam.id,(VideoData)data);
+                    break;
+            }
         }
     }
 

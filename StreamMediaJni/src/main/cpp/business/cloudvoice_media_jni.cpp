@@ -1,22 +1,21 @@
 //
 // Created by dengjun on 2019/3/26.
 //
-#include "com_stream_media_jni_MediaJni.h"
 #include "cloudvoice_media_manager_cpp.h"
 extern "C" {
+#include "com_stream_media_jni_MediaJni.h"
+
 #include <library/CommonLib/log/cloudvoice_log.h>
 #include <android/log/cloudvoice_android_log.h>
 #include <business/model/cloudvoice_player_param.h>
 #include <library/CommonLib/utils/cloudvoice_utils.h>
-
-
 }
 
 #include <android/native_window_jni.h>
 
 
 
-static CloudVoiceMediaManager mediaManager;
+static CloudVoiceMediaManager* mediaManager;
 
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
@@ -44,11 +43,10 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_init
         (JNIEnv *env, jobject  object){
     cloudVoiceLogI("media jni init ");
     if(!mediaManager){
-        mediaManager = cloudVoiceCreateMediaManager();
+        mediaManager = new CloudVoiceMediaManager();
+        mediaManager->init();
     }
-    if (mediaManager){
-        mediaManager->init(mediaManager);
-    }
+
 }
 
 JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_setMediaStatusCallback
@@ -63,8 +61,9 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_release
         (JNIEnv *env, jobject  object){
     cloudVoiceLogI("media jni release ");
     if (mediaManager){
-        mediaManager->release(mediaManager);
-        mediaManager = NULL;
+        mediaManager->release();
+        delete mediaManager;
+        mediaManager = nullptr ;
     }
 }
 
@@ -83,7 +82,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_createPlayer
     cloudVoiceLogI("%s",__FUNCTION__);
     if (mediaManager){
         char* idString = (char*)env->GetStringUTFChars(id ,NULL);
-        mediaManager->createPlayer(mediaManager,idString);
+        mediaManager->createPlayer(idString);
         env->ReleaseStringUTFChars(id, idString);
     }
 }
@@ -94,7 +93,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_setVideoSurface
     if (mediaManager){
         char* idString = (char*)env->GetStringUTFChars(id ,NULL);
         ANativeWindow* nativeWindow = ANativeWindow_fromSurface(env,surface);
-        mediaManager->setVideoSurface(mediaManager,idString,nativeWindow);
+        mediaManager->setVideoSurface(idString,nativeWindow);
         env->ReleaseStringUTFChars(id, idString);
     }
 }
@@ -112,7 +111,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_setVideoMatrix
         cloudVoiceLogI("matrix len : %d",len);
         float *matrixTmp = (float*)malloc(len);
         memcpy(matrixTmp, matrixs, len);
-        mediaManager->setVideoMatrix(mediaManager,idString,matrixTmp);
+        mediaManager->setVideoMatrix(idString,matrixTmp);
 
         env->ReleaseFloatArrayElements(matrix,matrixs,0);
         env->ReleaseStringUTFChars(id, idString);
@@ -157,7 +156,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_setPlayerParam
         memcpy(matrix,buffer,matrixLen);
         env->ReleaseFloatArrayElements(dataArray, buffer, 0);
 
-        CloudVoicePlayerParam playerParam1 = mediaManager->getPlayerParam(mediaManager,idString);
+        CloudVoicePlayerParam playerParam1 = mediaManager->getPlayerParam(idString);
         if (playerParam1){
             playerParam1->viewWidth = viewWidth;
             playerParam1->viewHeight = viewHeight;
@@ -185,7 +184,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_startPlay
     if (mediaManager){
         char* idString = (char*)env->GetStringUTFChars(id ,NULL);
 
-        mediaManager->startPlay(mediaManager,idString);
+        mediaManager->startPlay(idString);
 
         env->ReleaseStringUTFChars(id, idString);
     }
@@ -197,7 +196,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_stopPlay
     cloudVoiceLogI("%s",__FUNCTION__);
     if (mediaManager){
         char* idString = (char*)env->GetStringUTFChars(id ,NULL);
-        mediaManager->stopPlay(mediaManager,idString);
+        mediaManager->stopPlay(idString);
         env->ReleaseStringUTFChars(id, idString);
     }
 }
@@ -248,7 +247,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_createPushClient
         char* idString = (char*)env->GetStringUTFChars(id ,NULL);
         jboolean isCp = JNI_FALSE;
 
-        mediaManager->createPushClient(mediaManager,idString);
+        mediaManager->createPushClient(idString);
 
 
         env->ReleaseStringUTFChars(id, idString);
@@ -277,7 +276,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_setPushStreamParam
             streamParam1->type = type;
             cloudVoiceStringCopy(urlString,&streamParam1->url);
         }
-        mediaManager->setPushStreamParam(mediaManager,idString,streamParam1);
+        mediaManager->setPushStreamParam(idString,streamParam1);
 
         env->ReleaseStringUTFChars(url, urlString);
         env->ReleaseStringUTFChars(id, idString);
@@ -291,7 +290,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_startPush
     if (mediaManager){
         char* idString = (char*)env->GetStringUTFChars(id ,NULL);
 
-        mediaManager->startPush(mediaManager,idString);
+        mediaManager->startPush(idString);
 
         env->ReleaseStringUTFChars(id, idString);
     }
@@ -304,7 +303,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_stopPush
     if (mediaManager){
         char* idString = (char*)env->GetStringUTFChars(id ,NULL);
 
-        mediaManager->stopPush(mediaManager,idString);
+        mediaManager->stopPush(idString);
 
         env->ReleaseStringUTFChars(id, idString);
     }
@@ -350,6 +349,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_sendVideoData
                 avPacket->data = (uint8_t *) malloc(avPacket->dataLen);//后面再考虑重用内存
                 memcpy(avPacket->data,buffer,avPacket->dataLen);
                 env->ReleaseByteArrayElements(dataArray, buffer, 0);
+                cloudVoiceLogD("data len : %d",avPacket->dataLen);
 
             } else if (avPacket->packetFormat == VDIEO_FORMAT_H264_SPS_PPS){
                 avPacket->spsLen = env->GetIntField(videoData,jspsLen);
@@ -368,7 +368,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_sendVideoData
             }
 
 
-            mediaManager->sendVideoData(mediaManager,idString,avPacket);
+            mediaManager->sendVideoData(idString,avPacket);
         }
 
         env->ReleaseStringUTFChars(id, idString);

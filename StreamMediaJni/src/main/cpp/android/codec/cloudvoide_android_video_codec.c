@@ -67,7 +67,10 @@ static void setMediaDataCallback(CloudVoiceCodec codec,MediaDataCallback mediaDa
 
 static void addData(CloudVoiceCodec codec,CloudVoiceAVPacket srcPackect){
     if(codec && codec ->codecOpaque && codec->codecOpaque->workFlag == 1){
+        cloudVoiceLogD("codec add data");
         codec->codecOpaque->blockingQueue->add(codec->codecOpaque->blockingQueue,srcPackect);
+        cloudVoiceLogD("codec add data 1");
+
     } else{
         cloudVoiceDestroyAVPackect(srcPackect);
     }
@@ -76,13 +79,13 @@ static void addData(CloudVoiceCodec codec,CloudVoiceAVPacket srcPackect){
 static void codecInputData(CloudVoiceCodec codec){
     CloudVoiceAVPacket srcPackect = (CloudVoiceAVPacket)codec->codecOpaque->blockingQueue->take(codec->codecOpaque->blockingQueue);
     ssize_t bufidx = -1;
-    if (srcPackect){
+    if (srcPackect && srcPackect->data){
         bufidx = AMediaCodec_dequeueInputBuffer(codec->codecOpaque->mediaCodec,2000);
         if(bufidx >= 0){
             size_t bufsize;
             uint8_t* buf = AMediaCodec_getInputBuffer(codec->codecOpaque->mediaCodec,bufidx,&bufsize);
-//            LOGI("input data bufsize : %d",bufsize);
-            memcpy(buf,srcPackect+srcPackect->startPos,srcPackect->dataLen);
+            cloudVoiceLogD("input data bufsize : %d,  dataLen : %d",bufsize,srcPackect->dataLen);
+            memcpy(buf,srcPackect->data+srcPackect->startPos,srcPackect->dataLen);
             AMediaCodec_queueInputBuffer(codec->codecOpaque->mediaCodec,bufidx,0,srcPackect->dataLen,0,0);
         }
     }
@@ -95,12 +98,12 @@ static void codecOutputData(CloudVoiceCodec codec){
     AMediaCodecBufferInfo info;
 
     bufidx = AMediaCodec_dequeueOutputBuffer(codec->codecOpaque->mediaCodec,&info,2000);
-//        LOGI("decode_func ing------------bufidx ： %d ",bufidx);
+        cloudVoiceLogD("decode_func ing------------bufidx ： %d ",bufidx);
     if(bufidx >= 0){
-//            LOGI("decode_func ing------------1 ");
+        cloudVoiceLogD("decode_func ing------------1 ");
 
         uint8_t* buf = AMediaCodec_getOutputBuffer(codec->codecOpaque->mediaCodec,bufidx,&bufsize);
-//            LOGI("decode_func ing------------2  bufsize : %d",bufsize);
+        cloudVoiceLogD("decode_func ing------------2  bufsize : %d",bufsize);
 
         if (codec->codecOpaque->mediaDataCallback){
             CloudVoiceAVPacket  voiceAVPackect = cloudVoiceCreateAVPackect();
@@ -120,6 +123,8 @@ static void codecOutputData(CloudVoiceCodec codec){
 static int mediaCodecStart(CloudVoiceCodec codec){
     int retVal = -1;
     CloudVoiceCodecParam codecParam = codec->codecOpaque->codecParam;
+    cloudVoiceLogI("codecParam videoDataWidth : %d , videoDataHeight : %d",codecParam->videoDataWidth,codecParam->videoDataHeight);
+
     AMediaCodec* mediaCodec = AMediaCodec_createDecoderByType("video/avc");
 
     AMediaFormat* videoFormat = AMediaFormat_new();
@@ -140,6 +145,7 @@ static int mediaCodecStart(CloudVoiceCodec codec){
         } else{
             codec->codecOpaque->mediaCodec = mediaCodec;
             retVal = 0;
+            cloudVoiceLogI("-------------------------mediaCodecStart success-----------------");
         }
     }
     AMediaFormat_delete(videoFormat);
@@ -149,9 +155,15 @@ static int mediaCodecStart(CloudVoiceCodec codec){
 static void* workThreadFunc(void *arg){
     CloudVoiceCodec codec = (CloudVoiceCodec)arg;
     if (mediaCodecStart(codec) == 0){
+        cloudVoiceLogI("-------------------------mediaCodec loop start-----------------");
         while (codec->codecOpaque->workFlag){
+            cloudVoiceLogD("mediaCodec loop 1");
             codecInputData(codec);
+            cloudVoiceLogD("mediaCodec loop 2");
+
             codecOutputData(codec);
+            cloudVoiceLogD("mediaCodec loop 3");
+
         }
 
         if(codec->codecOpaque->mediaCodec){
@@ -224,6 +236,11 @@ CloudVoiceCodec cloudVoiceCreateAndroidVideoCodec(CloudVoiceCodecParam codecPara
             codecOpaque->cacheList = cloudVoiceCreateList(cloudVoiceAVPackactFreeNodeCallback);
 
             codecOpaque->codecParam = cloudVoiceCreateCodecParam();
+            codecOpaque->mediaDataCallback = NULL;
+            codecOpaque->mediaStatusCallback = NULL;
+            codecOpaque->workFlag = 0;
+            codecOpaque->workThreadId = -1;
+            codecOpaque->mediaCodec = NULL;
         }
     }
     return codec;

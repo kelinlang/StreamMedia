@@ -26,6 +26,10 @@ using namespace std;
 
 class CloudVoiceMediaManager {
 
+public:
+    CloudVoiceMediaManager();
+
+    virtual ~CloudVoiceMediaManager();
 
 private:
     int initFlag;
@@ -57,6 +61,8 @@ public:
 
     void sendVideoData(char*id,CloudVoiceAVPacket avPacket);
     void sendAudioData(char*id,CloudVoiceAVPacket avPacket);
+
+
 };
 
 #endif //VOICELIBDEMO_CLOUDVOICE_MEDIA_MANAGER_H

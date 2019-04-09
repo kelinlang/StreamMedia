@@ -301,7 +301,7 @@ public class VideoEncoder {
                                         videoData.timeStamp = bufferInfo.presentationTimeUs / 1000 - startTime;
 
                                         if (dataCallback != null){
-                                            dataCallback.onData(2,videoData);
+//                                            dataCallback.onData(2,videoData);
                                         }
                                         break;
                                 }

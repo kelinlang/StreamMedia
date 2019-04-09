@@ -134,7 +134,7 @@ static void sendRtmpPacket(CloudVoiceRtmpClient rtmpClient, unsigned int nPacket
 }
 
 static void initRtmpClient(CloudVoiceRtmpClient rtmpClient) {
-    cloudVoiceLogI("-----------initRtmp push Client------------");
+    cloudVoiceLogI("-----------initRtmp  Client------------");
 
 //    RTMP_LogSetCallback(rtmpLogPrint);
 
@@ -320,9 +320,11 @@ static void pullLoop(CloudVoiceRtmpClient rtmpClient){
 
 static void releaseRtmpClient(CloudVoiceRtmpClient rtmpPushClient) {
     if (rtmpPushClient && rtmpPushClient->rtmpClientOpaque) {
-        RTMP_Close(rtmpPushClient->rtmpClientOpaque->rtmp);
-        RTMP_Free(rtmpPushClient->rtmpClientOpaque->rtmp);
-        rtmpPushClient->rtmpClientOpaque->rtmp = NULL;
+        if (rtmpPushClient->rtmpClientOpaque->rtmp){
+            RTMP_Close(rtmpPushClient->rtmpClientOpaque->rtmp);
+            RTMP_Free(rtmpPushClient->rtmpClientOpaque->rtmp);
+            rtmpPushClient->rtmpClientOpaque->rtmp = NULL;
+        }
         rtmpPushClient->rtmpClientOpaque->workFlag = 0;
     }
 }
@@ -331,10 +333,12 @@ static void* workThreadFunc(void *arg){
     CloudVoiceRtmpClient rtmpClient = (CloudVoiceRtmpClient)arg;
     initRtmpClient(rtmpClient);
 
-    if (rtmpClient->rtmpClientOpaque->rtmpParam->clientType == PUSH){
-        pushLoop(rtmpClient);
-    } else{
-        pullLoop(rtmpClient);
+    if (rtmpClient->rtmpClientOpaque->workFlag ==1){
+        if (rtmpClient->rtmpClientOpaque->rtmpParam->clientType == PUSH){
+            pushLoop(rtmpClient);
+        } else{
+            pullLoop(rtmpClient);
+        }
     }
 
     releaseRtmpClient(rtmpClient);
@@ -343,7 +347,7 @@ static void* workThreadFunc(void *arg){
 
 static void start(CloudVoiceRtmpClient rtmpClient){
     if (rtmpClient && rtmpClient->rtmpClientOpaque){
-        rtmpClient->rtmpClientOpaque->workFlag = 1;
+        rtmpClient->rtmpClientOpaque->workFlag = 0;
         int retval = pthread_create(&rtmpClient->rtmpClientOpaque->workThreadId,NULL,workThreadFunc,rtmpClient);
 //
         cloudVoiceLogI("start rtmp thread retval : %d", retval);
@@ -403,6 +407,11 @@ CloudVoiceRtmpClient cloudVoiceCreateRtmpClient(){
         if (rtmpClientOpaque){
             rtmpClient->rtmpClientOpaque = rtmpClientOpaque;
 
+            rtmpClientOpaque->workThreadId = -1;
+            rtmpClientOpaque->workFlag = 0;
+            rtmpClientOpaque->rtmp = NULL;
+            rtmpClientOpaque->mediaStatusCallback = NULL;
+            rtmpClientOpaque->mediaDataCallback = NULL;
             rtmpClientOpaque->blockingQueue = cloudVoiceCreateBlockingQueue(cloudVoiceAVPackactFreeCallback);
 //            rtmpClientOpaque->cacheList = cloudVoiceCreateList(cloudVoiceAVPackactFreeCallback);
 

@@ -84,4 +84,5 @@ CloudVoicePushStreamClient cloudVoiceCreatePushStreamClient(){
 
 //        pushStreamClient->streamParam = cloudVoiceCreateStreamParam();
     }
+    return pushStreamClient;
 }

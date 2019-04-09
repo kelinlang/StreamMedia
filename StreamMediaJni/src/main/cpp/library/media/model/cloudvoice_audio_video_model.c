@@ -16,6 +16,10 @@ CloudVoiceAVPacket cloudVoiceCreateAVPackect(){
         avPackect->data = NULL;
         avPackect->startPos = 0;
 //        avPackect->idLen = 0;
+        avPackect->sps = NULL;
+        avPackect->spsLen = 0;
+        avPackect->pps = NULL;
+        avPackect->ppsLen = 0;
     }
     return avPackect;
 }
