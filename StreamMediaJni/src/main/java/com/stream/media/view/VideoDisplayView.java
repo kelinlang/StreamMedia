@@ -60,7 +60,7 @@ public class VideoDisplayView extends SurfaceView implements SurfaceHolder.Callb
             playerParam.videoHeight = getHeight();
             playerParam.viewWidth = getWidth();
             playerParam.viewHeight = getHeight();
-            playerParam.videoWidth = getWidth();
+
 
             mediaJni.createPlayer(playerParam.id);
             mediaJni.setVideoSurface(playerParam.id,holder.getSurface());

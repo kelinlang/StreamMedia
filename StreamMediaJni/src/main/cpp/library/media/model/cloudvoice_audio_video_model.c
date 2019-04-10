@@ -3,6 +3,7 @@
 //
 
 #include <malloc.h>
+#include <library/CommonLib/log/cloudvoice_log.h>
 #include "cloudvoice_audio_video_model.h"
 
 
@@ -21,10 +22,12 @@ CloudVoiceAVPacket cloudVoiceCreateAVPackect(){
         avPackect->pps = NULL;
         avPackect->ppsLen = 0;
     }
+    cloudVoiceLogD("create avPackect : %p",avPackect);
     return avPackect;
 }
 void cloudVoiceDestroyAVPackect(CloudVoiceAVPacket avPackect){
     if(avPackect){
+        cloudVoiceLogD("destory avPackect : %p",avPackect);
         if (avPackect->data){
             free(avPackect->data);
             avPackect->data = NULL;

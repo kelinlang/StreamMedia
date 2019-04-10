@@ -5,6 +5,7 @@
 #include <malloc.h>
 #include <android/codec/cloudvoide_android_video_codec.h>
 #include <memory.h>
+#include <library/CommonLib/log/cloudvoice_log.h>
 #include "cloudvoice_pull_stream_player.h"
 
 //rtmp回调接收的数据
@@ -26,11 +27,8 @@ static void RtmpMediaStatusCallback(void *externHandle,char *id, int  mediaStatu
 static void DecodeMediaDataCallback(void *externHandle,char *id, int type,  void * dataPacket,void *ext){
     CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)externHandle;
     CloudVoiceAVPacket  avPacket = (CloudVoiceAVPacket)dataPacket;
-    if(player){
-        player->display->addData(player->display,avPacket);
-    } else{
-        cloudVoiceDestroyAVPackect(avPacket);
-    }
+    cloudVoiceLogD("%s DecodeMediaDataCallback  player :%p , display : %p", id,player,player->display);
+    player->display->addData(player->display,avPacket);
 }
 
 
@@ -63,6 +61,7 @@ static void setParam(CloudVoicePullStreamPlayer self,CloudVoicePlayerParam param
         displayParam->videoWidth = param->videoWidth;
         displayParam->videoHeight = param->videoHeight;
         displayParam->matrix = (float*)malloc(param->matrixLen);
+        displayParam->matrixLen = param->matrixLen;
         memcpy(displayParam->matrix, param->matrix, param->matrixLen);
 
 

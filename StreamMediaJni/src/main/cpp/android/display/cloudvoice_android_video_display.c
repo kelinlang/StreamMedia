@@ -109,6 +109,7 @@ static void yuvDataChange(CloudVoiceDisplay display, CloudVoiceAVPacket avPackec
 
 
 static void* workThreadFunc(void *arg){
+    cloudVoiceLogD("display 1");
     CloudVoiceDisplay display = (CloudVoiceDisplay)arg;
     CloudVoiceDisplayOpaque displayOpaque = display->displayOpaque;
     CloudVoiceDisplayParam displayParam = displayOpaque->displayParam;
@@ -242,12 +243,13 @@ static void* workThreadFunc(void *arg){
     glUniform1i(textureSamplerHandleV,2);
 
 //    glUniformMatrix3fv(um4_mvp, 1, GL_FALSE, SM_GLES2_getColorMatrix_bt709());
-    glUniformMatrix4fv(um4_mvp, 1, GL_FALSE, displayOpaque->cacheMatrixTmp);
+    glUniformMatrix4fv(um4_mvp, 1, GL_FALSE, displayOpaque->displayParam->matrix);
 
     /***
      * 开始解码
      * **/
     int ret;
+    cloudVoiceLogD("display 2");
     while (displayOpaque->workFlag) {
         CloudVoiceAVPacket avPackect = (CloudVoiceAVPacket)displayOpaque->blockingQueue->take(displayOpaque->blockingQueue);
         if(avPackect && avPackect->data != NULL){
@@ -276,10 +278,11 @@ static void* workThreadFunc(void *arg){
 
             eglSwapBuffers(eglDisp, eglWindow);
 
-            cloudVoiceDestroyAVPackect(avPackect);
         }
+        cloudVoiceLogD("display loop  destroy avpackect");
+        cloudVoiceDestroyAVPackect(avPackect);
     }
-
+    cloudVoiceLogD("display 3");
     eglMakeCurrent(eglDisp, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(eglDisp, eglCtx);
     eglDestroySurface(eglDisp, eglWindow);
@@ -364,6 +367,8 @@ static void stop(CloudVoiceDisplay display){
         if(display->displayOpaque->workThreadId != -1){
             cloudVoiceLogI("pthread_join  display start");
             pthread_join(display->displayOpaque->workThreadId,NULL);
+
+
             cloudVoiceLogI("pthread_join display finish");
             display->displayOpaque->workThreadId = -1;
         }
@@ -373,6 +378,7 @@ static void stop(CloudVoiceDisplay display){
 
 static void destroy(CloudVoiceDisplay display){
     if (display && display->displayOpaque){
+        cloudVoiceLogD("display destroy start");
         stop(display);
         if (display->displayOpaque->cacheMatrixTmp){
             free(display->displayOpaque->cacheMatrixTmp);
@@ -383,13 +389,19 @@ static void destroy(CloudVoiceDisplay display){
             display->displayOpaque->aNativeWindow = NULL;
         }
 
+        if (display->displayOpaque->displayParam){
+            cloudVoiceDestroyDisplayParam(display->displayOpaque->displayParam);
+            display->displayOpaque->displayParam = NULL;
+        }
 
         if (display->displayOpaque->blockingQueue){
             display->displayOpaque->blockingQueue->destroy(display->displayOpaque->blockingQueue);
             display->displayOpaque->blockingQueue = NULL;
         }
+        display->externHandle = NULL;
         free(display->displayOpaque);
         free(display);
+        cloudVoiceLogD("display destroy finish");
     }
 }
 
@@ -399,7 +411,7 @@ static void cloudVoiceAVPackactFreeCallback(void *object, void* avPackect){
 
 CloudVoiceDisplay cloudVoiceCreateAndroidVideoDisplay(/*CloudVoiceDisplayParam displayParam*/){
     CloudVoiceDisplay  display = NULL;
-    display = (CloudVoiceDisplay)malloc(sizeof(CloudVoiceDisplay));
+    display = (CloudVoiceDisplay)malloc(sizeof(CloudVoiceDisplay_));
     if(display){
         CloudVoiceDisplayOpaque displayOpaque = (CloudVoiceDisplayOpaque)malloc(sizeof(CloudVoiceDisplayOpaque_));
         if(display&&displayOpaque){
@@ -415,23 +427,25 @@ CloudVoiceDisplay cloudVoiceCreateAndroidVideoDisplay(/*CloudVoiceDisplayParam d
             displayOpaque->pixelsY = NULL;
             displayOpaque->pixelsU = NULL;
             displayOpaque->pixelsV = NULL;
-
+            displayOpaque->displayParam = cloudVoiceCreateDisplayParam();
+            displayOpaque->blockingQueue = cloudVoiceCreateBlockingQueue(cloudVoiceAVPackactFreeCallback);
 
             display->getParam = getParam;
             display->setParam = setParam;
             display->setVideoSurface = setVideoSurface;
-            cloudVoiceLogD("setVideoSurface : %d",setVideoSurface);
+            cloudVoiceLogD("display : %p, setVideoSurface : %p",display,setVideoSurface);
 
             display->setVideoMatrix = setVideoMatrix;
             display->setMediaStatusCallback = setMediaStatusCallback;
             display->setMediaDataCallback = setMediaDataCallback;
             display->addData = addData;
+            cloudVoiceLogD("display : %p, addData : %p",display,addData);
             display->start = start;
             display->stop = stop;
             display->destroy = destroy;
+            display->externHandle = NULL;
 
-            displayOpaque->displayParam = cloudVoiceCreateDisplayParam();
-            displayOpaque->blockingQueue = cloudVoiceCreateBlockingQueue(cloudVoiceAVPackactFreeCallback);
+
 
             display->displayOpaque = displayOpaque;
         }

@@ -76,8 +76,10 @@ add_library( # Sets the name of the library.
 
 
         #business 相关代码
-        src/main/cpp/business/cloudvoice_media_jni.c
-        src/main/cpp/business/cloudvoice_media_manager.c
+        #src/main/cpp/business/cloudvoice_media_jni.c
+        #src/main/cpp/business/cloudvoice_media_manager.c
+        src/main/cpp/business/cloudvoice_media_jni.cpp
+        src/main/cpp/business/cloudvoice_media_manager_cpp.cpp
 
         src/main/cpp/business/client/cloudvoice_pull_stream_player.c
         src/main/cpp/business/client/cloudvoice_push_stream_client.c

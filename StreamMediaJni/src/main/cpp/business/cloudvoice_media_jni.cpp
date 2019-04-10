@@ -150,9 +150,9 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_setPlayerParam
         char * urlString = (char*)env->GetStringUTFChars(url ,NULL);
 
         jfloatArray  dataArray = (jfloatArray)env->GetObjectField(playerParam,jMatrix);
-        jfloat* buffer = (jfloat *)env->GetFloatArrayElements(dataArray, 0);
-        int matrixLen = env->GetArrayLength(dataArray);
-        float* matrix = (float *) malloc(matrixLen* sizeof(float));//后面再考虑重用内存
+        jfloat* buffer = env->GetFloatArrayElements(dataArray, 0);
+        int matrixLen = env->GetArrayLength(dataArray)* sizeof(float);
+        float* matrix = (float *) malloc(matrixLen);//后面再考虑重用内存
         memcpy(matrix,buffer,matrixLen);
         env->ReleaseFloatArrayElements(dataArray, buffer, 0);
 

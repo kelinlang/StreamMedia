@@ -51,8 +51,8 @@ static void add(CloudVoiceBlockingQueue blockingQueue,void* element){
             }
         }
 
-        cloudVoiceCondSignal(queueEntity->clCond);
         cloudVoiceUnlockMutex(queueEntity->clMutex);
+        cloudVoiceCondSignal(queueEntity->clCond);
     }
 }
 

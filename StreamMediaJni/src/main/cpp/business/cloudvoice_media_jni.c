@@ -145,7 +145,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_setPlayerParam
         jstring * urlString = (*env)->GetStringUTFChars(env,url ,NULL);
 
         jfloatArray  dataArray = (jfloatArray)(*env)->GetObjectField(env,playerParam,jMatrix);
-        jfloatArray* buffer = (jfloatArray*)(*env)->GetFloatArrayElements(env,dataArray, 0);
+        jfloat * buffer = (*env)->GetFloatArrayElements(env,dataArray, 0);
         int matrixLen = (*env)->GetArrayLength(env,dataArray);
         float* matrix = (uint8_t *) malloc(matrixLen* sizeof(float));//后面再考虑重用内存
         memcpy(matrix,buffer,matrixLen);
