@@ -37,6 +37,7 @@ CloudVoiceRtmpParam cloudVoiceCreateRtmpParam(){
     CloudVoiceRtmpParam  rtmpParam = (CloudVoiceRtmpParam)malloc(sizeof(CloudVoiceRtmpParam_));
     if (rtmpParam){
         rtmpParam->setUrl = setUrl;
+        rtmpParam->url = NULL;
     }
     return rtmpParam;
 }
@@ -89,6 +90,7 @@ static void setMediaDataCallback(CloudVoiceRtmpClient rtmpClient,MediaDataCallba
 
 static void sendData(CloudVoiceRtmpClient rtmpClient,CloudVoiceAVPacket srcPackect){
     if(rtmpClient && rtmpClient ->rtmpClientOpaque && rtmpClient->rtmpClientOpaque->workFlag == 1){
+//        cloudVoiceLogD("rtmp client send data");
         rtmpClient->rtmpClientOpaque->blockingQueue->add(rtmpClient->rtmpClientOpaque->blockingQueue,srcPackect);
     } else{
         cloudVoiceDestroyAVPackect(srcPackect);
@@ -138,16 +140,16 @@ static void initRtmpClient(CloudVoiceRtmpClient rtmpClient) {
 
 //    RTMP_LogSetCallback(rtmpLogPrint);
 
-    char *url = "rtmp://192.168.3.34:1395/mylive/rtmpstream";
+//    char *url = "rtmp://192.168.3.34:1395/mylive/rtmpstream";
     if (rtmpClient) {
         rtmpClient->rtmpClientOpaque->rtmp = RTMP_Alloc();
         if (rtmpClient->rtmpClientOpaque->rtmp) {
             RTMP_Init(rtmpClient->rtmpClientOpaque->rtmp);
-            int ret = RTMP_SetupURL(rtmpClient->rtmpClientOpaque->rtmp, url);
+            int ret = RTMP_SetupURL(rtmpClient->rtmpClientOpaque->rtmp, rtmpClient->rtmpClientOpaque->rtmpParam->url);
             if (!ret) {
                 RTMP_Free(rtmpClient->rtmpClientOpaque->rtmp);
                 rtmpClient->rtmpClientOpaque->rtmp = NULL;
-                cloudVoiceLogI("push RTMP_SetupURL=%d", ret);
+                cloudVoiceLogI("type : %d, push RTMP_SetupURL=%d", rtmpClient->rtmpClientOpaque->rtmpParam->clientType,ret);
                 return;
             }
 
@@ -159,7 +161,7 @@ static void initRtmpClient(CloudVoiceRtmpClient rtmpClient) {
             if (!ret) {
                 RTMP_Free(rtmpClient->rtmpClientOpaque->rtmp);
                 rtmpClient->rtmpClientOpaque->rtmp = NULL;
-                cloudVoiceLogI("push RTMP_Connect=%d", ret);
+                cloudVoiceLogI("type : %d, push RTMP_Connect=%d",rtmpClient->rtmpClientOpaque->rtmpParam->clientType, ret);
                 return;
             }
 
@@ -168,10 +170,10 @@ static void initRtmpClient(CloudVoiceRtmpClient rtmpClient) {
                 RTMP_Close(rtmpClient->rtmpClientOpaque->rtmp);
                 RTMP_Free(rtmpClient->rtmpClientOpaque->rtmp);
                 rtmpClient->rtmpClientOpaque->rtmp = NULL;
-                cloudVoiceLogI("push RTMP_ConnectStream=%d", ret);
+                cloudVoiceLogI("type : %d, push RTMP_ConnectStream=%d", rtmpClient->rtmpClientOpaque->rtmpParam->clientType,ret);
                 return;
             }
-            cloudVoiceLogI("push RTMP_ConnectStream=%d, -----------------success---------------", ret);
+            cloudVoiceLogI("type : %d, push RTMP_ConnectStream=%d, -----------------success---------------", rtmpClient->rtmpClientOpaque->rtmpParam->clientType,ret);
             cloudVoiceLogI("");
             cloudVoiceLogI("");
             cloudVoiceLogI("");
@@ -233,6 +235,7 @@ static void sendSpsPpsData(CloudVoiceRtmpClient rtmpPushClient, CloudVoiceAVPack
 }
 
 static void sendH264Data(CloudVoiceRtmpClient rtmpPushClient, CloudVoiceAVPacket videoData) {
+//    cloudVoiceLogD("rtmp send data len : %d",videoData->dataLen);
     if (videoData && videoData->dataLen > 11) {
         int size = videoData->dataLen + 9;
         unsigned char *body = (unsigned char *) malloc(size);
@@ -264,6 +267,7 @@ static void sendH264Data(CloudVoiceRtmpClient rtmpPushClient, CloudVoiceAVPacket
 static void pushLoop(CloudVoiceRtmpClient rtmpClient){
     while (rtmpClient->rtmpClientOpaque->workFlag == 1) {
         CloudVoiceAVPacket avPackect = rtmpClient->rtmpClientOpaque->blockingQueue->take(rtmpClient->rtmpClientOpaque->blockingQueue);
+//        cloudVoiceLogD("pushLoop");
         if (avPackect){
             switch (avPackect->packetFormat){
                 case VDIEO_FORMAT_H264:
@@ -280,20 +284,21 @@ static void pushLoop(CloudVoiceRtmpClient rtmpClient){
 
 
 static void pullLoop(CloudVoiceRtmpClient rtmpClient){
+    cloudVoiceLogD("rtmp  pull loop start");
     RTMPPacket *packet = (RTMPPacket *) malloc(sizeof(RTMPPacket));
     while (rtmpClient->rtmpClientOpaque->workFlag == 1) {
         if (RTMP_ReadPacket(rtmpClient->rtmpClientOpaque->rtmp,packet)){
-//        LOGI("read rtmp packet type : %d",packet->m_packetType);
+//            cloudVoiceLogD("read rtmp packet type : %x",packet->m_packetType);
             if(RTMPPacket_IsReady(packet)){
                 switch (packet->m_packetType){
                     case RTMP_PACKET_TYPE_VIDEO:
-//                        LOGI("read rtmp packet size : %d,  mBody : %d",packet->m_nBodySize, packet->m_body);
+//                        cloudVoiceLogD("read rtmp packet size : %d,  mBody : %p",packet->m_nBodySize-9, packet->m_body);
 
                         if (rtmpClient->rtmpClientOpaque->mediaDataCallback && packet->m_body[1] == 0x01){
                             CloudVoiceAVPacket avPacket = cloudVoiceCreateAVPackect();
                             int dataLen = packet->m_nBodySize-9;
-                            uint8_t *data = (uint8_t*)malloc(packet->m_nBodySize-9);
-                            memcpy(data,packet->m_body-9,packet->m_nBodySize+9);
+                            uint8_t *data = (uint8_t*)malloc(dataLen);
+                            memcpy(data,packet->m_body+9,dataLen);
                             avPacket->data = data;
                             avPacket->startPos = 0;
                             avPacket->dataLen = dataLen;
@@ -305,16 +310,16 @@ static void pullLoop(CloudVoiceRtmpClient rtmpClient){
                         break;
                 }
             }
-
-            RTMPPacket_Free(packet);
-
+//            RTMPPacket_Free(packet);
         } else{
-
+            cloudVoiceLogD("read rtmp packet error");
             break;
         }
     }
+    cloudVoiceLogD("rtmp read loop  finish 1");
     RTMPPacket_Free(packet);
     free(packet);
+    cloudVoiceLogD("rtmp read loop  finish");
 }
 
 
@@ -331,6 +336,7 @@ static void releaseRtmpClient(CloudVoiceRtmpClient rtmpPushClient) {
 
 static void* workThreadFunc(void *arg){
     CloudVoiceRtmpClient rtmpClient = (CloudVoiceRtmpClient)arg;
+
     initRtmpClient(rtmpClient);
 
     if (rtmpClient->rtmpClientOpaque->workFlag ==1){
@@ -348,9 +354,12 @@ static void* workThreadFunc(void *arg){
 static void start(CloudVoiceRtmpClient rtmpClient){
     if (rtmpClient && rtmpClient->rtmpClientOpaque){
         rtmpClient->rtmpClientOpaque->workFlag = 0;
-        int retval = pthread_create(&rtmpClient->rtmpClientOpaque->workThreadId,NULL,workThreadFunc,rtmpClient);
+        if (rtmpClient && rtmpClient->rtmpClientOpaque->rtmpParam->url){
+            cloudVoiceLogD("rtmp url : %s",rtmpClient->rtmpClientOpaque->rtmpParam->url);
+            int retval = pthread_create(&rtmpClient->rtmpClientOpaque->workThreadId,NULL,workThreadFunc,rtmpClient);
 //
-        cloudVoiceLogI("start rtmp thread retval : %d", retval);
+            cloudVoiceLogI("start rtmp thread retval : %d", retval);
+        }
     }
 }
 

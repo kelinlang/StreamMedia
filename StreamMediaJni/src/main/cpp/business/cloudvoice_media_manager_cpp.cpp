@@ -155,15 +155,19 @@ void CloudVoiceMediaManager::sendVideoData(char *id, CloudVoiceAVPacket avPacket
     if (initFlag == 1){
         //推流到服务器
 //        CloudVoicePushStreamClient pushStreamClient = pushStreamClientMap.at(id);
+        if(pushStreamClientMap.find(id) != pushStreamClientMap.end()){
+            CloudVoicePushStreamClient pushStreamClient = pushStreamClientMap.at(id);
+            pushStreamClient->sendData(pushStreamClient,avPacket);
+        }
 
 //        cloudVoiceLogD("sendVideoData 1");
         //直接送给播放器，界面播放
-        if(pullStreamPlayerMap.find(id) != pullStreamPlayerMap.end()){
+     /*   if(pullStreamPlayerMap.find(id) != pullStreamPlayerMap.end()){
             CloudVoicePullStreamPlayer player = pullStreamPlayerMap.at(id);
             if (player){
                 player->sendData(player,avPacket);
             }
-        }
+        }*/
     }
 }
 
