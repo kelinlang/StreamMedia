@@ -253,7 +253,7 @@ static void* workThreadFunc(void *arg){
     while (displayOpaque->workFlag) {
         CloudVoiceAVPacket avPackect = (CloudVoiceAVPacket)displayOpaque->blockingQueue->take(displayOpaque->blockingQueue);
         if(avPackect && avPackect->data != NULL){
-            cloudVoiceLogD("display loop ------------ 2");
+//            cloudVoiceLogD("display loop ------------ 2");
             yuvDataChange(display, avPackect);
 
             glActiveTexture(GL_TEXTURE0);
@@ -279,7 +279,7 @@ static void* workThreadFunc(void *arg){
             eglSwapBuffers(eglDisp, eglWindow);
 
         }
-        cloudVoiceLogD("display loop  destroy avpackect");
+//        cloudVoiceLogD("display loop  destroy avpackect");
         cloudVoiceDestroyAVPackect(avPackect);
     }
     cloudVoiceLogD("display 3");

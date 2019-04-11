@@ -70,7 +70,7 @@ static void addData(CloudVoiceCodec codec,CloudVoiceAVPacket srcPackect){
     if(codec && codec ->codecOpaque && codec->codecOpaque->workFlag == 1){
         cloudVoiceLogD("codec add data avpackect : %p",srcPackect);
         codec->codecOpaque->blockingQueue->add(codec->codecOpaque->blockingQueue,srcPackect);
-        cloudVoiceLogD("codec add data 1");
+//        cloudVoiceLogD("codec add data 1");
 
     } else{
         cloudVoiceDestroyAVPackect(srcPackect);

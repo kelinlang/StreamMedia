@@ -27,7 +27,7 @@ static void RtmpMediaStatusCallback(void *externHandle,char *id, int  mediaStatu
 static void DecodeMediaDataCallback(void *externHandle,char *id, int type,  void * dataPacket,void *ext){
     CloudVoicePullStreamPlayer player = (CloudVoicePullStreamPlayer)externHandle;
     CloudVoiceAVPacket  avPacket = (CloudVoiceAVPacket)dataPacket;
-    cloudVoiceLogD("%s DecodeMediaDataCallback  player :%p , display : %p", id,player,player->display);
+//    cloudVoiceLogD("%s DecodeMediaDataCallback  player :%p , display : %p", id,player,player->display);
     player->display->addData(player->display,avPacket);
 }
 

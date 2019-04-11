@@ -5,6 +5,7 @@
 #include "cloudvoice_blocking_queue.h"
 #include "library/CommonLib/thread/cloudvoice_mutex.h"
 #include <malloc.h>
+#include <library/CommonLib/log/cloudvoice_log.h>
 
 #define MAX_CACHE_FRAME  30
 
@@ -36,19 +37,23 @@ static void add(CloudVoiceBlockingQueue blockingQueue,void* element){
         }
 
         ElementNode  elementNode = (ElementNode)malloc(sizeof(ElementNode_));
+        cloudVoiceLogD("queue add elementNode: %p, element : %p",elementNode,element);
         if (elementNode){
             elementNode->next = NULL;
             elementNode->element = element;
 
             if(queueEntity->lastNode){
                 queueEntity->lastNode->next = elementNode;
+            } else{
+                queueEntity->lastNode = elementNode;
             }
-            queueEntity->lastNode = elementNode;
             queueEntity->numNode++;
 
+            cloudVoiceLogD("queue add 2 elementNode: %p, element : %p",queueEntity->firstNode,element);
             if (!queueEntity->firstNode){
                 queueEntity->firstNode = elementNode;
             }
+            cloudVoiceLogD("queue add 3 elementNode: %p, element : %p",queueEntity->firstNode,element);
         }
 
         cloudVoiceUnlockMutex(queueEntity->clMutex);
@@ -61,18 +66,26 @@ static void* take(CloudVoiceBlockingQueue blockingQueue){
     if (blockingQueue ){
         BlockingQueueEntity  queueEntity = blockingQueue->blockingQueueEntity;
         cloudVoiceLockMutex(queueEntity->clMutex);
-
+        cloudVoiceLogD("queueEntity->numNode : %d",queueEntity->numNode);
         if (queueEntity->numNode <=0){
             cloudVoiceCondWait(queueEntity->clCond,queueEntity->clMutex);
-        }
-        ElementNode  elementNode = queueEntity->firstNode;
-        if(elementNode){
-            element = elementNode->element;
-            queueEntity->firstNode = elementNode->next;
-            queueEntity->numNode--;
-            free(elementNode);
-        }
+        } else{
+            ElementNode  elementNode = queueEntity->firstNode;
+            cloudVoiceLogD("queue take 1 elementNode: %p, element : %p",elementNode,element);
+            if(elementNode){
+                element = elementNode->element;
+                cloudVoiceLogD("queue take 2  elementNode: %p, element : %p, elementNode->next : %p",elementNode,element,elementNode->next);
+                if(queueEntity->firstNode == queueEntity->lastNode){
+                    queueEntity->lastNode = NULL;
+                    queueEntity->firstNode = NULL;
+                } else{
+                    queueEntity->firstNode = elementNode->next;
+                }
+                free(elementNode);
+                queueEntity->numNode--;
 
+            }
+        }
         cloudVoiceUnlockMutex(queueEntity->clMutex);
     }
     return element;
