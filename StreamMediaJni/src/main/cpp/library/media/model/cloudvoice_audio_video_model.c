@@ -22,12 +22,12 @@ CloudVoiceAVPacket cloudVoiceCreateAVPackect(){
         avPackect->pps = NULL;
         avPackect->ppsLen = 0;
     }
-    cloudVoiceLogD("create avPackect : %p",avPackect);
+//    cloudVoiceLogD("create avPackect : %p",avPackect);
     return avPackect;
 }
 void cloudVoiceDestroyAVPackect(CloudVoiceAVPacket avPackect){
     if(avPackect){
-        cloudVoiceLogD("destory avPackect : %p",avPackect);
+//        cloudVoiceLogD("destory avPackect : %p",avPackect);
         if (avPackect->data){
             free(avPackect->data);
             avPackect->data = NULL;

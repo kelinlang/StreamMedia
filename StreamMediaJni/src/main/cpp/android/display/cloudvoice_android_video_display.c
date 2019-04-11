@@ -343,7 +343,7 @@ static void setMediaDataCallback(CloudVoiceDisplay display,MediaDataCallback med
 
 static void addData(CloudVoiceDisplay display,CloudVoiceAVPacket srcPackect){
     if(display && display ->displayOpaque && display->displayOpaque->workFlag == 1){
-        cloudVoiceLogD("display add data");
+//        cloudVoiceLogD("display add data");
         display->displayOpaque->blockingQueue->add(display->displayOpaque->blockingQueue,srcPackect);
     } else{
         cloudVoiceDestroyAVPackect(srcPackect);
@@ -366,6 +366,8 @@ static void stop(CloudVoiceDisplay display){
     if (display && display->displayOpaque){
         if(display->displayOpaque->workThreadId != -1){
             cloudVoiceLogI("pthread_join  display start");
+            display->displayOpaque->workFlag = 0;
+            display->displayOpaque->blockingQueue->clear(display->displayOpaque->blockingQueue);
             pthread_join(display->displayOpaque->workThreadId,NULL);
 
 

@@ -29,7 +29,7 @@ struct BlockingQueueEntity_{
 
 
 static void add(CloudVoiceBlockingQueue blockingQueue,void* element){
-    if (blockingQueue && element){
+    if (blockingQueue && element&& blockingQueue->blockingQueueEntity->abortFlag == 1){
         BlockingQueueEntity  queueEntity = blockingQueue->blockingQueueEntity;
         cloudVoiceLockMutex(queueEntity->clMutex);
         if(queueEntity->numNode > MAX_CACHE_FRAME){
@@ -37,7 +37,7 @@ static void add(CloudVoiceBlockingQueue blockingQueue,void* element){
         }
 
         ElementNode  elementNode = (ElementNode)malloc(sizeof(ElementNode_));
-        cloudVoiceLogD("queue add elementNode: %p, element : %p",elementNode,element);
+//        cloudVoiceLogD("queue add elementNode: %p, element : %p",elementNode,element);
         if (elementNode){
             elementNode->next = NULL;
             elementNode->element = element;
@@ -49,11 +49,11 @@ static void add(CloudVoiceBlockingQueue blockingQueue,void* element){
             }
             queueEntity->numNode++;
 
-            cloudVoiceLogD("queue add 2 elementNode: %p, element : %p",queueEntity->firstNode,element);
+//            cloudVoiceLogD("queue add 2 elementNode: %p, element : %p",queueEntity->firstNode,element);
             if (!queueEntity->firstNode){
                 queueEntity->firstNode = elementNode;
             }
-            cloudVoiceLogD("queue add 3 elementNode: %p, element : %p",queueEntity->firstNode,element);
+//            cloudVoiceLogD("queue add 3 elementNode: %p, element : %p",queueEntity->firstNode,element);
         }
 
         cloudVoiceUnlockMutex(queueEntity->clMutex);
@@ -63,18 +63,18 @@ static void add(CloudVoiceBlockingQueue blockingQueue,void* element){
 
 static void* take(CloudVoiceBlockingQueue blockingQueue){
     void * element = NULL;
-    if (blockingQueue ){
+    if (blockingQueue && blockingQueue->blockingQueueEntity->abortFlag == 1){
         BlockingQueueEntity  queueEntity = blockingQueue->blockingQueueEntity;
         cloudVoiceLockMutex(queueEntity->clMutex);
-        cloudVoiceLogD("queueEntity->numNode : %d",queueEntity->numNode);
+//        cloudVoiceLogD("queueEntity->numNode : %d",queueEntity->numNode);
         if (queueEntity->numNode <=0){
             cloudVoiceCondWait(queueEntity->clCond,queueEntity->clMutex);
         } else{
             ElementNode  elementNode = queueEntity->firstNode;
-            cloudVoiceLogD("queue take 1 elementNode: %p, element : %p",elementNode,element);
+//            cloudVoiceLogD("queue take 1 elementNode: %p, element : %p",elementNode,element);
             if(elementNode){
                 element = elementNode->element;
-                cloudVoiceLogD("queue take 2  elementNode: %p, element : %p, elementNode->next : %p",elementNode,element,elementNode->next);
+//                cloudVoiceLogD("queue take 2  elementNode: %p, element : %p, elementNode->next : %p",elementNode,element,elementNode->next);
                 if(queueEntity->firstNode == queueEntity->lastNode){
                     queueEntity->lastNode = NULL;
                     queueEntity->firstNode = NULL;
@@ -94,6 +94,7 @@ static void* take(CloudVoiceBlockingQueue blockingQueue){
 static void clear(CloudVoiceBlockingQueue blockingQueue){
     if (blockingQueue){
         BlockingQueueEntity  queueEntity = blockingQueue->blockingQueueEntity;
+        cloudVoiceCondSignal(queueEntity->clCond);
         cloudVoiceLockMutex(queueEntity->clMutex);
 
         while (queueEntity->firstNode){
@@ -112,6 +113,7 @@ static void clear(CloudVoiceBlockingQueue blockingQueue){
 
 static void destroy(CloudVoiceBlockingQueue blockingQueue){
     if (blockingQueue){
+        blockingQueue->blockingQueueEntity ->abortFlag = 0;
         blockingQueue->clear(blockingQueue);
         BlockingQueueEntity  queueEntity = blockingQueue->blockingQueueEntity;
         free(queueEntity);
@@ -132,6 +134,7 @@ CloudVoiceBlockingQueue cloudVoiceCreateBlockingQueue(FreeCallback elementCallba
         blockingQueueEntity->clMutex = cloudVoiceCreateMutex();
         blockingQueueEntity->clCond = cloudVoiceCreateCond();
         blockingQueue->blockingQueueEntity = blockingQueueEntity;
+        blockingQueueEntity->abortFlag = 1;
 
         blockingQueue->add = add;
         blockingQueue->take = take;

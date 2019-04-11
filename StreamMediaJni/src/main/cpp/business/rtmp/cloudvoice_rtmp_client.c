@@ -356,10 +356,13 @@ static void start(CloudVoiceRtmpClient rtmpClient){
 
 static void stop(CloudVoiceRtmpClient rtmpClient){
     if (rtmpClient && rtmpClient->rtmpClientOpaque){
+        rtmpClient->rtmpClientOpaque->workFlag = 0;
+        rtmpClient->rtmpClientOpaque->blockingQueue->clear(rtmpClient->rtmpClientOpaque->blockingQueue);
+
         if(rtmpClient->rtmpClientOpaque->workThreadId != -1){
-            cloudVoiceLogI("pthread_join  start");
+            cloudVoiceLogI("rtmp client pthread_join  start");
             pthread_join(rtmpClient->rtmpClientOpaque->workThreadId,NULL);
-            cloudVoiceLogI("pthread_join  finish");
+            cloudVoiceLogI("rtmp client pthread_join  finish");
             rtmpClient->rtmpClientOpaque->workThreadId = -1;
         }
     }
@@ -367,6 +370,7 @@ static void stop(CloudVoiceRtmpClient rtmpClient){
 
 static void destroy(CloudVoiceRtmpClient rtmpClient){
     if (rtmpClient && rtmpClient->rtmpClientOpaque){
+        cloudVoiceLogI("rtmp client destroy  start");
         stop(rtmpClient);
         if (rtmpClient->rtmpClientOpaque->blockingQueue){
             rtmpClient->rtmpClientOpaque->blockingQueue->destroy(rtmpClient->rtmpClientOpaque->blockingQueue);

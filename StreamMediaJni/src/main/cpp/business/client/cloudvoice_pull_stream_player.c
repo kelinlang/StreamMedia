@@ -126,6 +126,7 @@ static void start(CloudVoicePullStreamPlayer self){
 }
 static void stop(CloudVoicePullStreamPlayer self){
     if (self){
+        cloudVoiceLogD("pull stream player stop");
         self->rtmpClient->stop(self->rtmpClient);
         self->decodec->stop(self->decodec);
         self->display->stop(self->display);
@@ -134,6 +135,7 @@ static void stop(CloudVoicePullStreamPlayer self){
 
 static void destroy(CloudVoicePullStreamPlayer self){
     if (self){
+        cloudVoiceLogD("pull stream player destroy");
         self->rtmpClient->destroy(self->rtmpClient);
         self->rtmpClient = NULL;
 

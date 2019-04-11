@@ -68,7 +68,7 @@ static void setMediaDataCallback(CloudVoiceCodec codec,MediaDataCallback mediaDa
 
 static void addData(CloudVoiceCodec codec,CloudVoiceAVPacket srcPackect){
     if(codec && codec ->codecOpaque && codec->codecOpaque->workFlag == 1){
-        cloudVoiceLogD("codec add data avpackect : %p",srcPackect);
+//        cloudVoiceLogD("codec add data avpackect : %p",srcPackect);
         codec->codecOpaque->blockingQueue->add(codec->codecOpaque->blockingQueue,srcPackect);
 //        cloudVoiceLogD("codec add data 1");
 
@@ -77,55 +77,8 @@ static void addData(CloudVoiceCodec codec,CloudVoiceAVPacket srcPackect){
     }
 }
 
-static void codecInputData(CloudVoiceCodec codec){
-    void * data = codec->codecOpaque->blockingQueue->take(codec->codecOpaque->blockingQueue);
-    cloudVoiceLogD("codecInputData avpackect : %p",data);
-    if(!data){
-        return;
-    }
-    CloudVoiceAVPacket srcPackect = (CloudVoiceAVPacket)data;
-    ssize_t bufidx = -1;
-    if (srcPackect && srcPackect->data){
-        bufidx = AMediaCodec_dequeueInputBuffer(codec->codecOpaque->mediaCodec,2000);
-        if(bufidx >= 0){
-            size_t bufsize;
-            uint8_t* buf = AMediaCodec_getInputBuffer(codec->codecOpaque->mediaCodec,bufidx,&bufsize);
-            cloudVoiceLogD("input data bufsize : %d,  dataLen : %d",bufsize,srcPackect->dataLen);
-            memcpy(buf,srcPackect->data+srcPackect->startPos,srcPackect->dataLen);
-            AMediaCodec_queueInputBuffer(codec->codecOpaque->mediaCodec,bufidx,0,srcPackect->dataLen,0,0);
-        }
-    }
-    cloudVoiceLogD("codecInputData  destroy avpackect");
-    cloudVoiceDestroyAVPackect(srcPackect);
-}
 
-static void codecOutputData(CloudVoiceCodec codec){
-    ssize_t bufidx = -1;
-    size_t bufsize;
-    AMediaCodecBufferInfo info;
 
-    bufidx = AMediaCodec_dequeueOutputBuffer(codec->codecOpaque->mediaCodec,&info,2000);
-        cloudVoiceLogD("decode_func ing------------bufidx ： %d ",bufidx);
-    if(bufidx >= 0){
-        cloudVoiceLogD("decode_func ing------------1 ");
-
-        uint8_t* buf = AMediaCodec_getOutputBuffer(codec->codecOpaque->mediaCodec,bufidx,&bufsize);
-        cloudVoiceLogD("decode_func ing------------2  bufsize : %d",bufsize);
-
-        if (codec->codecOpaque->mediaDataCallback){
-            CloudVoiceAVPacket  voiceAVPackect = cloudVoiceCreateAVPackect();
-            uint8_t *data =  (uint8_t*)malloc(bufsize);
-            memcpy(data,buf,bufsize);
-            voiceAVPackect->data = data;
-            voiceAVPackect->dataLen = bufsize;
-
-            //外部需要释放voiceAVPackect
-            codec->codecOpaque->mediaDataCallback(codec->externHandle,NULL,0,voiceAVPackect,NULL);
-        }
-
-        AMediaCodec_releaseOutputBuffer(codec->codecOpaque->mediaCodec, bufidx, false);
-    }
-}
 
 static int mediaCodecStart(CloudVoiceCodec codec){
     int retVal = -1;
@@ -143,12 +96,14 @@ static int mediaCodecStart(CloudVoiceCodec codec){
     if (status != 0){
         cloudVoiceLogE("AMediaCodec_configure error : %d",status);
         AMediaCodec_stop(mediaCodec);
+        free(mediaCodec);
     } else{
         cloudVoiceLogI("-------------------------config media codec success-----------------");
 
         if ((status = AMediaCodec_start(mediaCodec)) != AMEDIA_OK){
             cloudVoiceLogE("AMediaCodec_start error : %d",status);
             AMediaCodec_stop(mediaCodec);
+            free(mediaCodec);
         } else{
             codec->codecOpaque->mediaCodec = mediaCodec;
             retVal = 0;
@@ -164,14 +119,14 @@ static  void* readThreadFunc(void *arg){
     cloudVoiceLogD("readThreadFunc loop start ");
     while (codec->codecOpaque->workFlag){
         void * data = codec->codecOpaque->blockingQueue->take(codec->codecOpaque->blockingQueue);
-        cloudVoiceLogD("codecInputData avpackect : %p",data);
+//        cloudVoiceLogD("codecInputData avpackect : %p",data);
         if(!data){
             continue;
         }
         CloudVoiceAVPacket srcPackect = (CloudVoiceAVPacket)data;
         ssize_t bufidx = -1;
         if (srcPackect && srcPackect->data){
-            bufidx = AMediaCodec_dequeueInputBuffer(codec->codecOpaque->mediaCodec,2000);
+            bufidx = AMediaCodec_dequeueInputBuffer(codec->codecOpaque->mediaCodec,50);
             if(bufidx >= 0){
                 size_t bufsize;
                 uint8_t* buf = AMediaCodec_getInputBuffer(codec->codecOpaque->mediaCodec,bufidx,&bufsize);
@@ -180,7 +135,7 @@ static  void* readThreadFunc(void *arg){
                 AMediaCodec_queueInputBuffer(codec->codecOpaque->mediaCodec,bufidx,0,srcPackect->dataLen,0,0);
             }
         }
-        cloudVoiceLogD("codecInputData  destroy avpackect");
+//        cloudVoiceLogD("codecInputData  destroy avpackect");
         cloudVoiceDestroyAVPackect(srcPackect);
     }
 }
@@ -193,13 +148,13 @@ static void* workThreadFunc(void *arg){
     AMediaCodecBufferInfo info;
     cloudVoiceLogD("workThreadFunc loop start ");
     while (codec->codecOpaque->workFlag){
-        bufidx = AMediaCodec_dequeueOutputBuffer(codec->codecOpaque->mediaCodec,&info,2000);
+        bufidx = AMediaCodec_dequeueOutputBuffer(codec->codecOpaque->mediaCodec,&info,50);
 //        cloudVoiceLogD("decode_func ing------------bufidx ： %d ",bufidx);
         if(bufidx >= 0){
 //            cloudVoiceLogD("decode_func ing------------1 ");
 
             uint8_t* buf = AMediaCodec_getOutputBuffer(codec->codecOpaque->mediaCodec,bufidx,&bufsize);
-            cloudVoiceLogD("decode_func ing------------2  bufsize : %d",bufsize);
+//            cloudVoiceLogD("decode_func ing------------2  bufsize : %d",bufsize);
 
             if (codec->codecOpaque->mediaDataCallback){
                 CloudVoiceAVPacket  voiceAVPackect = cloudVoiceCreateAVPackect();
@@ -235,22 +190,25 @@ static void start(CloudVoiceCodec codec){
 
 static void stop(CloudVoiceCodec codec){
     if (codec && codec->codecOpaque){
+        codec->codecOpaque->workFlag = 0;
+        codec->codecOpaque->blockingQueue->clear(codec->codecOpaque->blockingQueue);
         if(codec->codecOpaque->workThreadId != -1){
-            cloudVoiceLogI("pthread_join  start");
+            cloudVoiceLogI("Codec workthread pthread_join  start");
             pthread_join(codec->codecOpaque->workThreadId,NULL);
-            cloudVoiceLogI("pthread_join  finish");
+            cloudVoiceLogI("Codec workthread pthread_join  finish");
             codec->codecOpaque->workThreadId = -1;
         }
 
         if(codec->codecOpaque->readThreadId != -1){
-            cloudVoiceLogI("pthread_join  start 2");
+            cloudVoiceLogI("Codec readthread pthread_join  start ");
             pthread_join(codec->codecOpaque->readThreadId,NULL);
-            cloudVoiceLogI("pthread_join  finish 2");
+            cloudVoiceLogI("Codec readthread pthread_join  finish ");
             codec->codecOpaque->readThreadId = -1;
         }
 
         if(codec->codecOpaque->mediaCodec){
             AMediaCodec_stop(codec->codecOpaque->mediaCodec);
+            free(codec->codecOpaque->mediaCodec);
             codec->codecOpaque->mediaCodec = NULL;
         }
     }

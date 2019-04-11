@@ -349,7 +349,7 @@ JNIEXPORT void JNICALL Java_com_stream_media_jni_MediaJni_sendVideoData
                 avPacket->data = (uint8_t *) malloc(avPacket->dataLen);//后面再考虑重用内存
                 memcpy(avPacket->data,buffer,avPacket->dataLen);
                 env->ReleaseByteArrayElements(dataArray, buffer, 0);
-                cloudVoiceLogD("data len : %d",avPacket->dataLen);
+//                cloudVoiceLogD("data len : %d",avPacket->dataLen);
 
             } else if (avPacket->packetFormat == VDIEO_FORMAT_H264_SPS_PPS){
                 avPacket->spsLen = env->GetIntField(videoData,jspsLen);
