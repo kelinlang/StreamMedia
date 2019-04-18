@@ -80,6 +80,7 @@ public class VideoDisplayView extends SurfaceView implements SurfaceHolder.Callb
         if (holdCallback != null){
             holdCallback.surfaceChanged(holder, format,width,height);
         }
+
     }
 
     @Override

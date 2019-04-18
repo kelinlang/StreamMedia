@@ -65,7 +65,7 @@ public class VideoEncoder {
         mediaCodec = MediaCodec.createEncoderByType(videoParam.getMediaFormat());
 
         for (int colorFormats: mediaCodec.getCodecInfo().getCapabilitiesForType(mediaFormat.getString(MediaFormat.KEY_MIME)).colorFormats){
-            MLog.i("mediaCodec colorFormats : "+ colorFormats);
+//            MLog.i("mediaCodec colorFormats : "+ colorFormats);
         }
 
         int[] colorFormats = mediaCodec.getCodecInfo().getCapabilitiesForType(mediaFormat.getString(MediaFormat.KEY_MIME)).colorFormats;
@@ -417,7 +417,7 @@ public class VideoEncoder {
                     new FileStorage("/sdcard/h264tmp.h264");
             count++;
 
-            fileStorage.setSaveEnableFlag(true);
+//            fileStorage.setSaveEnableFlag(true);
             fileStorage.open();
         }
     }

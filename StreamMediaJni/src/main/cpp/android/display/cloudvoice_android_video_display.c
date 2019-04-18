@@ -370,6 +370,11 @@ static void stop(CloudVoiceDisplay display){
             display->displayOpaque->blockingQueue->clear(display->displayOpaque->blockingQueue);
             pthread_join(display->displayOpaque->workThreadId,NULL);
 
+            if(display->displayOpaque->aNativeWindow){
+                cloudVoiceLogD("display release native window");
+                ANativeWindow_release(display->displayOpaque->aNativeWindow);
+                display->displayOpaque->aNativeWindow = NULL;
+            }
 
             cloudVoiceLogI("pthread_join display finish");
             display->displayOpaque->workThreadId = -1;
@@ -435,13 +440,13 @@ CloudVoiceDisplay cloudVoiceCreateAndroidVideoDisplay(/*CloudVoiceDisplayParam d
             display->getParam = getParam;
             display->setParam = setParam;
             display->setVideoSurface = setVideoSurface;
-            cloudVoiceLogD("display : %p, setVideoSurface : %p",display,setVideoSurface);
+//            cloudVoiceLogD("display : %p, setVideoSurface : %p",display,setVideoSurface);
 
             display->setVideoMatrix = setVideoMatrix;
             display->setMediaStatusCallback = setMediaStatusCallback;
             display->setMediaDataCallback = setMediaDataCallback;
             display->addData = addData;
-            cloudVoiceLogD("display : %p, addData : %p",display,addData);
+//            cloudVoiceLogD("display : %p, addData : %p",display,addData);
             display->start = start;
             display->stop = stop;
             display->destroy = destroy;

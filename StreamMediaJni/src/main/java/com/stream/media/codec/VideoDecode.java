@@ -288,7 +288,7 @@ public class VideoDecode {
                     new FileStorage("/sdcard/h264tmp.h264");
             count++;
 
-            fileStorage.setSaveEnableFlag(true);
+//            fileStorage.setSaveEnableFlag(true);
             fileStorage.open();
         }
     }

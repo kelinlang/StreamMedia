@@ -47,7 +47,7 @@ void CloudVoiceMediaManager::pause() {
 void CloudVoiceMediaManager::createPlayer(char *id) {
     if (initFlag == 1&& pullStreamPlayerMap.find(id) == pullStreamPlayerMap.end()){
         CloudVoicePullStreamPlayer player = cloudVoiceCreatePullStreamPlayer();
-        cloudVoiceLogD("%s createPlayer  create addr :%p , display : %p,display setVideoSurface : %p", id,player,player->display,player->display->setVideoSurface);
+//        cloudVoiceLogD("%s createPlayer  create addr :%p , display : %p,display setVideoSurface : %p", id,player,player->display,player->display->setVideoSurface);
         pullStreamPlayerMap.insert(pair<char *, CloudVoicePullStreamPlayer>(id, player));
     }
 }
@@ -55,10 +55,10 @@ void CloudVoiceMediaManager::createPlayer(char *id) {
 void CloudVoiceMediaManager::setVideoSurface(char *id, ANativeWindow *nativeWindow) {
     if (initFlag == 1&& pullStreamPlayerMap.find(id) != pullStreamPlayerMap.end()){
         CloudVoicePullStreamPlayer player = pullStreamPlayerMap.at(id);
-        cloudVoiceLogD("%s createPlayer  create addr :%p , display : %p", id,player,player->display);
+//        cloudVoiceLogD("%s createPlayer  create addr :%p , display : %p", id,player,player->display);
 
         if (player){
-            cloudVoiceLogD("%s createPlayer  get addr :%p , display setVideoSurface : %p", id,player,player->display->setVideoSurface);
+//            cloudVoiceLogD("%s createPlayer  get addr :%p , display setVideoSurface : %p", id,player,player->display->setVideoSurface);
             player->display->setVideoSurface(player->display,nativeWindow);
             cloudVoiceLogD("setVideoSurface finish");
         }
