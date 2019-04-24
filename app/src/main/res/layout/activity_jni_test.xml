@@ -5,24 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.stream.media.demo.MainActivity">
+    tools:context=".JniTestActivity">
+
 
     <Button
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="进入测试camera界面"
-    android:onClick="onToTestCameraView"/>
-
-    <Button
+        android:text="开始"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="进入测试OpenSLES界面"
-        android:onClick="onToTestOpenSLES"/>
-
+        android:onClick="onStart"/>
 
     <Button
+        android:text="停止"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="进入测试Jni测试界面"
-        android:onClick="onToTestJNI"/>
+        android:onClick="onStop"/>
+
 </LinearLayout>

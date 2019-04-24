@@ -42,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this,TestOpenslesActivity.class));
     }
 
+    public void onToTestJNI(View view){
+        startActivity(new Intent(this,JniTestActivity.class));
+    }
+
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.

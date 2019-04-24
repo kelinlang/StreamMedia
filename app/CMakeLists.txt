@@ -23,7 +23,7 @@ include_directories(CommonLib/common
                                      StreamMedia/gles2/fsh
                                      StreamMedia/gles2/vsh
                                       StreamMedia/video
-
+                                        JniTest
                                       librtmp)
 
 
@@ -98,6 +98,11 @@ add_library( # Sets the name of the library.
               src/main/cpp/test/test_opensles.cpp
 
 
+
+            #JniTest
+            src/main/cpp/JniTest/JniTest.cpp
+
+            #JniTest
 
               #LibRtmp
               src/main/cpp/librtmp/amf.c
