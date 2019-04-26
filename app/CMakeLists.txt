@@ -101,6 +101,7 @@ add_library( # Sets the name of the library.
 
             #JniTest
             src/main/cpp/JniTest/JniTest.cpp
+            src/main/cpp/JniTest/Tree.c
 
             #JniTest
 

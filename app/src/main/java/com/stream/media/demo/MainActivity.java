@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Example of a call to a native method
 //        onToTestCameraView(null);
+        onToTestJNI(null);
     }
 
 
